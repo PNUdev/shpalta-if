@@ -1,0 +1,13 @@
+spring:
+  freemarker:
+    template-loader-path: "classpath:/templates"
+    suffix: ".ftl"
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/shpalta?useSSL=false&serverTimezone=UTC&useLegacyDatetimeCode=false}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:root}
+  jpa:
+    properties:
+      hibernate.dialect: org.hibernate.dialect.MySQL55Dialect
+    hibernate.ddl-auto: update
+
