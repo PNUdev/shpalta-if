@@ -12,7 +12,6 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.List;
 
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -22,7 +21,11 @@ public class CategoryServiceIntegrationTest {
 
     private static final String TITLE = "Title";
 
+    private static final String COLOR = "Color";
+
     private static final String UPDATED_TITLE = "Updated title";
+
+    private static final String UPDATED_COLOR = "Updated color";
 
     @Autowired
     private PostRepository postRepository;
@@ -35,6 +38,7 @@ public class CategoryServiceIntegrationTest {
 
         CategoryDto categoryDto = CategoryDto.builder()
                 .title(TITLE)
+                .colorTheme(COLOR)
                 .build();
 
         List<Category> allCategoriesBeforeCreate = categoryService.findAll();
@@ -44,6 +48,9 @@ public class CategoryServiceIntegrationTest {
 
         List<Category> allCategoriesAfterCreate = categoryService.findAll();
         assertEquals(1, allCategoriesAfterCreate.size());
+
+        Category category = allCategoriesAfterCreate.get(0);
+        assertValidCategoryBasedOnCategoryDto(categoryDto, category);
 
         categoryService.deleteById(allCategoriesAfterCreate.get(0).getId());
 
@@ -57,6 +64,7 @@ public class CategoryServiceIntegrationTest {
 
         CategoryDto categoryDto = CategoryDto.builder()
                 .title(TITLE)
+                .colorTheme(COLOR)
                 .build();
 
         List<Category> allCategoriesBeforeCreate = categoryService.findAll();
@@ -91,6 +99,7 @@ public class CategoryServiceIntegrationTest {
 
         CategoryDto categoryDto = CategoryDto.builder()
                 .title(TITLE)
+                .colorTheme(COLOR)
                 .build();
 
         List<Category> allCategoriesBeforeCreate = categoryService.findAll();
@@ -103,25 +112,25 @@ public class CategoryServiceIntegrationTest {
 
         Category createdCategory = allCategoriesAfterCreate.get(0);
 
-        Category expectedUpdatedCategory = createdCategory.toBuilder()
+        CategoryDto updatedCategoryDto = CategoryDto.builder()
                 .title(UPDATED_TITLE)
+                .colorTheme(UPDATED_COLOR)
                 .build();
 
-        CategoryDto updateCategoryDto = CategoryDto.builder()
-                .title(UPDATED_TITLE)
-                .build();
-
-        categoryService.update(expectedUpdatedCategory.getId(), updateCategoryDto);
+        categoryService.update(createdCategory.getId(), updatedCategoryDto);
 
         List<Category> allCategoriesAfterUpdate = categoryService.findAll();
         assertEquals(1, allCategoriesAfterUpdate.size());
 
-        Category updatedCategoryFromDb = categoryService.findById(expectedUpdatedCategory.getId());
+        Category updatedCategoryFromDb = categoryService.findById(createdCategory.getId());
 
-        // posts is lazy-fetched and we are out of hibernate session here, so we will simply ignore this field
-        assertThat(updatedCategoryFromDb)
-                .isEqualToIgnoringGivenFields(expectedUpdatedCategory, "posts");
+        assertValidCategoryBasedOnCategoryDto(updatedCategoryDto, updatedCategoryFromDb);
 
+    }
+
+    private void assertValidCategoryBasedOnCategoryDto(CategoryDto categoryDto, Category category) {
+        assertEquals(categoryDto.getTitle(), category.getTitle());
+        assertEquals(categoryDto.getColorTheme(), category.getColorTheme());
     }
 
 }

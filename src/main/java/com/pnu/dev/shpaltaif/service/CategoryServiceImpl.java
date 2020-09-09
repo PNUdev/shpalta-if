@@ -39,6 +39,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         Category category = Category.builder()
                 .title(categoryDto.getTitle())
+                .colorTheme(categoryDto.getColorTheme())
                 .build();
 
         categoryRepository.save(category);
@@ -50,6 +51,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         Category updatedCategory = categoryFromDb.toBuilder()
                 .title(categoryDto.getTitle())
+                .colorTheme(categoryDto.getColorTheme())
                 .build();
 
         categoryRepository.save(updatedCategory);

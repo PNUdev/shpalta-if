@@ -26,9 +26,9 @@ public class Category {
 
     private String title;
 
+    private String colorTheme;
+
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
     private List<Post> posts;
-
-    // ToDo add more fields
 
 }
