@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.ConstraintViolationException;
+import java.util.stream.Collectors;
 
 import static com.pnu.dev.shpaltaif.util.FlashMessageConstants.FLASH_MESSAGE_ERROR;
 
@@ -26,6 +28,20 @@ public class ExceptionsInterceptor {
     public String unhandledException(RedirectAttributes redirectAttributes, HttpServletRequest request) {
 
         redirectAttributes.addFlashAttribute(FLASH_MESSAGE_ERROR, "Виникла внутрішня помилка сервера");
+
+        return getRedirectUrl(request);
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    public String constraintViolationException(ConstraintViolationException exception,
+                                               RedirectAttributes redirectAttributes, HttpServletRequest request) {
+
+
+        String message = exception.getConstraintViolations().stream()
+                .map(constraintViolation -> constraintViolation.getMessage() + "; ")
+                .collect(Collectors.joining());
+
+        redirectAttributes.addFlashAttribute(FLASH_MESSAGE_ERROR, message);
 
         return getRedirectUrl(request);
     }
