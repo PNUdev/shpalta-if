@@ -1,6 +1,7 @@
 package com.pnu.dev.shpaltaif.service;
 
 import com.pnu.dev.shpaltaif.domain.Category;
+import com.pnu.dev.shpaltaif.dto.CategoryDto;
 
 import java.util.List;
 
@@ -10,9 +11,9 @@ public interface CategoryService {
 
     Category findById(Long id);
 
-    void create(Category category);
+    void create(CategoryDto categoryDto);
 
-    void update(Long id, Category category);
+    void update(Long id, CategoryDto categoryDto);
 
     void deleteById(Long id);
 

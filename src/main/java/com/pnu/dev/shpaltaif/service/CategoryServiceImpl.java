@@ -1,7 +1,8 @@
 package com.pnu.dev.shpaltaif.service;
 
 import com.pnu.dev.shpaltaif.domain.Category;
-import com.pnu.dev.shpaltaif.exception.NotFoundException;
+import com.pnu.dev.shpaltaif.dto.CategoryDto;
+import com.pnu.dev.shpaltaif.exception.ServiceAdminException;
 import com.pnu.dev.shpaltaif.repository.CategoryRepository;
 import com.pnu.dev.shpaltaif.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,20 +31,25 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category findById(Long id) {
         return categoryRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Категорію не знайдено"));
+                .orElseThrow(() -> new ServiceAdminException("Категорію не знайдено"));
     }
 
     @Override
-    public void create(Category category) {
+    public void create(CategoryDto categoryDto) {
+
+        Category category = Category.builder()
+                .title(categoryDto.getTitle())
+                .build();
+
         categoryRepository.save(category);
     }
 
     @Override
-    public void update(Long id, Category category) {
+    public void update(Long id, CategoryDto categoryDto) {
         Category categoryFromDb = findById(id);
 
         Category updatedCategory = categoryFromDb.toBuilder()
-                .title(category.getTitle())
+                .title(categoryDto.getTitle())
                 .build();
 
         categoryRepository.save(updatedCategory);

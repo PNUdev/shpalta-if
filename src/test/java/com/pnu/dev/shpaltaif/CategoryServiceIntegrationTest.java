@@ -2,6 +2,7 @@ package com.pnu.dev.shpaltaif;
 
 import com.pnu.dev.shpaltaif.domain.Category;
 import com.pnu.dev.shpaltaif.domain.Post;
+import com.pnu.dev.shpaltaif.dto.CategoryDto;
 import com.pnu.dev.shpaltaif.repository.PostRepository;
 import com.pnu.dev.shpaltaif.service.CategoryService;
 import org.junit.jupiter.api.Test;
@@ -32,14 +33,14 @@ public class CategoryServiceIntegrationTest {
     @Test
     void createAndThenDeleteByIdCategoryWithoutPosts() {
 
-        Category category = Category.builder()
+        CategoryDto categoryDto = CategoryDto.builder()
                 .title(TITLE)
                 .build();
 
         List<Category> allCategoriesBeforeCreate = categoryService.findAll();
         assertEquals(0, allCategoriesBeforeCreate.size());
 
-        categoryService.create(category);
+        categoryService.create(categoryDto);
 
         List<Category> allCategoriesAfterCreate = categoryService.findAll();
         assertEquals(1, allCategoriesAfterCreate.size());
@@ -54,14 +55,14 @@ public class CategoryServiceIntegrationTest {
     @Test
     void createAndThenDeleteByIdCategoryWithPosts() {
 
-        Category category = Category.builder()
+        CategoryDto categoryDto = CategoryDto.builder()
                 .title(TITLE)
                 .build();
 
         List<Category> allCategoriesBeforeCreate = categoryService.findAll();
         assertEquals(0, allCategoriesBeforeCreate.size());
 
-        categoryService.create(category);
+        categoryService.create(categoryDto);
 
         List<Category> allCategoriesAfterCreate = categoryService.findAll();
         assertEquals(1, allCategoriesAfterCreate.size());
@@ -88,14 +89,14 @@ public class CategoryServiceIntegrationTest {
     @Test
     void createAndThenUpdateCategoryWithPosts() {
 
-        Category category = Category.builder()
+        CategoryDto categoryDto = CategoryDto.builder()
                 .title(TITLE)
                 .build();
 
         List<Category> allCategoriesBeforeCreate = categoryService.findAll();
         assertEquals(0, allCategoriesBeforeCreate.size());
 
-        categoryService.create(category);
+        categoryService.create(categoryDto);
 
         List<Category> allCategoriesAfterCreate = categoryService.findAll();
         assertEquals(1, allCategoriesAfterCreate.size());
@@ -106,7 +107,11 @@ public class CategoryServiceIntegrationTest {
                 .title(UPDATED_TITLE)
                 .build();
 
-        categoryService.update(expectedUpdatedCategory.getId(), expectedUpdatedCategory);
+        CategoryDto updateCategoryDto = CategoryDto.builder()
+                .title(UPDATED_TITLE)
+                .build();
+
+        categoryService.update(expectedUpdatedCategory.getId(), updateCategoryDto);
 
         List<Category> allCategoriesAfterUpdate = categoryService.findAll();
         assertEquals(1, allCategoriesAfterUpdate.size());
