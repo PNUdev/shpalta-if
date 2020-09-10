@@ -61,7 +61,7 @@ public class CategoryServiceImpl implements CategoryService {
     public void deleteById(Long id) {
 
         if (postRepository.existsPostsByCategoryId(id)) {
-            throw new SecurityException("Неможливо видалити категорію, яка має пости");
+            throw new ServiceAdminException("Неможливо видалити категорію, яка має пости");
         }
 
         categoryRepository.deleteById(id);

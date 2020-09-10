@@ -3,6 +3,7 @@ package com.pnu.dev.shpaltaif;
 import com.pnu.dev.shpaltaif.domain.Category;
 import com.pnu.dev.shpaltaif.domain.Post;
 import com.pnu.dev.shpaltaif.dto.CategoryDto;
+import com.pnu.dev.shpaltaif.exception.ServiceAdminException;
 import com.pnu.dev.shpaltaif.repository.PostRepository;
 import com.pnu.dev.shpaltaif.service.CategoryService;
 import org.junit.jupiter.api.Test;
@@ -84,7 +85,7 @@ public class CategoryServiceIntegrationTest {
 
         postRepository.save(post);
 
-        assertThrows(SecurityException.class,
+        assertThrows(ServiceAdminException.class,
                 () -> categoryService.deleteById(createdCategory.getId()),
                 "Неможливо видалити категорію, яка має пости"
         );
@@ -125,6 +126,18 @@ public class CategoryServiceIntegrationTest {
         Category updatedCategoryFromDb = categoryService.findById(createdCategory.getId());
 
         assertValidCategoryBasedOnCategoryDto(updatedCategoryDto, updatedCategoryFromDb);
+
+    }
+
+    @Test
+    public void findByIdNotFound() {
+
+        assertEquals(0, categoryService.findAll().size());
+
+        assertThrows(ServiceAdminException.class,
+                () -> categoryService.findById(Long.MAX_VALUE),
+                "Категорію не знайдено"
+        );
 
     }
 
