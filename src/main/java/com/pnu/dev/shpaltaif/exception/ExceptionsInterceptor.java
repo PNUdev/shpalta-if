@@ -2,12 +2,13 @@ package com.pnu.dev.shpaltaif.exception;
 
 import com.pnu.dev.shpaltaif.util.HttpUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.ConstraintViolationException;
 import java.util.stream.Collectors;
 
 import static com.pnu.dev.shpaltaif.util.FlashMessageConstants.FLASH_MESSAGE_ERROR;
@@ -32,14 +33,14 @@ public class ExceptionsInterceptor {
         return getRedirectUrl(request);
     }
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    public String constraintViolationException(ConstraintViolationException exception,
+    @ExceptionHandler(BindException.class)
+    public String constraintViolationException(BindException exception,
                                                RedirectAttributes redirectAttributes, HttpServletRequest request) {
 
 
-        String message = exception.getConstraintViolations().stream()
-                .map(constraintViolation -> constraintViolation.getMessage() + "; ")
-                .collect(Collectors.joining());
+        String message = exception.getBindingResult().getAllErrors().stream()
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                .collect(Collectors.joining(" ;"));
 
         redirectAttributes.addFlashAttribute(FLASH_MESSAGE_ERROR, message);
 
