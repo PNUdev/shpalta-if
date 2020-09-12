@@ -1,5 +1,13 @@
 package com.pnu.dev.shpaltaif.domain;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
+import javax.persistence.Cacheable;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -8,7 +16,13 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import java.util.List;
 
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
 @Entity
+@Data
+@Builder(toBuilder = true)
+@NoArgsConstructor
+@AllArgsConstructor
 public class Category {
 
     @Id
@@ -17,9 +31,9 @@ public class Category {
 
     private String title;
 
+    private String colorTheme;
+
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
     private List<Post> posts;
-
-    // ToDo add more fields
 
 }
