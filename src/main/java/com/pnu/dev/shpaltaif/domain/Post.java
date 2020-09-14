@@ -28,6 +28,10 @@ public class Post {
 
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @ManyToOne
+    private Account author;
+
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @ManyToOne
     private Category category;
 
     // ToDo add more fields
