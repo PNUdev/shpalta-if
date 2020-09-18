@@ -16,10 +16,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
-// ToDo ADMIN user account have to be created on startup, if not exists (in scope of security)
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, AdminUserInitializer {
 
     private UserRepository userRepository;
 
@@ -130,5 +130,25 @@ public class UserServiceImpl implements UserService {
                 .build();
 
         userRepository.save(updatedUser);
+    }
+
+    @Override
+    public void createAdminUserIfNotExists() {
+
+        Optional<User> adminUser = userRepository.findUserByRole(UserRole.ROLE_ADMIN);
+
+        if (adminUser.isPresent()) {
+            return;
+        }
+
+        User newAdminUser = User.builder()
+                .login("defaultLogin")
+                .password("defaultPassword") // ToDo password hash should be stored instead + use env for this values
+                .role(UserRole.ROLE_ADMIN)
+                .active(Boolean.TRUE)
+                .build();
+
+        userRepository.save(newAdminUser);
+
     }
 }

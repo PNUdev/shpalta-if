@@ -46,10 +46,7 @@ public class User {
 
     private boolean active;
 
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "user", fetch = FetchType.EAGER)
     private PublicAccount publicAccount;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "authorPublicAccount")
-    private List<Post> posts;
 
 }

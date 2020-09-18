@@ -3,6 +3,8 @@ package com.pnu.dev.shpaltaif.controller;
 import com.pnu.dev.shpaltaif.domain.User;
 import com.pnu.dev.shpaltaif.dto.CreateUserDto;
 import com.pnu.dev.shpaltaif.dto.UpdatePasswordDto;
+import com.pnu.dev.shpaltaif.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,15 +15,25 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
+
 // ToDo only ADMIN user should have access to this endpoints (except, update-password)
 @Controller
 @RequestMapping("/users")
 public class UserController {
 
+    private UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
     @GetMapping
     public String findAll(Model model) {
-
-        return "";
+            List<User> users = userService.findAll();
+            model.addAttribute("users", users);
+            return "/admin/user/index";
     }
 
     @GetMapping("/{id}")
