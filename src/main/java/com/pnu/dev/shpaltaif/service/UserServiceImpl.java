@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService, AdminUserInitializer {
@@ -61,6 +60,10 @@ public class UserServiceImpl implements UserService, AdminUserInitializer {
 
         if (!StringUtils.equals(createUserDto.getPassword(), createUserDto.getRepeatedPassword())) {
             throw new ServiceAdminException("Паролі не співпадають!");
+        }
+
+        if (userRepository.existsByLogin(createUserDto.getLogin())) {
+            throw new ServiceAdminException("Логін уже використовується!");
         }
 
         User user = User.builder()
@@ -141,15 +144,13 @@ public class UserServiceImpl implements UserService, AdminUserInitializer {
     @Override
     public void createAdminUserIfNotExists() {
 
-        Optional<User> adminUser = userRepository.findUserByRole(UserRole.ROLE_ADMIN);
-
-        if (adminUser.isPresent()) {
+        if (userRepository.existsByRole(UserRole.ROLE_ADMIN)) {
             return;
         }
 
         User newAdminUser = User.builder()
                 .login(environment.getProperty("admin.default.login"))
-                .password(environment.getProperty("admin.default.password"))
+                .password(environment.getProperty("admin.default.password")) // ToDo hash it
                 .role(UserRole.ROLE_ADMIN)
                 .active(Boolean.TRUE)
                 .build();
