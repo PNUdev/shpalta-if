@@ -7,4 +7,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     boolean existsPostsByCategoryId(Long categoryId);
 
+    boolean existsPostsByAuthorPublicAccountId(Long authorId);
+
 }

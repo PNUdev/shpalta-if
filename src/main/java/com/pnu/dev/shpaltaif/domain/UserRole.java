@@ -1,5 +1,5 @@
 package com.pnu.dev.shpaltaif.domain;
 
 public enum UserRole {
-    ADMIN, WRITER
+    ROLE_ADMIN, ROLE_WRITER
 }

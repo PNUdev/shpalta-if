@@ -1,6 +1,8 @@
 package com.pnu.dev.shpaltaif.controller;
 
-import com.pnu.dev.shpaltaif.dto.AccountDto;
+import com.pnu.dev.shpaltaif.domain.User;
+import com.pnu.dev.shpaltaif.dto.PublicAccountDto;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
@@ -12,7 +14,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/accounts")
-public class AccountController {
+public class PublicAccountController {
 
     @GetMapping
     public String findAll(Model model) {
@@ -26,14 +28,14 @@ public class AccountController {
         return "";
     }
 
-    @GetMapping("/edit/{id}")
-    public String editForm(Model model, @PathVariable("id") Long id) {
+    @GetMapping("/edit")
+    public String editForm(@AuthenticationPrincipal User user, @PathVariable("id") Long id) {
 
         return "";
     }
 
-    @PostMapping("/update/{id}")
-    public String update(@PathVariable("id") Long id, @Validated AccountDto accountDto,
+    @PostMapping("/update")
+    public String update(@AuthenticationPrincipal User user, @Validated PublicAccountDto publicAccountDto,
                          RedirectAttributes redirectAttributes) {
 
         return "";

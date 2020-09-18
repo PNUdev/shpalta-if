@@ -2,9 +2,14 @@ package com.pnu.dev.shpaltaif;
 
 import com.pnu.dev.shpaltaif.domain.Category;
 import com.pnu.dev.shpaltaif.domain.Post;
+import com.pnu.dev.shpaltaif.domain.PublicAccount;
+import com.pnu.dev.shpaltaif.domain.User;
+import com.pnu.dev.shpaltaif.domain.UserRole;
 import com.pnu.dev.shpaltaif.dto.CategoryDto;
 import com.pnu.dev.shpaltaif.exception.ServiceAdminException;
 import com.pnu.dev.shpaltaif.repository.PostRepository;
+import com.pnu.dev.shpaltaif.repository.PublicAccountRepository;
+import com.pnu.dev.shpaltaif.repository.UserRepository;
 import com.pnu.dev.shpaltaif.service.CategoryService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,28 +37,20 @@ public class CategoryServiceIntegrationTest {
     private PostRepository postRepository;
 
     @Autowired
-    CategoryService categoryService;
+    private CategoryService categoryService;
+
+    @Autowired
+    private PublicAccountRepository publicAccountRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Test
     void createAndThenDeleteByIdCategoryWithoutPosts() {
 
-        CategoryDto categoryDto = CategoryDto.builder()
-                .title(TITLE)
-                .colorTheme(COLOR)
-                .build();
+        Category category = createCategory();
 
-        List<Category> allCategoriesBeforeCreate = categoryService.findAll();
-        assertEquals(0, allCategoriesBeforeCreate.size());
-
-        categoryService.create(categoryDto);
-
-        List<Category> allCategoriesAfterCreate = categoryService.findAll();
-        assertEquals(1, allCategoriesAfterCreate.size());
-
-        Category category = allCategoriesAfterCreate.get(0);
-        assertValidCategoryBasedOnCategoryDto(categoryDto, category);
-
-        categoryService.deleteById(allCategoriesAfterCreate.get(0).getId());
+        categoryService.deleteById(category.getId());
 
         List<Category> allCategoriesAfterDelete = categoryService.findAll();
         assertEquals(0, allCategoriesAfterDelete.size());
@@ -63,24 +60,30 @@ public class CategoryServiceIntegrationTest {
     @Test
     void createAndThenDeleteByIdCategoryWithPosts() {
 
-        CategoryDto categoryDto = CategoryDto.builder()
-                .title(TITLE)
-                .colorTheme(COLOR)
+        User user = User.builder()
+                .login("login")
+                .password("password")
+                .role(UserRole.ROLE_WRITER)
                 .build();
 
-        List<Category> allCategoriesBeforeCreate = categoryService.findAll();
-        assertEquals(0, allCategoriesBeforeCreate.size());
+        userRepository.save(user);
 
-        categoryService.create(categoryDto);
+        PublicAccount publicAccount = PublicAccount.builder()
+                .name("name")
+                .surname("surname")
+                .profileImageUrl("profileImageUrl")
+                .description("description")
+                .user(user)
+                .build();
 
-        List<Category> allCategoriesAfterCreate = categoryService.findAll();
-        assertEquals(1, allCategoriesAfterCreate.size());
+        publicAccountRepository.save(publicAccount);
 
-        Category createdCategory = allCategoriesAfterCreate.get(0);
+        Category createdCategory = createCategory();
 
         Post post = Post.builder()
                 .title(TITLE)
                 .category(createdCategory)
+                .authorPublicAccount(publicAccount)
                 .build();
 
         postRepository.save(post);
@@ -96,22 +99,9 @@ public class CategoryServiceIntegrationTest {
     }
 
     @Test
-    void createAndThenUpdateCategoryWithPosts() {
+    void createAndThenUpdateCategory() {
 
-        CategoryDto categoryDto = CategoryDto.builder()
-                .title(TITLE)
-                .colorTheme(COLOR)
-                .build();
-
-        List<Category> allCategoriesBeforeCreate = categoryService.findAll();
-        assertEquals(0, allCategoriesBeforeCreate.size());
-
-        categoryService.create(categoryDto);
-
-        List<Category> allCategoriesAfterCreate = categoryService.findAll();
-        assertEquals(1, allCategoriesAfterCreate.size());
-
-        Category createdCategory = allCategoriesAfterCreate.get(0);
+        Category createdCategory = createCategory();
 
         CategoryDto updatedCategoryDto = CategoryDto.builder()
                 .title(UPDATED_TITLE)
@@ -140,6 +130,28 @@ public class CategoryServiceIntegrationTest {
         );
 
     }
+
+    private Category createCategory() {
+        CategoryDto categoryDto = CategoryDto.builder()
+                .title(TITLE)
+                .colorTheme(COLOR)
+                .build();
+
+        List<Category> allCategoriesBeforeCreate = categoryService.findAll();
+        assertEquals(0, allCategoriesBeforeCreate.size());
+
+        categoryService.create(categoryDto);
+
+        List<Category> allCategoriesAfterCreate = categoryService.findAll();
+        assertEquals(1, allCategoriesAfterCreate.size());
+
+        Category category = allCategoriesAfterCreate.get(0);
+
+        assertValidCategoryBasedOnCategoryDto(categoryDto, category);
+
+        return category;
+    }
+
 
     private void assertValidCategoryBasedOnCategoryDto(CategoryDto categoryDto, Category category) {
         assertEquals(categoryDto.getTitle(), category.getTitle());
