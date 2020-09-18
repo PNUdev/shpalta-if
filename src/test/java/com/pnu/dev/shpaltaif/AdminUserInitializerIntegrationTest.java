@@ -22,8 +22,8 @@ public class AdminUserInitializerIntegrationTest {
     void defaultUserWasCreated() {
 
         User expectedAdminUser = User.builder()
-                .login("defaultLogin")
-                .password("defaultPassword")
+                .login("admin")
+                .password("admin")
                 .role(UserRole.ROLE_ADMIN)
                 .active(Boolean.TRUE)
                 .build();

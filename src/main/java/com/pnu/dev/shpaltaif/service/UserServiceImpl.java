@@ -10,6 +10,7 @@ import com.pnu.dev.shpaltaif.exception.ServiceAdminException;
 import com.pnu.dev.shpaltaif.repository.UserRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -25,11 +26,16 @@ public class UserServiceImpl implements UserService, AdminUserInitializer {
 
     private PublicAccountService publicAccountService;
 
+    private Environment environment;
+
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, PublicAccountService publicAccountService) {
+    public UserServiceImpl(UserRepository userRepository,
+                           PublicAccountService publicAccountService,
+                           Environment environment) {
 
         this.userRepository = userRepository;
         this.publicAccountService = publicAccountService;
+        this.environment = environment;
     }
 
     @Override
@@ -142,8 +148,8 @@ public class UserServiceImpl implements UserService, AdminUserInitializer {
         }
 
         User newAdminUser = User.builder()
-                .login("defaultLogin")
-                .password("defaultPassword") // ToDo password hash should be stored instead + use env for this values
+                .login(environment.getProperty("admin.default.login"))
+                .password(environment.getProperty("admin.default.password"))
                 .role(UserRole.ROLE_ADMIN)
                 .active(Boolean.TRUE)
                 .build();
