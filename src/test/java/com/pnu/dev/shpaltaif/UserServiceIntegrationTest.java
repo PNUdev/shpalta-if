@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class UserServiceIntegrationTest {
 
-    private static final String LOGIN = "login";
+    private static final String USERNAME = "username";
 
     private static final String PASSWORD = "password";
 
@@ -41,7 +41,7 @@ public class UserServiceIntegrationTest {
     private static final String SURNAME = "surname";
 
     private static final CreateUserDto CREATE_USER_DTO = CreateUserDto.builder()
-            .login(LOGIN)
+            .username(USERNAME)
             .password(PASSWORD)
             .repeatedPassword(PASSWORD)
             .name(NAME)
@@ -158,7 +158,7 @@ public class UserServiceIntegrationTest {
         assertEquals(1, usersAfterCreate.size());
 
         User expectedUser = User.builder()
-                .login(LOGIN)
+                .username(USERNAME)
                 .password(PASSWORD)
                 .role(UserRole.ROLE_WRITER)
                 .active(true)

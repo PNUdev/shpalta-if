@@ -8,6 +8,7 @@
             </a>
             <form method="POST" action="${actionUrl}" class="mt-2">
                 <button class="btn btn-outline-danger mx-4">Так, видалити!</button>
+                <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
             </form>
         </div>
     </div>

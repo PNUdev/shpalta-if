@@ -15,6 +15,6 @@
         <a class="navbar-brand" href="/admin/posts">Пости</a>
 
         <!-- ToDo: Show this tab only to ADMIN users -->
-        <a class="navbar-brand" href="#">Користувачі</a>
+        <a class="navbar-brand" href="/admin/users">Користувачі</a>
     </div>
 </nav>

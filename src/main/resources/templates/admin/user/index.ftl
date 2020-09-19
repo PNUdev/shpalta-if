@@ -14,7 +14,7 @@
     <#list users as user >
         <tr>
             <th scope="row">${user.id}</th>
-            <td>${user.login}</td>
+            <td>${user.username}</td>
             <td>${user.role}</td>
             <td>${user.active?then('активний', 'неактивний')}</td>
             <td>

@@ -17,9 +17,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
-// ToDo only ADMIN user should have access to this endpoints (except, update-password)
 @Controller
-@RequestMapping("/users")
+@RequestMapping("/admin/users")
 public class UserController {
 
     private UserService userService;
@@ -31,15 +30,9 @@ public class UserController {
 
     @GetMapping
     public String findAll(Model model) {
-            List<User> users = userService.findAll();
-            model.addAttribute("users", users);
-            return "/admin/user/index";
-    }
-
-    @GetMapping("/{id}")
-    public String findById(Model model, @PathVariable("id") Long id) {
-
-        return "";
+        List<User> users = userService.findAll();
+        model.addAttribute("users", users);
+        return "/admin/user/index";
     }
 
     @GetMapping("/new")
@@ -47,9 +40,8 @@ public class UserController {
         return "";
     }
 
-    // ToDo this endpoint have to be accessible for any user
-    @GetMapping("/update-password/{id}")
-    public String updatePasswordForm(Model model, @PathVariable("id") Long id) {
+    @GetMapping("/update-password")
+    public String updatePasswordForm(@AuthenticationPrincipal User user) {
 
         return "";
     }

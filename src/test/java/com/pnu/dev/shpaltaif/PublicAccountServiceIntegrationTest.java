@@ -70,7 +70,7 @@ public class PublicAccountServiceIntegrationTest {
                 .build();
 
         User user = User.builder()
-                .login("login")
+                .username("username")
                 .password("password")
                 .role(UserRole.ROLE_WRITER)
                 .build();

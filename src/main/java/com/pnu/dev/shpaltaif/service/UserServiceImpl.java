@@ -12,14 +12,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
-public class UserServiceImpl implements UserService, AdminUserInitializer {
+public class UserServiceImpl implements UserService, AdminUserInitializer, UserDetailsService {
 
     private UserRepository userRepository;
 
@@ -27,20 +30,24 @@ public class UserServiceImpl implements UserService, AdminUserInitializer {
 
     private Environment environment;
 
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
                            PublicAccountService publicAccountService,
-                           Environment environment) {
+                           Environment environment,
+                           BCryptPasswordEncoder bCryptPasswordEncoder) {
 
         this.userRepository = userRepository;
         this.publicAccountService = publicAccountService;
         this.environment = environment;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     @Override
-    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
-        // ToDo implement it along with security
-        return null;
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findUserByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException(username));
     }
 
     @Override
@@ -62,13 +69,13 @@ public class UserServiceImpl implements UserService, AdminUserInitializer {
             throw new ServiceAdminException("Паролі не співпадають!");
         }
 
-        if (userRepository.existsByLogin(createUserDto.getLogin())) {
+        if (userRepository.existsByUsername(createUserDto.getPassword())) {
             throw new ServiceAdminException("Логін уже використовується!");
         }
 
         User user = User.builder()
-                .login(createUserDto.getLogin())
-                .password(createUserDto.getPassword()) // ToDo password hash should be stored instead
+                .username(createUserDto.getUsername())
+                .password(bCryptPasswordEncoder.encode(createUserDto.getPassword()))
                 .role(UserRole.ROLE_WRITER)
                 .active(Boolean.TRUE)
                 .build();
@@ -149,8 +156,10 @@ public class UserServiceImpl implements UserService, AdminUserInitializer {
         }
 
         User newAdminUser = User.builder()
-                .login(environment.getProperty("admin.default.login"))
-                .password(environment.getProperty("admin.default.password")) // ToDo hash it
+                .username(environment.getProperty("admin.default.username"))
+                .password(bCryptPasswordEncoder.encode(
+                        Objects.requireNonNull(environment.getProperty("admin.default.password")))
+                )
                 .role(UserRole.ROLE_ADMIN)
                 .active(Boolean.TRUE)
                 .build();
