@@ -1,3 +1,4 @@
+<#assign  security=JspTaglibs["http://www.springframework.org/security/tags"] />
 <html>
 <head>
     <#include "./coreDependencies.ftl" >
@@ -7,14 +8,13 @@
 <nav class="navbar navbar-dark bg-info">
     <div>
 
-        <!-- ToDo: Show this tab only to ADMIN users -->
-        <a class="navbar-brand" href="/admin/categories">Категорії</a>
+        <@security.authorize access="hasRole('ROLE_ADMIN')">
+            <a class="navbar-brand" href="/admin/categories">Категорії</a>
+            <a class="navbar-brand" href="/admin/users">Користувачі</a>
+        </@security.authorize >
 
         <!-- ToDo: WRITER should have access to own posts only and should be able to add posts or edit own posts -->
-        <!-- ADMIN should not be able to add or edit posts, only see or hide (deactivate) them -->
+        <!-- ADMIN should not be able to add or edit posts, only see or hide (deactivate) them (since admin doesn't have account) -->
         <a class="navbar-brand" href="/admin/posts">Пости</a>
-
-        <!-- ToDo: Show this tab only to ADMIN users -->
-        <a class="navbar-brand" href="/admin/users">Користувачі</a>
     </div>
 </nav>

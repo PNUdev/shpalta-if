@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,6 +60,9 @@ public class UserServiceIntegrationTest {
 
     @Autowired
     private PostRepository postRepository;
+
+    @Autowired
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @MockBean // present here to disable default admin user creation
     private ApplicationReadyEventListener applicationReadyEventListener;
@@ -175,7 +179,9 @@ public class UserServiceIntegrationTest {
         User actualUser = usersAfterCreate.get(0);
 
         assertThat(actualUser)
-                .isEqualToIgnoringGivenFields(expectedUser, "id", "publicAccount");
+                .isEqualToIgnoringGivenFields(expectedUser, "id", "publicAccount", "password");
+
+        assertTrue(bCryptPasswordEncoder.matches(PASSWORD, actualUser.getPassword()));
 
         assertThat(actualUser.getPublicAccount())
                 .isEqualToIgnoringGivenFields(expectedPublicAccount, "id", "createdAt", "updatedAt", "user");
