@@ -3,7 +3,7 @@
 <#assign formSubmissionUrl = category???then('/admin/categories/update/${category.id}', '/admin/categories/new') >
 <#assign defaultColorTheme = '#42adf5'>
 
-<div class="mx-auto mt-5 p-5 rounded bg-light">
+<div class="mx-auto mt-5 p-5 rounded bg-light col-md-9">
     <form method="POST" action="${formSubmissionUrl}">
         <div class="input-group mb-3">
             <div class="input-group-prepend">
@@ -37,5 +37,4 @@
     </form>
 </div>
 
-<#include "../include/toastr.ftl">
 <#include "../include/footer.ftl">

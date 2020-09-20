@@ -54,5 +54,4 @@
     </#list>
 </table>
 
-<#include "../include/toastr.ftl">
 <#include "../include/footer.ftl">

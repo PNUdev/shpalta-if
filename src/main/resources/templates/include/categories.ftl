@@ -1,4 +1,4 @@
-<#macro categoriesList categories>
+<#macro categories categories>
 
     <!-- ToDo update the view -->
     <aside>

@@ -1,6 +1,6 @@
 <#include "../include/header.ftl">
 
-<div class="col-md-7 mt-5 p-5 rounded bg-light">
+<div class="mx-auto mt-5 p-5 rounded bg-light col-md-9">
     <form method="POST" action="/admin/users/update-password">
         <div class="input-group mb-3">
             <div class="input-group-prepend">

@@ -18,17 +18,31 @@
     </div>
 
     <div class="ml-auto row mr-2">
-        <@security.authorize access="hasRole('ROLE_WRITER')">
-            <a class="navbar-brand" href="/accounts/<@security.authentication property="principal.publicAccount.id"/>">
-                Мій акаунт
-            </a>
-        </@security.authorize >
-        <a class="navbar-brand" href="/admin/users/update-password">
-            Оновити пароль
-        </a>
-        <form method="POST" action="/logout">
-            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-            <button type="submit" class="btn btn-light">Вийти</button>
-        </form>
+        <div class="btn-group dropleft">
+            <button type="button" class="btn btn-light dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false">
+                <@security.authentication property="principal.username"/>
+            </button>
+            <div class="dropdown-menu">
+                <@security.authorize access="hasRole('ROLE_WRITER')">
+                    <a class="dropdown-item" href="/accounts/edit">
+                        Редагувати акаунт
+                    </a>
+                    <a class="dropdown-item"
+                       href="/accounts/<@security.authentication property="principal.publicAccount.id"/>">
+                        Переглянути акаунт
+                    </a>
+                </@security.authorize >
+                <a class="dropdown-item" href="/admin/users/update-password">
+                    Оновити пароль
+                </a>
+                <div class="dropdown-divider"></div>
+                <form method="POST" action="/logout">
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                    <button type="submit" class="btn btn-link dropdown-item">Вийти</button>
+                </form>
+            </div>
+        </div>
+
     </div>
 </nav>

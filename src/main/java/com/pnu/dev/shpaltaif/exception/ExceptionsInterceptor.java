@@ -32,7 +32,7 @@ public class ExceptionsInterceptor {
     @ExceptionHandler(Exception.class)
     public String unhandledException(Exception e, RedirectAttributes redirectAttributes, HttpServletRequest request) {
 
-        log.error("Unexpected was thrown, httpServletRequest: {}", request, e);
+        log.error("Unexpected exception was thrown, httpServletRequest: {}", request, e);
 
         redirectAttributes.addFlashAttribute(FLASH_MESSAGE_ERROR, "Виникла внутрішня помилка сервера");
 
