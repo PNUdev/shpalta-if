@@ -13,19 +13,19 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class CreateUserDto {
 
-    @NotNull
+    @NotNull(message = "Ім'я користувача повинно бути вказаним")
     private String username;
 
-    @NotNull
+    @NotNull(message = "Пароль повинен бути вказаним")
     private String password;
 
-    @NotNull
+    @NotNull(message = "Повторення паролю повинно бути вказаним")
     private String repeatedPassword;
 
-    @NotNull
+    @NotNull(message = "Ім'я повинно бути вказаним")
     private String name;
 
-    @NotNull
+    @NotNull(message = "Прізвище повинно бути вказаним")
     private String surname;
 
 }

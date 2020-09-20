@@ -17,12 +17,15 @@
         <a class="navbar-brand" href="/admin/posts">Пости</a>
     </div>
 
-    <div class="ml-auto row">
+    <div class="ml-auto row mr-2">
         <@security.authorize access="hasRole('ROLE_WRITER')">
             <a class="navbar-brand" href="/accounts/<@security.authentication property="principal.publicAccount.id"/>">
                 Мій акаунт
             </a>
         </@security.authorize >
+        <a class="navbar-brand" href="/admin/users/update-password">
+            Оновити пароль
+        </a>
         <form method="POST" action="/logout">
             <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
             <button type="submit" class="btn btn-light">Вийти</button>

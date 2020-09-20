@@ -34,7 +34,7 @@ public class UserController {
     public String findAll(Model model) {
         List<User> users = userService.findAll();
         model.addAttribute("users", users);
-        return "/admin/user/index";
+        return "admin/user/index";
     }
 
     @GetMapping("/new")
@@ -43,9 +43,8 @@ public class UserController {
     }
 
     @GetMapping("/update-password")
-    public String updatePasswordForm(@AuthenticationPrincipal User user) {
-
-        return "";
+    public String updatePasswordForm() {
+        return "admin/user/updatePasswordForm";
     }
 
     @PostMapping("/new")
@@ -58,10 +57,14 @@ public class UserController {
     }
 
     @PostMapping("/update-password")
-    public String resetPassword(@AuthenticationPrincipal User user, @Validated UpdatePasswordDto updatePasswordDto) {
-        return "";
-    }
+    public String updatePassword(@AuthenticationPrincipal User user, @Validated UpdatePasswordDto updatePasswordDto,
+                                 RedirectAttributes redirectAttributes) {
 
+        userService.updatePassword(user, updatePasswordDto);
+
+        redirectAttributes.addFlashAttribute(FLASH_MESSAGE_SUCCESS, "Пароль було успішно оновлено");
+        return "redirect:/admin/users";
+    }
 
     @PostMapping("/activate/{id}")
     public String activate(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {

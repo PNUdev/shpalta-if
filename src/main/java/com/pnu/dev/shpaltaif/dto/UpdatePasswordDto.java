@@ -7,13 +7,13 @@ import javax.validation.constraints.NotNull;
 @Data
 public class UpdatePasswordDto {
 
-    @NotNull
+    @NotNull(message = "Старий пароль повинен бути вказаним")
     private String oldPassword;
 
-    @NotNull
+    @NotNull(message = "Новий пароль повинен бути вказаним")
     private String newPassword;
 
-    @NotNull
+    @NotNull(message = "Повторення нового паролю повинне бути вказаним")
     private String newPasswordRepeated;
 
 }

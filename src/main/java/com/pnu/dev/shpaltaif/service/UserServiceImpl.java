@@ -100,13 +100,19 @@ public class UserServiceImpl implements UserService, AdminUserInitializer, UserD
     @Override
     public void updatePassword(User user, UpdatePasswordDto updatePasswordDto) {
 
-        // ToDo implement along with security
+        if (!bCryptPasswordEncoder.matches(updatePasswordDto.getOldPassword(), user.getPassword())) {
+            throw new ServiceAdminException("Неправильний старий пароль");
+        }
 
-        // ToDo compare hash of updatePasswordDto.oldPassword to user.password
+        if (!StringUtils.equals(updatePasswordDto.getNewPassword(), updatePasswordDto.getNewPasswordRepeated())) {
+            throw new ServiceAdminException("Паролі не співпадають!");
+        }
 
-        // ToDo compare updatePasswordDto.newPassword and updatePasswordDto.newPasswordRepeated
+        User updatedUser = user.toBuilder()
+                .password(bCryptPasswordEncoder.encode(updatePasswordDto.getNewPassword()))
+                .build();
 
-        // ToDo update user record
+        userRepository.save(updatedUser);
 
     }
 

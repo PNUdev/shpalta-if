@@ -13,10 +13,10 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 public class PublicAccountDto {
 
-    @NotNull
+    @NotNull(message = "Ім'я повинно бути вказаним")
     private String name;
 
-    @NotNull
+    @NotNull(message = "Прізвище повинно бути вказаним")
     private String surname;
 
     private String profileImageUrl;
