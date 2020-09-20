@@ -17,6 +17,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
+import static com.pnu.dev.shpaltaif.util.FlashMessageConstants.FLASH_MESSAGE_SUCCESS;
+
 @Controller
 @RequestMapping("/admin/users")
 public class UserController {
@@ -37,7 +39,7 @@ public class UserController {
 
     @GetMapping("/new")
     public String createForm() {
-        return "";
+        return "admin/user/form";
     }
 
     @GetMapping("/update-password")
@@ -49,7 +51,10 @@ public class UserController {
     @PostMapping("/new")
     public String create(@Validated CreateUserDto createUserDto, RedirectAttributes redirectAttributes) {
 
-        return "";
+        userService.create(createUserDto);
+
+        redirectAttributes.addFlashAttribute(FLASH_MESSAGE_SUCCESS, "Акаунт користувача було успішно створено");
+        return "redirect:/admin/users";
     }
 
     @PostMapping("/update-password")
@@ -61,18 +66,27 @@ public class UserController {
     @PostMapping("/activate/{id}")
     public String activate(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
 
-        return "";
+        userService.activate(id);
+
+        redirectAttributes.addFlashAttribute(FLASH_MESSAGE_SUCCESS, "Акаунт користувача було успішно активовано");
+        return "redirect:/admin/users";
     }
 
     @PostMapping("/deactivate/{id}")
     public String deactivate(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
 
-        return "";
+        userService.deactivate(id);
+
+        redirectAttributes.addFlashAttribute(FLASH_MESSAGE_SUCCESS, "Акаунт користувача було успішно деактивовано");
+        return "redirect:/admin/users";
     }
 
     @PostMapping("/delete/{id}")
     public String delete(@PathVariable("id") Long id, RedirectAttributes redirectAttributes) {
 
-        return "";
+        userService.delete(id);
+
+        redirectAttributes.addFlashAttribute(FLASH_MESSAGE_SUCCESS, "Акаунт користувача було успішно видалено");
+        return "redirect:/admin/users";
     }
 }

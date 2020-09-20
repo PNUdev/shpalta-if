@@ -1,4 +1,4 @@
-<#assign  security=JspTaglibs["http://www.springframework.org/security/tags"] />
+<#assign security=JspTaglibs["http://www.springframework.org/security/tags"] />
 <html>
 <head>
     <#include "./coreDependencies.ftl" >
@@ -7,7 +7,6 @@
 <body>
 <nav class="navbar navbar-dark bg-info">
     <div>
-
         <@security.authorize access="hasRole('ROLE_ADMIN')">
             <a class="navbar-brand" href="/admin/categories">Категорії</a>
             <a class="navbar-brand" href="/admin/users">Користувачі</a>
@@ -16,5 +15,17 @@
         <!-- ToDo: WRITER should have access to own posts only and should be able to add posts or edit own posts -->
         <!-- ADMIN should not be able to add or edit posts, only see or hide (deactivate) them (since admin doesn't have account) -->
         <a class="navbar-brand" href="/admin/posts">Пости</a>
+    </div>
+
+    <div class="ml-auto row">
+        <@security.authorize access="hasRole('ROLE_WRITER')">
+            <a class="navbar-brand" href="/accounts/<@security.authentication property="principal.publicAccount.id"/>">
+                Мій акаунт
+            </a>
+        </@security.authorize >
+        <form method="POST" action="/logout">
+            <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+            <button type="submit" class="btn btn-light">Вийти</button>
+        </form>
     </div>
 </nav>

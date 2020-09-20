@@ -112,12 +112,20 @@ public class UserServiceImpl implements UserService, AdminUserInitializer, UserD
 
     @Override
     public void activate(Long userId) {
-        setActive(userId, Boolean.TRUE);
+        User user = findById(userId);
+        setActive(user, Boolean.TRUE);
     }
 
     @Override
     public void deactivate(Long userId) {
-        setActive(userId, Boolean.FALSE);
+
+        User user = findById(userId);
+
+        if (user.getRole() == UserRole.ROLE_ADMIN) {
+            throw new ServiceAdminException("Неможливо деактивувати користувача-адміністратора");
+        }
+
+        setActive(user, Boolean.FALSE);
     }
 
     @Transactional
@@ -137,9 +145,7 @@ public class UserServiceImpl implements UserService, AdminUserInitializer, UserD
         userRepository.deleteById(user.getId());
     }
 
-    private void setActive(Long userId, boolean active) {
-
-        User user = findById(userId);
+    private void setActive(User user, boolean active) {
 
         User updatedUser = user.toBuilder()
                 .active(active)
