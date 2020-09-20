@@ -1,6 +1,8 @@
 <#include "../admin/include/header.ftl" >
 <#assign security=JspTaglibs["http://www.springframework.org/security/tags"] />
 
+<@security.authentication property='principal.publicAccount' var='principalAccount' />
+
 <div class="row d-flex justify-content-around">
     <div class="col-md-7 mt-5 p-5 rounded bg-light">
         <form method="POST" action="/accounts/update">
@@ -8,30 +10,27 @@
                 <div class="input-group-prepend">
                     <span class="input-group-text">Ім'я</span>
                 </div>
-                <input type="text" class="form-control" name="name"
-                       value="<@security.authentication property='principal.publicAccount.name' />" required>
+                <input type="text" class="form-control" name="name" value="${principalAccount.name}" required>
             </div>
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
                     <span class="input-group-text">Прізвище</span>
                 </div>
-                <input type="text" class="form-control" name="surname"
-                       value="<@security.authentication property='principal.publicAccount.surname' />" required>
+                <input type="text" class="form-control" name="surname" value="${principalAccount.surname}" required>
             </div>
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
                     <span class="input-group-text">Зображення акаунту</span>
                 </div>
                 <input type="text" class="form-control" name="imageUrl" id="image-url"
-                       value="<@security.authentication property='principal.publicAccount.profileImageUrl' />">
+                       value="${(principalAccount.profileImageUrl)!}">
             </div>
             <div class="input-group">
                 <div class="input-group-prepend">
                     <span class="input-group-text">Опис</span>
                 </div>
-                <textarea class="form-control" name="description" rows="10">
-                    <@security.authentication property='principal.publicAccount.description' /> <!-- ToDo fix for null values -->
-                </textarea>
+                <textarea class="form-control" name="description"
+                          rows="10">${(principalAccount.description)!}</textarea>
             </div>
 
             <div class="p-3">

@@ -6,6 +6,7 @@ import com.pnu.dev.shpaltaif.domain.User;
 import com.pnu.dev.shpaltaif.dto.PublicAccountDto;
 import com.pnu.dev.shpaltaif.service.CategoryService;
 import com.pnu.dev.shpaltaif.service.PublicAccountService;
+import com.pnu.dev.shpaltaif.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -29,10 +30,16 @@ public class PublicAccountController {
 
     private CategoryService categoryService;
 
+    private UserService userService;
+
     @Autowired
-    public PublicAccountController(PublicAccountService publicAccountService, CategoryService categoryService) {
+    public PublicAccountController(PublicAccountService publicAccountService,
+                                   CategoryService categoryService,
+                                   UserService userService) {
+
         this.publicAccountService = publicAccountService;
         this.categoryService = categoryService;
+        this.userService = userService;
     }
 
     @GetMapping
@@ -66,6 +73,8 @@ public class PublicAccountController {
 
         Long publicAccountId = user.getPublicAccount().getId();
         publicAccountService.update(publicAccountDto, publicAccountId);
+
+        userService.refreshPrincipalInAuthSession(user.getId());
 
         redirectAttributes.addFlashAttribute(FLASH_MESSAGE_SUCCESS, "Анаунт було успішно оновлено");
         return "redirect:/accounts/" + publicAccountId;

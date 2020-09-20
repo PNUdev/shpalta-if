@@ -11,6 +11,9 @@ import com.pnu.dev.shpaltaif.repository.UserRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -149,6 +152,18 @@ public class UserServiceImpl implements UserService, AdminUserInitializer, UserD
 
         publicAccountService.delete(user.getPublicAccount().getId());
         userRepository.deleteById(user.getId());
+    }
+
+    @Override
+    public void refreshPrincipalInAuthSession(Long userId) {
+
+        User user = findById(userId);
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                user, user.getPassword(), user.getAuthorities());
+
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
     }
 
     private void setActive(User user, boolean active) {
