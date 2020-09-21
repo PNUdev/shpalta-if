@@ -1,12 +1,10 @@
 package com.pnu.dev.shpaltaif.controller;
 
-import com.pnu.dev.shpaltaif.domain.Category;
 import com.pnu.dev.shpaltaif.domain.PublicAccount;
 import com.pnu.dev.shpaltaif.domain.User;
 import com.pnu.dev.shpaltaif.dto.PublicAccountDto;
-import com.pnu.dev.shpaltaif.service.CategoryService;
+import com.pnu.dev.shpaltaif.service.AuthSessionSynchronizer;
 import com.pnu.dev.shpaltaif.service.PublicAccountService;
-import com.pnu.dev.shpaltaif.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -28,18 +26,14 @@ public class PublicAccountController {
 
     private PublicAccountService publicAccountService;
 
-    private CategoryService categoryService;
-
-    private UserService userService;
+    private AuthSessionSynchronizer authSessionSynchronizer;
 
     @Autowired
     public PublicAccountController(PublicAccountService publicAccountService,
-                                   CategoryService categoryService,
-                                   UserService userService) {
+                                   AuthSessionSynchronizer authSessionSynchronizer) {
 
         this.publicAccountService = publicAccountService;
-        this.categoryService = categoryService;
-        this.userService = userService;
+        this.authSessionSynchronizer = authSessionSynchronizer;
     }
 
     @GetMapping
@@ -48,7 +42,6 @@ public class PublicAccountController {
         List<PublicAccount> publicAccounts = publicAccountService.findAll();
         model.addAttribute("accounts", publicAccounts);
 
-        setCategories(model);
         return "account/index";
     }
 
@@ -58,7 +51,6 @@ public class PublicAccountController {
         PublicAccount publicAccount = publicAccountService.findById(id);
         model.addAttribute("account", publicAccount);
 
-        setCategories(model);
         return "account/show";
     }
 
@@ -74,15 +66,10 @@ public class PublicAccountController {
         Long publicAccountId = user.getPublicAccount().getId();
         publicAccountService.update(publicAccountDto, publicAccountId);
 
-        userService.refreshPrincipalInAuthSession(user.getId());
+        authSessionSynchronizer.refreshPrincipalInAuthSession(user.getId());
 
         redirectAttributes.addFlashAttribute(FLASH_MESSAGE_SUCCESS, "Анаунт було успішно оновлено");
         return "redirect:/accounts/" + publicAccountId;
-    }
-
-    private void setCategories(Model model) {
-        List<Category> categories = categoryService.findAll();
-        model.addAttribute("categories", categories);
     }
 
 }

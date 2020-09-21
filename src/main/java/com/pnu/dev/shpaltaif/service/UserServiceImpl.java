@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
-public class UserServiceImpl implements UserService, AdminUserInitializer, UserDetailsService {
+public class UserServiceImpl implements UserService, AdminUserInitializer, UserDetailsService, AuthSessionSynchronizer {
 
     private UserRepository userRepository;
 
@@ -166,15 +166,6 @@ public class UserServiceImpl implements UserService, AdminUserInitializer, UserD
 
     }
 
-    private void setActive(User user, boolean active) {
-
-        User updatedUser = user.toBuilder()
-                .active(active)
-                .build();
-
-        userRepository.save(updatedUser);
-    }
-
     @Override
     public void createAdminUserIfNotExists() {
 
@@ -193,5 +184,14 @@ public class UserServiceImpl implements UserService, AdminUserInitializer, UserD
 
         userRepository.save(newAdminUser);
 
+    }
+
+    private void setActive(User user, boolean active) {
+
+        User updatedUser = user.toBuilder()
+                .active(active)
+                .build();
+
+        userRepository.save(updatedUser);
     }
 }

@@ -22,6 +22,4 @@ public interface UserService {
 
     void delete(Long userId);
 
-    void refreshPrincipalInAuthSession(Long userId);
-
 }
