@@ -72,7 +72,7 @@ public class UserServiceImpl implements UserService, AdminUserInitializer, UserD
             throw new ServiceAdminException("Паролі не співпадають!");
         }
 
-        if (userRepository.existsByUsername(createUserDto.getPassword())) {
+        if (userRepository.existsByUsername(createUserDto.getUsername())) {
             throw new ServiceAdminException("Логін уже використовується!");
         }
 

@@ -68,7 +68,7 @@ public class PublicAccountController {
 
         authSessionSynchronizer.refreshPrincipalInAuthSession(user.getId());
 
-        redirectAttributes.addFlashAttribute(FLASH_MESSAGE_SUCCESS, "Анаунт було успішно оновлено");
+        redirectAttributes.addFlashAttribute(FLASH_MESSAGE_SUCCESS, "Акаунт було успішно оновлено");
         return "redirect:/accounts/" + publicAccountId;
     }
 
