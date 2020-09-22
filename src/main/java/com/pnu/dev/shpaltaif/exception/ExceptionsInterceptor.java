@@ -1,6 +1,7 @@
 package com.pnu.dev.shpaltaif.exception;
 
 import com.pnu.dev.shpaltaif.util.HttpUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.validation.BindException;
@@ -14,11 +15,14 @@ import java.util.stream.Collectors;
 import static com.pnu.dev.shpaltaif.util.FlashMessageConstants.FLASH_MESSAGE_ERROR;
 
 @ControllerAdvice
+@Slf4j
 public class ExceptionsInterceptor {
 
     @ExceptionHandler(ServiceAdminException.class)
     public String serviceAdminException(ServiceAdminException serviceException, RedirectAttributes redirectAttributes,
                                         HttpServletRequest request) {
+
+        log.error("ServiceAdminException was thrown, httpServletRequest: {}", request, serviceException);
 
         redirectAttributes.addFlashAttribute(FLASH_MESSAGE_ERROR, serviceException.getMessage());
 
@@ -26,7 +30,9 @@ public class ExceptionsInterceptor {
     }
 
     @ExceptionHandler(Exception.class)
-    public String unhandledException(RedirectAttributes redirectAttributes, HttpServletRequest request) {
+    public String unhandledException(Exception e, RedirectAttributes redirectAttributes, HttpServletRequest request) {
+
+        log.error("Unexpected exception was thrown, httpServletRequest: {}", request, e);
 
         redirectAttributes.addFlashAttribute(FLASH_MESSAGE_ERROR, "Виникла внутрішня помилка сервера");
 
@@ -37,6 +43,7 @@ public class ExceptionsInterceptor {
     public String constraintViolationException(BindException exception,
                                                RedirectAttributes redirectAttributes, HttpServletRequest request) {
 
+        log.error("Constraint violation, httpServletRequest: {}", request, exception);
 
         String message = exception.getBindingResult().getAllErrors().stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)

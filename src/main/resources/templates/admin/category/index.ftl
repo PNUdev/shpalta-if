@@ -14,5 +14,4 @@
     </#if>
 </div>
 
-<#include "../include/toastr.ftl">
 <#include "../include/footer.ftl">

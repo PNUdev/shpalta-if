@@ -18,3 +18,8 @@ spring:
           cache:
             missing_cache_strategy: create
     hibernate.ddl-auto: update
+
+admin:
+  default:
+    username: ${ADMIN_DEFAULT_USERNAME:admin}
+    password: ${ADMIN_DEFAULT_PASSWORD:admin}
