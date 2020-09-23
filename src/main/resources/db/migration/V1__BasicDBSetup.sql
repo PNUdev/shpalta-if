@@ -4,7 +4,7 @@ create table if not exists category
   color_theme varchar(255) not null,
   title       varchar(255) not null,
   primary key (id)
-) engine = InnoDB;
+);
 
 create table if not exists post
 (
@@ -13,7 +13,7 @@ create table if not exists post
   author_public_account_id bigint       not null,
   category_id              bigint       not null,
   primary key (id)
-) engine = InnoDB;
+);
 
 create table if not exists public_account
 (
@@ -26,7 +26,7 @@ create table if not exists public_account
   updated_at        datetime,
   user_id           bigint,
   primary key (id)
-) engine = InnoDB;
+);
 
 create table if not exists user
 (
@@ -36,7 +36,7 @@ create table if not exists user
   role     varchar(255) not null,
   username varchar(255) not null,
   primary key (id)
-) engine = InnoDB;
+);
 
 alter table user
   add constraint UQ_User_Username unique (username);
