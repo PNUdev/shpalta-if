@@ -13,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -38,6 +39,11 @@ public class Post {
     @ManyToOne
     private Category category;
 
-    // ToDo add more fields
+    @NotNull
+    private String content;
+
+    private String pictureUrl;
+
+    private LocalDateTime createdAt;
 
 }
