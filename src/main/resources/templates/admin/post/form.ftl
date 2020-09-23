@@ -1,11 +1,10 @@
 <#include "../include/header.ftl">
-<#--<#include  "../include/nicEdit.ftl">-->
 <#include "../include/summernote.ftl">
 
-
 <#assign formSubmissionUrl = post???then('/admin/posts/update/${post.id}', '/admin/posts/new') >
+
 <div class="mx-auto mt-5 p-5 rounded bg-light col-md-9">
-    <form method="POST" action="${formSubmissionUrl}">
+    <form method="POST" id="postForm" action="${formSubmissionUrl}">
         <div class="input-group mb-3">
             <div class="input-group-prepend">
                 <span class="input-group-text">Заголовок</span>
@@ -36,7 +35,9 @@
                 <textarea name="content" id="contentEditor"></textarea>
                 <script>
                     $('#contentEditor').summernote({
-                        tabsize: 2
+                        lang: 'uk-UA',
+                        tabsize: 2,
+                        height: 500
                     });
                 </script>
             </div>
@@ -57,16 +58,5 @@
         </div>
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
     </form>
-<#--    <div class="input-group mb-3">-->
-<#--        <div style="width: 100%">-->
-<#--            <div id="contentEditor"></div>-->
-<#--            <script>-->
-<#--                $('#contentEditor').summernote({-->
-<#--                    tabsize: 2,-->
-<#--                    height: 100,-->
-<#--                });-->
-<#--            </script>-->
-<#--        </div>-->
-<#--    </div>-->
 </div>
 <#include "../include/footer.ftl">
