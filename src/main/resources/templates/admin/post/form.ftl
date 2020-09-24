@@ -21,11 +21,12 @@
             <div class="input-group-prepend">
                 <label for="category_selection" class="input-group-text">Категорія</label>
             </div>
-            <select data-live-search="false" title="Categories" class="form-control selectpicker" name="category"
+            <select data-live-search="false" title="Categories" class="form-control selectpicker" name="categoryId"
                     id="category_selection" required>
                 <option disabled selected value> -- Виберіть категорію --</option>
                 <#list categories as category>
-                    <option value="${category.id}">${category.title}
+                    <option value="${category.id}"
+                            <#if post?? && category.id == post.category.id>selected</#if>>${category.title}
                     </option>
                 </#list>
             </select>
@@ -39,22 +40,14 @@
                         tabsize: 2,
                         height: 500
                     });
+                    <#if post??>
+                    $('#contentEditor').summernote('code', '${post.content}');
+                    </#if>
                 </script>
             </div>
         </div>
         <div class="p-3">
-            <#if post??>
-                <div class="row">
-                    <div class="pt-3">
-                        <button class="btn btn-primary">Оновити</button>
-                        <a href="/admin/posts/delete/${post.id}">
-                            <div class="btn btn-danger">Видалити</div>
-                        </a>
-                    </div>
-                </div>
-            <#else >
-                <button class="btn btn-primary">Зберегти</button>
-            </#if>
+                <button class="btn btn-primary btn-block">Зберегти</button>
         </div>
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
     </form>

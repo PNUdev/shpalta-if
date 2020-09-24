@@ -39,7 +39,10 @@ public class PostServiceImpl implements PostService {
         if (user.getRole().equals(UserRole.ROLE_ADMIN)) {
             return postRepository.findAllByActive(Boolean.TRUE, pageable);
         } else {
-            return postRepository.findAllByAuthorPublicAccountIdAndActive(user.getId(), Boolean.TRUE, pageable);
+
+            PublicAccount publicAccount = publicAccountRepository.findByUserId(user.getId())
+                    .orElseThrow(() -> new ServiceAdminException("Акаунт не знайдено"));
+            return postRepository.findAllByAuthorPublicAccountIdAndActive(publicAccount.getId(), Boolean.TRUE, pageable);
         }
     }
 
@@ -48,7 +51,11 @@ public class PostServiceImpl implements PostService {
         if (user.getRole().equals(UserRole.ROLE_ADMIN)) {
             return postRepository.findAllByActive(Boolean.FALSE, pageable);
         }
-        return postRepository.findAllByAuthorPublicAccountIdAndActive(user.getId(), Boolean.FALSE, pageable);
+        PublicAccount publicAccount = publicAccountRepository.findByUserId(user.getId())
+                .orElseThrow(() -> new ServiceAdminException("Акаунт не знайдено"));
+
+
+        return postRepository.findAllByAuthorPublicAccountIdAndActive(publicAccount.getId(), Boolean.FALSE, pageable);
 
     }
 
@@ -59,7 +66,10 @@ public class PostServiceImpl implements PostService {
         if (user.getRole().equals(UserRole.ROLE_ADMIN)) {
             optionalPost = postRepository.findById(id);
         } else {
-            optionalPost = postRepository.findByIdAndAuthorPublicAccountId(id, user.getId());
+            PublicAccount publicAccount = publicAccountRepository.findByUserId(user.getId())
+                    .orElseThrow(() -> new ServiceAdminException("Акаунт не знайдено"));
+
+            optionalPost = postRepository.findByIdAndAuthorPublicAccountId(id, publicAccount.getId());
         }
         return optionalPost.orElseThrow(() -> new ServiceAdminException("Пост не знайдено"));
 
