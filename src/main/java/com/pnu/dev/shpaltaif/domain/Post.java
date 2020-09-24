@@ -44,6 +44,8 @@ public class Post {
 
     private String pictureUrl;
 
+    private boolean active;
+
     private LocalDateTime createdAt;
 
 }
