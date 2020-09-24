@@ -1,7 +1,7 @@
 <script>
     // prevent double form submission
     $('button').click(function () {
-        if (!!document.getElementById("postForm")) {
+        if (document.getElementById('postForm')) {
             return;
         }
         const btn = $(this);
