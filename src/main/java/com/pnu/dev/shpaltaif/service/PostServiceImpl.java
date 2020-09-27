@@ -6,17 +6,25 @@ import com.pnu.dev.shpaltaif.domain.PublicAccount;
 import com.pnu.dev.shpaltaif.domain.User;
 import com.pnu.dev.shpaltaif.domain.UserRole;
 import com.pnu.dev.shpaltaif.dto.PostDto;
+import com.pnu.dev.shpaltaif.dto.PostFiltersDto;
 import com.pnu.dev.shpaltaif.exception.ServiceAdminException;
 import com.pnu.dev.shpaltaif.repository.CategoryRepository;
 import com.pnu.dev.shpaltaif.repository.PostRepository;
 import com.pnu.dev.shpaltaif.repository.PublicAccountRepository;
+import com.pnu.dev.shpaltaif.repository.specification.PostSpecification;
+import com.pnu.dev.shpaltaif.repository.specification.SearchCriteria;
+import com.pnu.dev.shpaltaif.repository.specification.SearchOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
+
+import static java.util.Objects.nonNull;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -35,15 +43,51 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<Post> findAll(User user, Pageable pageable) {
-        if (user.getRole().equals(UserRole.ROLE_ADMIN)) {
-            return postRepository.findAllByActive(Boolean.TRUE, pageable);
-        } else {
+    public Page<Post> findAll(User user, PostFiltersDto filtersDto, Pageable pageable) {
 
+        Specification<Post> specification = generatePostSpecification(user, filtersDto);
+        return postRepository.findAll(specification, pageable);
+    }
+
+    private Specification<Post> generatePostSpecification(User user, PostFiltersDto postFiltersDto) {
+
+        PostSpecification specification = new PostSpecification();
+
+        specification.add(new SearchCriteria("active", postFiltersDto.isActive(), SearchOperation.EQUAL));
+
+        if (user.getRole().equals(UserRole.ROLE_WRITER)) {
             PublicAccount publicAccount = publicAccountRepository.findByUserId(user.getId())
                     .orElseThrow(() -> new ServiceAdminException("Акаунт не знайдено"));
-            return postRepository.findAllByAuthorPublicAccountIdAndActive(publicAccount.getId(), Boolean.TRUE, pageable);
+            specification.add(new SearchCriteria("authorPublicAccount", publicAccount, SearchOperation.EQUAL));
+        } else if (nonNull(postFiltersDto.getAuthorPublicAccountId())) {
+            PublicAccount publicAccount = publicAccountRepository.findById(postFiltersDto.getAuthorPublicAccountId())
+                    .orElseThrow(() -> new ServiceAdminException("Акаунт не знайдено"));
+            specification.add(new SearchCriteria("authorPublicAccount", publicAccount, SearchOperation.EQUAL));
         }
+
+        if (nonNull(postFiltersDto.getTitle())) {
+            specification.add(new SearchCriteria("title", postFiltersDto.getTitle(), SearchOperation.MATCH));
+        }
+
+        if (nonNull(postFiltersDto.getCategoryId())) {
+            Category category = categoryRepository.findById(postFiltersDto.getCategoryId())
+                    .orElseThrow(() -> new ServiceAdminException("Категорію не знайдено"));
+            specification.add(new SearchCriteria("category", category, SearchOperation.EQUAL));
+        }
+
+        if (nonNull(postFiltersDto.getCreatedAtGt())) {
+            specification.add(new SearchCriteria("createdAt",
+                    (LocalDate.parse(postFiltersDto.getCreatedAtGt()).atStartOfDay()),
+                    SearchOperation.GREATER_THAN));
+        }
+
+        if (nonNull(postFiltersDto.getCreatedAtLt())) {
+            specification.add(new SearchCriteria("createdAt",
+                    (LocalDate.parse(postFiltersDto.getCreatedAtLt()).atStartOfDay()),
+                    SearchOperation.LESS_THAN));
+        }
+        return specification;
+
     }
 
     @Override

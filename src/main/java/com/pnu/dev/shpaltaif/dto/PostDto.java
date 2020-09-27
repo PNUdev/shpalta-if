@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
 @Builder(toBuilder = true)
@@ -16,9 +17,10 @@ public class PostDto {
     @NotBlank(message = "Заголовок не може бути порожнім")
     private String title;
 
-    @NotBlank(message = "Посилання на головне зобрадення не може бути порожнім")
+    @NotBlank(message = "Посилання на головне зображення не може бути порожнім")
     private String pictureUrl;
 
+    @NotNull
     private Long categoryId;
 
     @NotBlank(message = "Стаття не може бути порожньою")

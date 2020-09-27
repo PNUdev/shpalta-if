@@ -1,10 +1,13 @@
 package com.pnu.dev.shpaltaif.controller;
 
 import com.pnu.dev.shpaltaif.domain.Post;
+import com.pnu.dev.shpaltaif.domain.PublicAccount;
 import com.pnu.dev.shpaltaif.domain.User;
 import com.pnu.dev.shpaltaif.dto.PostDto;
+import com.pnu.dev.shpaltaif.dto.PostFiltersDto;
 import com.pnu.dev.shpaltaif.service.CategoryService;
 import com.pnu.dev.shpaltaif.service.PostService;
+import com.pnu.dev.shpaltaif.service.PublicAccountService;
 import com.pnu.dev.shpaltaif.util.HttpUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -30,26 +33,36 @@ import static com.pnu.dev.shpaltaif.util.FlashMessageConstants.FLASH_MESSAGE_SUC
 @RequestMapping("/admin/posts")
 public class PostAdminController {
 
-    private PostService postService;
+    private final PostService postService;
 
-    private CategoryService categoryService;
+    private final CategoryService categoryService;
+
+    private final PublicAccountService publicAccountService;
 
     @Autowired
-    public PostAdminController(PostService postService, CategoryService categoryService) {
+    public PostAdminController(PostService postService, CategoryService categoryService, PublicAccountService publicAccountService) {
         this.postService = postService;
         this.categoryService = categoryService;
+        this.publicAccountService = publicAccountService;
     }
 
 
     @GetMapping
-    public String findAll(@AuthenticationPrincipal User user, Model model, @PageableDefault(size = 10,
-            sort = "createdAt",
-            direction = Sort.Direction.ASC)
-            Pageable pageable) {
+    public String findAll(@AuthenticationPrincipal User user, Model model,
+                          @PageableDefault(size = 10,
+                                  sort = "createdAt",
+                                  direction = Sort.Direction.DESC)
+                                  Pageable pageable,
+                          PostFiltersDto postFiltersDto) {
 
-        Page<Post> posts = postService.findAll(user, pageable);
+        Page<Post> posts = postService.findAll(user, postFiltersDto, pageable);
+        List categories = categoryService.findAll();
+        List<PublicAccount> publicAccounts = publicAccountService.findAll();
 
+        model.addAttribute("categories", categories);
+        model.addAttribute("publicAccounts", publicAccounts);
         model.addAttribute("posts", posts);
+        model.addAttribute("postFilters", postFiltersDto);
         return "admin/post/index";
     }
 

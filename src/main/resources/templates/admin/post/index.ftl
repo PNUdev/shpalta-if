@@ -1,12 +1,88 @@
 <#include "../include/header.ftl">
+
+<#assign formSubmissionUrl = '/admin/posts'>
+
 <div class="container">
     <@security.authorize access="hasRole('ROLE_WRITER')">
         <a href="/admin/posts/new">
             <div class="btn btn-primary btn-lg btn-block my-4">Додати пост</div>
         </a>
     </@security.authorize>
+    <form method="GET" action="${formSubmissionUrl}" id="filter-form">
+        <div class="row mt-3">
+            <div class="col-4">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <label for="category_selection" class="input-group-text">Категорія</label>
+                    </div>
+                    <select data-live-search="false" class="form-control selectpicker"
+                            name="categoryId"
+                            id="category_selection">
+                        <option disabled selected value> -- Виберіть категорію --</option>
+                        <#list categories as category>
+                            <option value="${category.id}"
+                                    <#if postFilters?? && postFilters.categoryId?? && category.id == postFilters.categoryId>selected</#if>
+                            >
+                                ${category.title}
+                            </option>
+                        </#list>
+                    </select>
+                </div>
+                <@security.authorize access="hasRole('ROLE_ADMIN')">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <label for="public_account_selection" class="input-group-text">Автор</label>
+                        </div>
+                        <select data-live-search="false" class="form-control selectpicker"
+                                name="authorPublicAccountId"
+                                id="public_account_selection">
+                            <option disabled selected value> -- Виберіть автора --</option>
+                            <#list publicAccounts as publicAccount>
+                                <option value="${publicAccount.id}"
+                                        <#if postFilters?? && postFilters.authorPublicAccountId?? && publicAccount.id == postFilters.authorPublicAccountId>selected</#if>
+                                    >
+                                    ${publicAccount.name} ${publicAccount.surname}
+                                </option>
+                            </#list>
+                        </select>
+                    </div>
+                </@security.authorize>
+            </div>
+            <div class="col-6">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Заголовок</span>
+                    </div>
+                    <input type="text" class="form-control" name="title" value="${(postFilters.title)!}">
+                </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Дата з</span>
+                        </div>
+                        <input type="date" class="form-control" name="createdAtGt" value="${(postFilters.createdAtGt)!}">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">до</span>
+                        </div>
+                        <input type="date" class="form-control" name="createdAtLt" value="${(postFilters.getCreatedAtLt())!}">
+                    </div>
+            </div>
+            <div class="col-2">
+                    <a href="/admin/posts" class="btn btn-secondary btn-block">Скинути</a>
+                    <button class="btn btn-primary btn-block">Відфільтрувати</button>
+            </div>
+        </div>
 
-
+    </form>
+    <script>
+        $('#filter-form').submit(function () {
+            $(this)
+                .find('input[name]')
+                .filter(function () {
+                    return !this.value;
+                })
+                .prop('name', '');
+        });
+    </script>
     <#if !posts.content?has_content >
         <h2 class="text-center">Список постів пустий</h2>
     <#else>
