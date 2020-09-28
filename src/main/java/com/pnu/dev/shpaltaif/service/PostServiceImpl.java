@@ -20,7 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -75,17 +74,18 @@ public class PostServiceImpl implements PostService {
             specification.add(new SearchCriteria("category", category, SearchOperation.EQUAL));
         }
 
-        if (nonNull(postFiltersDto.getCreatedAtGt())) {
-            specification.add(new SearchCriteria("createdAt",
-                    (LocalDate.parse(postFiltersDto.getCreatedAtGt()).atStartOfDay()),
-                    SearchOperation.GREATER_THAN));
-        }
+//        if (nonNull(postFiltersDto.getCreatedAtGt())) {
+//            specification.add(new SearchCriteria("createdDate",
+//                    postFiltersDto.getCreatedAtGt(),
+//                    SearchOperation.GREATER_THAN_EQUAL));
+//        }
+//
+//        if (nonNull(postFiltersDto.getCreatedAtLt())) {
+//            specification.add(new SearchCriteria("createdDate",
+//                    postFiltersDto.getCreatedAtLt(),
+//                    SearchOperation.LESS_THAN_EQUAL));
+//        }
 
-        if (nonNull(postFiltersDto.getCreatedAtLt())) {
-            specification.add(new SearchCriteria("createdAt",
-                    (LocalDate.parse(postFiltersDto.getCreatedAtLt()).atStartOfDay()),
-                    SearchOperation.LESS_THAN));
-        }
         return specification;
 
     }
@@ -155,6 +155,7 @@ public class PostServiceImpl implements PostService {
                 .pictureUrl(postDto.getPictureUrl())
                 .category(category)
                 .content(postDto.getContent())
+                .active(postDto.isActive())
                 .build();
 
         postRepository.save(updatedPost);

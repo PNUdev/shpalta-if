@@ -1,6 +1,7 @@
 <#include "../include/header.ftl">
 
 <#assign formSubmissionUrl = '/admin/posts'>
+<#assign active = !postFilters?? || postFilters.isActive()>
 
 <div class="container">
     <@security.authorize access="hasRole('ROLE_WRITER')">
@@ -9,7 +10,25 @@
         </a>
     </@security.authorize>
     <form method="GET" action="${formSubmissionUrl}" id="filter-form">
-        <div class="row mt-3">
+        <div class="row d-flex justify-content-center mt-3">
+            <div class="btn-group btn-group-toggle" data-toggle="buttons">
+                <button class="btn <#if active>
+                btn-dark disabled<#else>
+                btn-outline-dark active</#if>">
+                    <input type="radio" name="active" value="true" id="hatchback" autocomplete="off"
+                           <#if active>checked</#if>>
+                    Пости
+                </button>
+                <button class="btn <#if !active>
+                btn-dark disabled<#else>
+                btn-outline-dark active</#if>">
+                    <input type="radio" name="active" value="false" autocomplete="off"
+                           <#if !active>checked</#if>>
+                    Архів
+                </button>
+            </div>
+        </div>
+        <div class="row mt-1 bg-light border p-2">
             <div class="col-4">
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
@@ -40,7 +59,7 @@
                             <#list publicAccounts as publicAccount>
                                 <option value="${publicAccount.id}"
                                         <#if postFilters?? && postFilters.authorPublicAccountId?? && publicAccount.id == postFilters.authorPublicAccountId>selected</#if>
-                                    >
+                                >
                                     ${publicAccount.name} ${publicAccount.surname}
                                 </option>
                             </#list>
@@ -55,20 +74,21 @@
                     </div>
                     <input type="text" class="form-control" name="title" value="${(postFilters.title)!}">
                 </div>
-                    <div class="input-group mb-3">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">Дата з</span>
-                        </div>
-                        <input type="date" class="form-control" name="createdAtGt" value="${(postFilters.createdAtGt)!}">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">до</span>
-                        </div>
-                        <input type="date" class="form-control" name="createdAtLt" value="${(postFilters.getCreatedAtLt())!}">
-                    </div>
+                <#--                <div class="input-group mb-3">-->
+                <#--                    <div class="input-group-prepend">-->
+                <#--                        <span class="input-group-text">Дата з</span>-->
+                <#--                    </div>-->
+                <#--                    <input type="date" class="form-control" name="createdAtGt" value="${(postFilters.createdAtGt)!}">-->
+                <#--                    <div class="input-group-prepend">-->
+                <#--                        <span class="input-group-text">до</span>-->
+                <#--                    </div>-->
+                <#--                    <input type="date" class="form-control" name="createdAtLt"-->
+                <#--                           value="${(postFilters.getCreatedAtLt())!}">-->
+                <#--                </div>-->
             </div>
             <div class="col-2">
-                    <a href="/admin/posts" class="btn btn-secondary btn-block">Скинути</a>
-                    <button class="btn btn-primary btn-block">Відфільтрувати</button>
+                <a href="/admin/posts" class="btn btn-secondary btn-block">Скинути</a>
+                <button class="btn btn-primary btn-block">Відфільтрувати</button>
             </div>
         </div>
 
@@ -83,42 +103,48 @@
                 .prop('name', '');
         });
     </script>
-    <#if !posts.content?has_content >
-        <h2 class="text-center">Список постів пустий</h2>
-    <#else>
-        <#list posts.content?chunk(2) as row>
-            <div class="row">
-                <#list row as post>
-                    <div class="col-6">
-                        <div class="row mb-4">
-                            <div class="col-6">
-                                <div class="row pl-4">
-                                    <img class="img-thumbnail" width="250px" height="250px" src="${post.pictureUrl}">
+    <div class="container py-3 <#if !active>text-white bg-dark</#if>">
+        <#if !posts.content?has_content >
+            <h2 class="text-center"><#if active>Список постів пустий<#else>Архів пустий</#if></h2>
+        <#else>
+
+            <#list posts.content?chunk(2) as row>
+                <div class="row">
+                    <#list row as post>
+                        <div class="col-6">
+                            <div class="row mb-4">
+                                <div class="col-6">
+                                    <div class="row pl-4">
+                                        <img class="img-thumbnail" width="250px" height="250px"
+                                             src="${post.pictureUrl}">
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="row d-flex justify-content-center h-25">
-                                    <span class="font-weight-bold text-secondary pr-2">Заголовок:</span><span
-                                            class="font-weight-normal">"${post.title}"</span>
-                                </div>
-                                <div class="row d-flex justify-content-center h-25">
-                                    <span class="font-weight-bold text-secondary pr-2">Дата:</span><span
-                                            class="font-weight-normal">"${post.createdAt}"</span>
-                                </div>
-                                <div class="row d-flex justify-content-center h-50">
-                                    <a href="/admin/posts/${post.id}" role="button"
-                                       class="btn btn-info btn-sm btn-block m-1">Переглянути</a>
-                                    <a href="/admin/posts/edit/${post.id}" role="button"
-                                       class="btn btn-warning btn-sm m-1 w-40">Редагувати</a>
-                                    <a href="/admin/posts/delete/${post.id}" role="button"
-                                       class="btn btn-danger btn-sm m-1 w-40">Перемістити в архів</a>
+                                <div class="col-6">
+                                    <div class="row d-flex justify-content-center h-25">
+                                        <span class="font-weight-bold text-secondary pr-2">Заголовок:</span><span
+                                                class="font-weight-normal">"${post.title}"</span>
+                                    </div>
+                                    <div class="row d-flex justify-content-center h-25">
+                                        <span class="font-weight-bold text-secondary pr-2">Дата:</span><span
+                                                class="font-weight-normal">"${post.crecatedAt}"</span>
+                                    </div>
+                                    <div class="row d-flex justify-content-center h-50">
+                                        <a href="/admin/posts/${post.id}" role="button"
+                                           class="btn btn-info btn-sm btn-block m-1">Переглянути</a>
+                                        <a href="/admin/posts/edit/${post.id}" role="button"
+                                           class="btn btn-warning btn-sm m-1 w-40">Редагувати</a>
+                                        <a href="/admin/posts/delete/${post.id}" role="button"
+                                           class="btn btn-danger btn-sm m-1 w-40">
+                                            <#if active>Перемістити в архів<#else>Видалити назавжди</#if>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </#list>
-            </div>
-        </#list>
-    </#if>
+                    </#list>
+                </div>
+            </#list>
+        </#if>
+    </div>
 </div>
 <#include "../include/footer.ftl">

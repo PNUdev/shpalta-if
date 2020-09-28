@@ -85,7 +85,12 @@
                 </script>
             </div>
         </div>
-        <div class="p-3">
+        <div>
+            <#if post?? && !post.active>
+                <div class="row d-flex justify-content-center align-items-center">
+                    <input type="checkbox" class="" name="active" id="active-checkbox">Активувати перед збереженням
+                </div>
+            </#if>
             <button class="btn btn-primary btn-block" id="btn-submit" disabled>Зберегти</button>
         </div>
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>

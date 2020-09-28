@@ -49,5 +49,4 @@ public class Post {
     private boolean active;
 
     private LocalDateTime createdAt;
-
 }

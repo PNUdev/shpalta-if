@@ -23,7 +23,7 @@
             <img class="img-thumbnail" width="200px" height="200px" src="${post.pictureUrl}">
         </div>
     </div>
-    <div class="row mt-4 border bg-light">
+    <div class="row mt-4 p-3 border bg-light">
         ${post.content}
     </div>
 </div>

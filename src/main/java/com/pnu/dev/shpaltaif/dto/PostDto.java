@@ -25,4 +25,6 @@ public class PostDto {
 
     @NotBlank(message = "Стаття не може бути порожньою")
     private String content;
+
+    private boolean active = true;
 }

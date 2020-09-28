@@ -50,7 +50,7 @@ public class PostAdminController {
     @GetMapping
     public String findAll(@AuthenticationPrincipal User user, Model model,
                           @PageableDefault(size = 10,
-                                  sort = "createdAt",
+                                  sort = "createdDate",
                                   direction = Sort.Direction.DESC)
                                   Pageable pageable,
                           PostFiltersDto postFiltersDto) {
@@ -105,6 +105,7 @@ public class PostAdminController {
     public String update(@AuthenticationPrincipal User user, @PathVariable("id") Long id, @Validated PostDto postDto,
                          RedirectAttributes redirectAttributes) {
 
+        System.out.println(postDto.toString());
         postService.update(user, id, postDto);
 
         redirectAttributes.addFlashAttribute(FLASH_MESSAGE_SUCCESS, "Пост успішно оновлено!");
