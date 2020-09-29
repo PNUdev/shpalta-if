@@ -50,7 +50,7 @@ public class PostAdminController {
     @GetMapping
     public String findAll(@AuthenticationPrincipal User user, Model model,
                           @PageableDefault(size = 10,
-                                  sort = "createdDate",
+                                  sort = "createdAt",
                                   direction = Sort.Direction.DESC)
                                   Pageable pageable,
                           PostFiltersDto postFiltersDto) {
@@ -113,6 +113,28 @@ public class PostAdminController {
         return "redirect:/admin/posts";
     }
 
+    @GetMapping("/deactivate/{id}")
+    public String deactivateConfirmation(@PathVariable("id") Long id, Model model,
+                                         HttpServletRequest request) {
+
+        model.addAttribute("message", "Ви впевнені, що справді хочете перемістити пост в архів?");
+        model.addAttribute("returnBackUrl", HttpUtils.getPreviousPageUrl(request));
+        model.addAttribute("actionUrl", "/admin/posts/deactivate/" + id);
+
+        return "admin/common/deleteConfirmation";
+    }
+
+    @PostMapping("/deactivate/{id}")
+    public String deactivate(@AuthenticationPrincipal User user, @PathVariable("id") Long id,
+                             RedirectAttributes redirectAttributes) {
+
+        postService.deactivate(user, id);
+
+        redirectAttributes.addFlashAttribute(FLASH_MESSAGE_SUCCESS, "Пост переміщено в архів!");
+
+        return "redirect:/admin/posts";
+    }
+
     @GetMapping("/delete/{id}")
     public String deleteConfirmation(@PathVariable("id") Long id, Model model,
                                      HttpServletRequest request) {
@@ -128,7 +150,7 @@ public class PostAdminController {
     public String delete(@AuthenticationPrincipal User user, @PathVariable("id") Long id,
                          RedirectAttributes redirectAttributes) {
 
-        postService.deleteById(user, id);
+        postService.delete(user, id);
 
         redirectAttributes.addFlashAttribute(FLASH_MESSAGE_SUCCESS, "Пост успішно видалено!");
 

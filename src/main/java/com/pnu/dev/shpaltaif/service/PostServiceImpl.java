@@ -2,7 +2,6 @@ package com.pnu.dev.shpaltaif.service;
 
 import com.pnu.dev.shpaltaif.domain.Category;
 import com.pnu.dev.shpaltaif.domain.Post;
-import com.pnu.dev.shpaltaif.domain.PublicAccount;
 import com.pnu.dev.shpaltaif.domain.User;
 import com.pnu.dev.shpaltaif.domain.UserRole;
 import com.pnu.dev.shpaltaif.dto.PostDto;
@@ -11,9 +10,7 @@ import com.pnu.dev.shpaltaif.exception.ServiceAdminException;
 import com.pnu.dev.shpaltaif.repository.CategoryRepository;
 import com.pnu.dev.shpaltaif.repository.PostRepository;
 import com.pnu.dev.shpaltaif.repository.PublicAccountRepository;
-import com.pnu.dev.shpaltaif.repository.specification.PostSpecification;
-import com.pnu.dev.shpaltaif.repository.specification.SearchCriteria;
-import com.pnu.dev.shpaltaif.repository.specification.SearchOperation;
+import com.pnu.dev.shpaltaif.util.PostSpecificationBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,8 +20,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static java.util.Objects.nonNull;
-
 @Service
 public class PostServiceImpl implements PostService {
 
@@ -32,104 +27,45 @@ public class PostServiceImpl implements PostService {
 
     private final CategoryRepository categoryRepository;
 
-    private final PublicAccountRepository publicAccountRepository;
+    private final PostSpecificationBuilder postSpecificationBuilder;
 
     @Autowired
-    public PostServiceImpl(PostRepository postRepository, CategoryRepository categoryRepository, PublicAccountRepository publicAccountRepository) {
+    public PostServiceImpl(PostRepository postRepository, CategoryRepository categoryRepository, PostSpecificationBuilder postSpecificationBuilder) {
         this.postRepository = postRepository;
         this.categoryRepository = categoryRepository;
-        this.publicAccountRepository = publicAccountRepository;
+        this.postSpecificationBuilder = postSpecificationBuilder;
     }
 
     @Override
     public Page<Post> findAll(User user, PostFiltersDto filtersDto, Pageable pageable) {
 
-        Specification<Post> specification = generatePostSpecification(user, filtersDto);
+        Specification<Post> specification = postSpecificationBuilder.buildPostSpecification(user, filtersDto);
         return postRepository.findAll(specification, pageable);
     }
 
-    private Specification<Post> generatePostSpecification(User user, PostFiltersDto postFiltersDto) {
-
-        PostSpecification specification = new PostSpecification();
-
-        specification.add(new SearchCriteria("active", postFiltersDto.isActive(), SearchOperation.EQUAL));
-
-        if (user.getRole().equals(UserRole.ROLE_WRITER)) {
-            PublicAccount publicAccount = publicAccountRepository.findByUserId(user.getId())
-                    .orElseThrow(() -> new ServiceAdminException("Акаунт не знайдено"));
-            specification.add(new SearchCriteria("authorPublicAccount", publicAccount, SearchOperation.EQUAL));
-        } else if (nonNull(postFiltersDto.getAuthorPublicAccountId())) {
-            PublicAccount publicAccount = publicAccountRepository.findById(postFiltersDto.getAuthorPublicAccountId())
-                    .orElseThrow(() -> new ServiceAdminException("Акаунт не знайдено"));
-            specification.add(new SearchCriteria("authorPublicAccount", publicAccount, SearchOperation.EQUAL));
-        }
-
-        if (nonNull(postFiltersDto.getTitle())) {
-            specification.add(new SearchCriteria("title", postFiltersDto.getTitle(), SearchOperation.MATCH));
-        }
-
-        if (nonNull(postFiltersDto.getCategoryId())) {
-            Category category = categoryRepository.findById(postFiltersDto.getCategoryId())
-                    .orElseThrow(() -> new ServiceAdminException("Категорію не знайдено"));
-            specification.add(new SearchCriteria("category", category, SearchOperation.EQUAL));
-        }
-
-//        if (nonNull(postFiltersDto.getCreatedAtGt())) {
-//            specification.add(new SearchCriteria("createdDate",
-//                    postFiltersDto.getCreatedAtGt(),
-//                    SearchOperation.GREATER_THAN_EQUAL));
-//        }
-//
-//        if (nonNull(postFiltersDto.getCreatedAtLt())) {
-//            specification.add(new SearchCriteria("createdDate",
-//                    postFiltersDto.getCreatedAtLt(),
-//                    SearchOperation.LESS_THAN_EQUAL));
-//        }
-
-        return specification;
-
-    }
-
-    @Override
-    public Page<Post> findAllArchived(User user, Pageable pageable) {
-        if (user.getRole().equals(UserRole.ROLE_ADMIN)) {
-            return postRepository.findAllByActive(Boolean.FALSE, pageable);
-        }
-        PublicAccount publicAccount = publicAccountRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new ServiceAdminException("Акаунт не знайдено"));
-
-
-        return postRepository.findAllByAuthorPublicAccountIdAndActive(publicAccount.getId(), Boolean.FALSE, pageable);
-
-    }
 
 
     @Override
     public Post findById(User user, Long id) {
+
         Optional<Post> optionalPost;
         if (user.getRole().equals(UserRole.ROLE_ADMIN)) {
             optionalPost = postRepository.findById(id);
         } else {
-            PublicAccount publicAccount = publicAccountRepository.findByUserId(user.getId())
-                    .orElseThrow(() -> new ServiceAdminException("Акаунт не знайдено"));
-
-            optionalPost = postRepository.findByIdAndAuthorPublicAccountId(id, publicAccount.getId());
+            optionalPost = postRepository.findByIdAndAuthorPublicAccountId(id, user.getPublicAccount().getId());
         }
-        return optionalPost.orElseThrow(() -> new ServiceAdminException("Пост не знайдено"));
 
+        return optionalPost.orElseThrow(() -> new ServiceAdminException("Пост не знайдено"));
     }
 
     @Override
     public void create(User user, PostDto postDto) {
 
-        PublicAccount publicAccount = publicAccountRepository.findByUserId(user.getId())
-                .orElseThrow(() -> new ServiceAdminException("Акаунт не знайдено"));
-
         Category category = categoryRepository.findById(postDto.getCategoryId())
                 .orElseThrow(() -> new ServiceAdminException("Категорію не знайдено"));
 
         Post post = Post.builder()
-                .authorPublicAccount(publicAccount)
+                .authorPublicAccount(user.getPublicAccount())
                 .active(Boolean.TRUE)
                 .category(category)
                 .title(postDto.getTitle())
@@ -139,7 +75,6 @@ public class PostServiceImpl implements PostService {
                 .build();
 
         postRepository.save(post);
-
     }
 
     @Override
@@ -162,17 +97,23 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public void deleteById(User user, Long id) {
+    public void deactivate(User user, Long id) {
 
         Post post = findById(user, id);
 
-        if (post.isActive()) {
-            Post updatedPost = post.toBuilder()
-                    .active(Boolean.FALSE)
-                    .build();
+        Post updatedPost = post.toBuilder()
+                .active(Boolean.FALSE)
+                .build();
 
-            postRepository.save(updatedPost);
-            return;
+        postRepository.save(updatedPost);
+    }
+
+    @Override
+    public void delete(User user, Long id) {
+
+        Post post = findById(user, id);
+        if (post.isActive()) {
+            throw new ServiceAdminException("Пост повинен бути переміщеним в архів перед видаленням");
         }
 
         postRepository.deleteById(id);

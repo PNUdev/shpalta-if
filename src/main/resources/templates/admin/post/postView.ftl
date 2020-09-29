@@ -3,10 +3,14 @@
 <div class="container">
 
     <div class="row mt-4 d-flex align-items-center  justify-content-end">
-        <a href="/admin/posts/edit/${post.id}" role="button"
-           class="btn btn-warning m-1 w-40">Редагувати</a>
-        <a href="/admin/posts/delete/${post.id}" role="button"
-           class="btn btn-danger m-1 w-40">Перемістити в архів</a>
+        <@security.authorize access="hasRole('ROLE_WRITER')">
+            <a href="/admin/posts/edit/${post.id}" role="button"
+               class="btn btn-warning btn-sm m-1 w-40">Редагувати</a>
+        </@security.authorize>
+        <a href="/admin/posts/deactivate/${post.id}" role="button"
+           class="btn btn-danger btn-sm m-1 w-40">
+            <#if post.isActive()>Перемістити в архів<#else>Видалити назавжди</#if>
+        </a>
     </div>
 
     <div class="row  border bg-light">

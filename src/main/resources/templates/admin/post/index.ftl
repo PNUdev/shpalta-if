@@ -126,14 +126,17 @@
                                     </div>
                                     <div class="row d-flex justify-content-center h-25">
                                         <span class="font-weight-bold text-secondary pr-2">Дата:</span><span
-                                                class="font-weight-normal">"${post.crecatedAt}"</span>
+                                                class="font-weight-normal">"${post.createdAt}"</span>
                                     </div>
                                     <div class="row d-flex justify-content-center h-50">
                                         <a href="/admin/posts/${post.id}" role="button"
                                            class="btn btn-info btn-sm btn-block m-1">Переглянути</a>
-                                        <a href="/admin/posts/edit/${post.id}" role="button"
-                                           class="btn btn-warning btn-sm m-1 w-40">Редагувати</a>
-                                        <a href="/admin/posts/delete/${post.id}" role="button"
+                                        <@security.authorize access="hasRole('ROLE_WRITER')">
+                                            <a href="/admin/posts/edit/${post.id}" role="button"
+                                               class="btn btn-warning btn-sm m-1 w-40">Редагувати</a>
+                                        </@security.authorize>
+                                        <a href="/admin/posts/<#if active>deactivate<#else></#if>delete/${post.id}"
+                                           role="button"
                                            class="btn btn-danger btn-sm m-1 w-40">
                                             <#if active>Перемістити в архів<#else>Видалити назавжди</#if>
                                         </a>
