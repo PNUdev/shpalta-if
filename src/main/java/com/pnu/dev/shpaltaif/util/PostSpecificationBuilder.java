@@ -57,18 +57,6 @@ public class PostSpecificationBuilder {
             specification.add(new SearchCriteria("category", category, SearchOperation.EQUAL));
         }
 
-        if (nonNull(postFiltersDto.getCreatedAtGt())) {
-            specification.add(new SearchCriteria("createdAt",
-                    LocalDate.parse(postFiltersDto.getCreatedAtGt()).atStartOfDay(),
-                    SearchOperation.GREATER_THAN_EQUAL));
-        }
-
-        if (nonNull(postFiltersDto.getCreatedAtLt())) {
-            specification.add(new SearchCriteria("createdAt",
-                    LocalDate.parse(postFiltersDto.getCreatedAtLt()).atStartOfDay(),
-                    SearchOperation.LESS_THAN_EQUAL));
-        }
-
         return specification;
     }
 }

@@ -18,8 +18,4 @@ public class PostFiltersDto {
     private Long categoryId;
 
     private boolean active = true;
-
-    private String createdAtGt;
-
-    private String createdAtLt;
 }

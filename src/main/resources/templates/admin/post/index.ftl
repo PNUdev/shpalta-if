@@ -74,17 +74,6 @@
                     </div>
                     <input type="text" class="form-control" name="title" value="${(postFilters.title)!}">
                 </div>
-                <#--                <div class="input-group mb-3">-->
-                <#--                    <div class="input-group-prepend">-->
-                <#--                        <span class="input-group-text">Дата з</span>-->
-                <#--                    </div>-->
-                <#--                    <input type="date" class="form-control" name="createdAtGt" value="${(postFilters.createdAtGt)!}">-->
-                <#--                    <div class="input-group-prepend">-->
-                <#--                        <span class="input-group-text">до</span>-->
-                <#--                    </div>-->
-                <#--                    <input type="date" class="form-control" name="createdAtLt"-->
-                <#--                           value="${(postFilters.getCreatedAtLt())!}">-->
-                <#--                </div>-->
             </div>
             <div class="col-2">
                 <a href="/admin/posts" class="btn btn-secondary btn-block">Скинути</a>

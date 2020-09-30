@@ -113,16 +113,6 @@ public class PostServiceIntegrationTest {
             assertEquals(post.getAuthorPublicAccount(), firstWriter.getPublicAccount());
             assertEquals(post.getCategory(), category1);
         }
-
-        LocalDate fiveDaysAgo = now.toLocalDate().minusDays(6);
-        postFiltersDto = PostFiltersDto.builder()
-                .createdAtGt(fiveDaysAgo.toString())
-                .build();
-
-        posts = postService.findAll(admin, postFiltersDto, pageable).getContent();
-        for (Post post : posts) {
-            assertTrue(post.getCreatedAt().isAfter(fiveDaysAgo.atStartOfDay()));
-        }
     }
 
     @Test
