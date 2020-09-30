@@ -1,8 +1,6 @@
 package com.pnu.dev.shpaltaif.repository;
 
 import com.pnu.dev.shpaltaif.domain.Post;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
@@ -14,10 +12,8 @@ public interface PostRepository extends JpaRepository<Post, Long>, JpaSpecificat
 
     boolean existsPostsByAuthorPublicAccountId(Long authorId);
 
-    Page<Post> findAllByAuthorPublicAccountIdAndActive(Long authorId, boolean active, Pageable pageable);
-
-    Page<Post> findAllByActive(boolean active, Pageable pageable);
-
     Optional<Post> findByIdAndAuthorPublicAccountId(Long id, Long authorId);
+
+    Optional<Post> findByIdAndActiveTrue(Long id);
 
 }

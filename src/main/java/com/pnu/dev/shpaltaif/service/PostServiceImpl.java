@@ -7,10 +7,10 @@ import com.pnu.dev.shpaltaif.domain.UserRole;
 import com.pnu.dev.shpaltaif.dto.PostDto;
 import com.pnu.dev.shpaltaif.dto.PostFiltersDto;
 import com.pnu.dev.shpaltaif.exception.ServiceAdminException;
+import com.pnu.dev.shpaltaif.exception.ServiceException;
 import com.pnu.dev.shpaltaif.repository.CategoryRepository;
 import com.pnu.dev.shpaltaif.repository.PostRepository;
-import com.pnu.dev.shpaltaif.repository.PublicAccountRepository;
-import com.pnu.dev.shpaltaif.util.PostSpecificationBuilder;
+import com.pnu.dev.shpaltaif.repository.specification.PostSpecificationBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -43,8 +43,6 @@ public class PostServiceImpl implements PostService {
         return postRepository.findAll(specification, pageable);
     }
 
-
-
     @Override
     public Post findById(User user, Long id) {
 
@@ -56,6 +54,11 @@ public class PostServiceImpl implements PostService {
         }
 
         return optionalPost.orElseThrow(() -> new ServiceAdminException("Пост не знайдено"));
+    }
+
+    @Override
+    public Post findById(Long id) {
+        return postRepository.findByIdAndActiveTrue(id).orElseThrow(() -> new ServiceException("Пост не знайдено"));
     }
 
     @Override

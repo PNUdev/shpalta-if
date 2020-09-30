@@ -72,7 +72,7 @@ public class PostAdminController {
         Post post = postService.findById(user, id);
 
         model.addAttribute("post", post);
-        return "admin/post/postView";
+        return "admin/post/show";
     }
 
     @GetMapping("/new")

@@ -29,6 +29,12 @@ public class ExceptionsInterceptor {
         return getRedirectUrl(request);
     }
 
+    @ExceptionHandler(ServiceException.class)
+    public String serviceException(HttpServletRequest request) {
+
+        return getRedirectUrl(request);
+    }
+
     @ExceptionHandler(Exception.class)
     public String unhandledException(Exception e, RedirectAttributes redirectAttributes, HttpServletRequest request) {
 

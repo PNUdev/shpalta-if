@@ -1,4 +1,4 @@
-package com.pnu.dev.shpaltaif.util;
+package com.pnu.dev.shpaltaif.repository.specification;
 
 import com.pnu.dev.shpaltaif.domain.Category;
 import com.pnu.dev.shpaltaif.domain.Post;
