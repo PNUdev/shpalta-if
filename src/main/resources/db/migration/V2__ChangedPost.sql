@@ -1,7 +1,11 @@
-alter table post
-    ADD content     TEXT    not null,
-    ADD picture_url varchar(255),
-    ADD active      bit     not null,
-    ADD created_at  timestamp
+ALTER TABLE post
+    ADD picture_url varchar(255);
 
+ALTER TABLE post
+    ADD content     TEXT    not null;
 
+ALTER TABLE post
+    ADD active      bit     not null;
+
+ALTER TABLE post
+    ADD created_at  timestamp;

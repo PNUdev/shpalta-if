@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+
 import static java.util.Objects.nonNull;
 
 @Component
@@ -55,17 +57,17 @@ public class PostSpecificationBuilder {
             specification.add(new SearchCriteria("category", category, SearchOperation.EQUAL));
         }
 
-//        if (nonNull(postFiltersDto.getCreatedAtGt())) {
-//            specification.add(new SearchCriteria("createdAt",
-//                    postFiltersDto.getCreatedAtGt(),
-//                    SearchOperation.GREATER_THAN_EQUAL));
-//        }
-//
-//        if (nonNull(postFiltersDto.getCreatedAtLt())) {
-//            specification.add(new SearchCriteria("createdAt",
-//                    postFiltersDto.getCreatedAtLt(),
-//                    SearchOperation.LESS_THAN_EQUAL));
-//        }
+        if (nonNull(postFiltersDto.getCreatedAtGt())) {
+            specification.add(new SearchCriteria("createdAt",
+                    LocalDate.parse(postFiltersDto.getCreatedAtGt()).atStartOfDay(),
+                    SearchOperation.GREATER_THAN_EQUAL));
+        }
+
+        if (nonNull(postFiltersDto.getCreatedAtLt())) {
+            specification.add(new SearchCriteria("createdAt",
+                    LocalDate.parse(postFiltersDto.getCreatedAtLt()).atStartOfDay(),
+                    SearchOperation.LESS_THAN_EQUAL));
+        }
 
         return specification;
     }
