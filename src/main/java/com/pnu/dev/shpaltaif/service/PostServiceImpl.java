@@ -43,14 +43,16 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post findById(Long id) {
-        return postRepository.findByIdAndActiveTrue(id).orElseThrow(() -> new ServiceException("Пост не знайдено"));
+    public Post findActiveById(Long id) {
+        return postRepository.findByIdAndActiveTrue(id)
+                .orElseThrow(() -> new ServiceException("Пост не знайдено"));
     }
 
     @Override
     public Post findById(User user, Long id) {
 
-        Post post = findById(id);
+        Post post = postRepository.findById(id)
+                .orElseThrow(() -> new ServiceAdminException("Пост не знайдено"));
 
         if (user.getRole().equals(UserRole.ROLE_ADMIN)) {
             return post;

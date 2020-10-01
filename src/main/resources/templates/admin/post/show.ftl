@@ -7,7 +7,8 @@
             <a href="/admin/posts/edit/${post.id}" role="button"
                class="btn btn-warning btn-sm m-1 w-40">Редагувати</a>
         </@security.authorize>
-        <a href="/admin/posts/deactivate/${post.id}" role="button"
+        <a href="/admin/posts/<#if post.isActive()>deactivate<#else>delete</#if>/${post.id}"
+           role="button"
            class="btn btn-danger btn-sm m-1 w-40">
             <#if post.isActive()>Перемістити в архів<#else>Видалити назавжди</#if>
         </a>

@@ -59,6 +59,7 @@ public class PostAdminController {
         List categories = categoryService.findAll();
         List<PublicAccount> publicAccounts = publicAccountService.findAll();
 
+        model.addAttribute("pageable", pageable);
         model.addAttribute("categories", categories);
         model.addAttribute("publicAccounts", publicAccounts);
         model.addAttribute("posts", posts);
@@ -84,7 +85,9 @@ public class PostAdminController {
     }
 
     @PostMapping("/new")
-    public String create(@AuthenticationPrincipal User user, @Validated PostDto postDto) {
+    public String create(@AuthenticationPrincipal User user, @Validated PostDto postDto, RedirectAttributes redirectAttributes) {
+
+        redirectAttributes.addFlashAttribute(FLASH_MESSAGE_SUCCESS, "Пост успішно створено!");
 
         postService.create(user, postDto);
         return "redirect:/admin/posts";
