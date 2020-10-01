@@ -9,14 +9,9 @@ import com.pnu.dev.shpaltaif.dto.PostFiltersDto;
 import com.pnu.dev.shpaltaif.exception.ServiceAdminException;
 import com.pnu.dev.shpaltaif.repository.CategoryRepository;
 import com.pnu.dev.shpaltaif.repository.PublicAccountRepository;
-import com.pnu.dev.shpaltaif.repository.specification.PostSpecification;
-import com.pnu.dev.shpaltaif.repository.specification.SearchCriteria;
-import com.pnu.dev.shpaltaif.repository.specification.SearchOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDate;
 
 import static java.util.Objects.nonNull;
 

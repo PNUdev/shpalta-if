@@ -18,7 +18,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -44,21 +43,22 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post findById(User user, Long id) {
-
-        Optional<Post> optionalPost;
-        if (user.getRole().equals(UserRole.ROLE_ADMIN)) {
-            optionalPost = postRepository.findById(id);
-        } else {
-            optionalPost = postRepository.findByIdAndAuthorPublicAccountId(id, user.getPublicAccount().getId());
-        }
-
-        return optionalPost.orElseThrow(() -> new ServiceAdminException("Пост не знайдено"));
+    public Post findById(Long id) {
+        return postRepository.findByIdAndActiveTrue(id).orElseThrow(() -> new ServiceException("Пост не знайдено"));
     }
 
     @Override
-    public Post findById(Long id) {
-        return postRepository.findByIdAndActiveTrue(id).orElseThrow(() -> new ServiceException("Пост не знайдено"));
+    public Post findById(User user, Long id) {
+
+        Post post = findById(id);
+
+        if (user.getRole().equals(UserRole.ROLE_ADMIN)) {
+            return post;
+        }
+        if (!post.getAuthorPublicAccount().getId().equals(user.getPublicAccount().getId())) {
+            throw new ServiceAdminException("Ви не маєте доступ до цього поста");
+        }
+        return post;
     }
 
     @Override
@@ -122,28 +122,3 @@ public class PostServiceImpl implements PostService {
         postRepository.deleteById(id);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

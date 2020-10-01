@@ -1,7 +1,6 @@
 package com.pnu.dev.shpaltaif.controller;
 
 import com.pnu.dev.shpaltaif.domain.Post;
-import com.pnu.dev.shpaltaif.domain.PublicAccount;
 import com.pnu.dev.shpaltaif.service.PostService;
 import com.pnu.dev.shpaltaif.service.PublicAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
