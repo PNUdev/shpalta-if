@@ -103,28 +103,28 @@
                         <div class="col-6">
                             <div class="row mb-4">
                                 <div class="col-6">
-                                    <div class="row pl-4">
-                                        <img class="img-thumbnail" width="250px" height="250px"
+                                    <div class="row pl-4 d-flex justify-content-center">
+                                        <img class="img-thumbnail" style="height: 150px; width: 200px"
                                              src="${post.pictureUrl}">
                                     </div>
                                 </div>
-                                <div class="col-6">
-                                    <div class="row d-flex justify-content-center h-25">
+                                <div class="col-6 d-flex align-items-start flex-column">
+                                    <div class="row d-flex justify-content-center w-100">
                                         <span class="font-weight-bold text-secondary pr-2">Заголовок:</span><span
                                                 class="font-weight-normal">"${post.title}"</span>
                                     </div>
-                                    <div class="row d-flex justify-content-center h-25">
+                                    <div class="row d-flex justify-content-center w-100 mt-auto">
                                         <span class="font-weight-bold text-secondary pr-2">Дата:</span><span
                                                 class="font-weight-normal">"${post.createdAt}"</span>
                                     </div>
-                                    <div class="row d-flex justify-content-center h-50">
+                                    <div class="row d-flex justify-content-center">
                                         <a href="/admin/posts/${post.id}" role="button"
                                            class="btn btn-info btn-sm btn-block m-1">Переглянути</a>
                                         <@security.authorize access="hasRole('ROLE_WRITER')">
                                             <a href="/admin/posts/edit/${post.id}" role="button"
                                                class="btn btn-warning btn-sm m-1 w-40">Редагувати</a>
                                         </@security.authorize>
-                                        <a href="/admin/posts/<#if active>deactivate<#else></#if>delete/${post.id}"
+                                        <a href="/admin/posts/<#if active>deactivate<#else>delete</#if>/${post.id}"
                                            role="button"
                                            class="btn btn-danger btn-sm m-1 w-40">
                                             <#if active>Перемістити в архів<#else>Видалити назавжди</#if>
@@ -137,6 +137,30 @@
                 </div>
             </#list>
         </#if>
+    </div>
+    <div class="row">
+        <ul class="pagination mx-auto">
+            <#list 1..posts.totalPages as pageNumber>
+                <form action="/admin/posts" method="get">
+                    <input type="hidden" name="postFiltersDto" value="${postFilters}">
+                    <input type="hidden" name="page" value="${pageNumber -1}">
+                    <li class="page-item">
+                        <button type="submit"
+                                <#if pageNumber - 1 == pageable.pageNumber>style="background-color: gray" </#if>
+                                class="page-link">${pageNumber}
+                        </button>
+                    </li>
+                    <#if name??>
+                        <input type="hidden" name="name" value="${name}">
+                    </#if>
+                    <#if active??>
+                        <input type="hidden" name="active" value="${active?string("true", "false")}">
+                    </#if>
+                    <input type="hidden" name="page" value="${pageNumber}">
+                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                </form>
+            </#list>
+        </ul>
     </div>
 </div>
 <#include "../include/footer.ftl">

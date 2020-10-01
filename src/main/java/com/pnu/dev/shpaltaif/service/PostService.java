@@ -13,7 +13,7 @@ public interface PostService {
 
     Post findById(User user, Long id);
 
-    Post findById(Long id);
+    Post findActiveById(Long id);
 
     void create(User user, PostDto postDto);
 

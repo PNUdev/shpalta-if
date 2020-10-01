@@ -26,7 +26,7 @@ public class PostController {
 
     @GetMapping("/{id}")
     public String findById(@PathVariable Long id, Model model) {
-        Post post = postService.findById(id);
+        Post post = postService.findActiveById(id);
         model.addAttribute("post", post);
         return "post/show";
     }
