@@ -48,4 +48,4 @@ alter table post
   add constraint FK_Post_Category foreign key (category_id) references category (id);
 
 alter table public_account
-  add constraint FK_Public_account_User foreign key (user_id) references user (id);
+  add constraint FK_Public_account_User foreign key (user_id) references user (id)
