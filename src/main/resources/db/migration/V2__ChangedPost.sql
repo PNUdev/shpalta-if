@@ -1,5 +1,5 @@
 ALTER TABLE post
-    ADD picture_url varchar(255);
+    ADD picture_url varchar(255) not null;
 
 ALTER TABLE post
     ADD content     TEXT    not null;

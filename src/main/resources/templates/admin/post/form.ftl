@@ -4,7 +4,7 @@
 <#assign formSubmissionUrl = post???then('/admin/posts/update/${post.id}', '/admin/posts/new') >
 
 <div class="mx-auto mt-5 p-5 rounded bg-light col-md-9">
-    <form method="POST" id="postForm" action="${formSubmissionUrl}">
+    <form method="POST" action="${formSubmissionUrl}">
         <div class="input-group mb-3">
             <div class="input-group-prepend">
                 <span class="input-group-text">Заголовок</span>
@@ -72,15 +72,25 @@
         </div>
         <div class="input-group mb-3">
             <div style="width: 100%">
-                <textarea name="content" id="contentEditor"></textarea>
+                <textarea name="content" id="postContentEditor"></textarea>
                 <script>
-                    $('#contentEditor').summernote({
+                    $('#postContentEditor').summernote({
                         lang: 'uk-UA',
                         tabsize: 2,
-                        height: 500
+                        height: 500,
+                        toolbar: [
+                            ['style', ['style']],
+                            ['font', ['bold', 'underline', 'strikethrough', 'clear']],
+                            ['fontname', ['fontname']],
+                            ['color', ['color']],
+                            ['para', ['ul', 'ol', 'paragraph']],
+                            ['table', ['table']],
+                            ['insert', ['link', 'picture', 'video']],
+                            ['view', ['fullscreen', 'codeview', 'help']],
+                        ],
                     });
                     <#if post??>
-                    $('#contentEditor').summernote('code', '${post.content}');
+                    $('#postContentEditor').summernote('code', '${post.content}');
                     </#if>
                 </script>
             </div>

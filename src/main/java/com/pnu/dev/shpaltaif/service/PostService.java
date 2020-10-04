@@ -21,5 +21,7 @@ public interface PostService {
 
     void deactivate(User user, Long id);
 
+    void activate(User user, Long id);
+
     void delete(User user, Long id);
 }

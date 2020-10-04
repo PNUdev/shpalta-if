@@ -4,7 +4,7 @@ import com.pnu.dev.shpaltaif.domain.PublicAccount;
 import com.pnu.dev.shpaltaif.domain.User;
 import com.pnu.dev.shpaltaif.domain.UserRole;
 import com.pnu.dev.shpaltaif.dto.PublicAccountDto;
-import com.pnu.dev.shpaltaif.exception.ServiceAdminException;
+import com.pnu.dev.shpaltaif.exception.ServiceException;
 import com.pnu.dev.shpaltaif.repository.UserRepository;
 import com.pnu.dev.shpaltaif.service.PublicAccountService;
 import org.junit.jupiter.api.Test;
@@ -50,7 +50,7 @@ public class PublicAccountServiceIntegrationTest {
 
         assertEquals(0, publicAccountService.findAll().size());
 
-        assertThrows(ServiceAdminException.class,
+        assertThrows(ServiceException.class,
                 () -> publicAccountService.findById(Long.MAX_VALUE),
                 "Акаунт не знайдено");
     }

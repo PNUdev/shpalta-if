@@ -44,6 +44,7 @@ public class Post {
     @Type(type = "text")
     private String content;
 
+    @NotNull
     private String pictureUrl;
 
     private boolean active;

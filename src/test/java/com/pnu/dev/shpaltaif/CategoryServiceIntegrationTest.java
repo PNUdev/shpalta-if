@@ -6,7 +6,7 @@ import com.pnu.dev.shpaltaif.domain.PublicAccount;
 import com.pnu.dev.shpaltaif.domain.User;
 import com.pnu.dev.shpaltaif.domain.UserRole;
 import com.pnu.dev.shpaltaif.dto.CategoryDto;
-import com.pnu.dev.shpaltaif.exception.ServiceAdminException;
+import com.pnu.dev.shpaltaif.exception.ServiceException;
 import com.pnu.dev.shpaltaif.repository.PostRepository;
 import com.pnu.dev.shpaltaif.repository.PublicAccountRepository;
 import com.pnu.dev.shpaltaif.repository.UserRepository;
@@ -88,7 +88,7 @@ public class CategoryServiceIntegrationTest {
 
         postRepository.save(post);
 
-        assertThrows(ServiceAdminException.class,
+        assertThrows(ServiceException.class,
                 () -> categoryService.deleteById(createdCategory.getId()),
                 "Неможливо видалити категорію, яка має пости"
         );
@@ -124,7 +124,7 @@ public class CategoryServiceIntegrationTest {
 
         assertEquals(0, categoryService.findAll().size());
 
-        assertThrows(ServiceAdminException.class,
+        assertThrows(ServiceException.class,
                 () -> categoryService.findById(Long.MAX_VALUE),
                 "Категорію не знайдено"
         );

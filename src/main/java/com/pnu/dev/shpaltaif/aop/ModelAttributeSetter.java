@@ -24,8 +24,13 @@ public class ModelAttributeSetter {
     @ModelAttribute
     public void setCategories(HttpServletRequest request, Model model) {
 
-        if (!StringUtils.startsWith(request.getRequestURI(), "/admin")
-                && StringUtils.equals(request.getMethod(), "GET")) {
+        if (
+                (!StringUtils.startsWith(request.getRequestURI(), "/admin")
+                        || StringUtils.equals(request.getRequestURI(), "/admin/posts")
+                        || StringUtils.equals(request.getRequestURI(), "/admin/posts/new")
+                        || StringUtils.startsWith(request.getRequestURI(), "/admin/posts/edit")
+                )
+                        && StringUtils.equals(request.getMethod(), "GET")) {
 
             List<Category> categories = categoryService.findAll();
             model.addAttribute("categories", categories);

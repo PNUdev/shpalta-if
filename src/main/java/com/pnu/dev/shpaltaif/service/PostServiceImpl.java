@@ -6,7 +6,6 @@ import com.pnu.dev.shpaltaif.domain.User;
 import com.pnu.dev.shpaltaif.domain.UserRole;
 import com.pnu.dev.shpaltaif.dto.PostDto;
 import com.pnu.dev.shpaltaif.dto.PostFiltersDto;
-import com.pnu.dev.shpaltaif.exception.ServiceAdminException;
 import com.pnu.dev.shpaltaif.exception.ServiceException;
 import com.pnu.dev.shpaltaif.repository.CategoryRepository;
 import com.pnu.dev.shpaltaif.repository.PostRepository;
@@ -50,24 +49,15 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Post findById(User user, Long id) {
-
-        Post post = postRepository.findById(id)
-                .orElseThrow(() -> new ServiceAdminException("Пост не знайдено"));
-
-        if (user.getRole().equals(UserRole.ROLE_ADMIN)) {
-            return post;
-        }
-        if (!post.getAuthorPublicAccount().getId().equals(user.getPublicAccount().getId())) {
-            throw new ServiceAdminException("Ви не маєте доступ до цього поста");
-        }
+        Post post = findById(id);
+        checkUserAccessPermissions(post, user);
         return post;
     }
 
     @Override
     public void create(User user, PostDto postDto) {
-
         Category category = categoryRepository.findById(postDto.getCategoryId())
-                .orElseThrow(() -> new ServiceAdminException("Категорію не знайдено"));
+                .orElseThrow(() -> new ServiceException("Категорію не знайдено"));
 
         Post post = Post.builder()
                 .authorPublicAccount(user.getPublicAccount())
@@ -78,18 +68,16 @@ public class PostServiceImpl implements PostService {
                 .pictureUrl(postDto.getPictureUrl())
                 .createdAt(LocalDateTime.now())
                 .build();
-
         postRepository.save(post);
     }
 
     @Override
     public void update(User user, Long id, PostDto postDto) {
-
-        Post postFromDb = findById(user, id);
+        Post postFromDb = findById(id);
+        checkWriterAccessPermissions(postFromDb, user);
 
         Category category = categoryRepository.findById(postDto.getCategoryId())
-                .orElseThrow(() -> new ServiceAdminException("Категорію не знайдено"));
-
+                .orElseThrow(() -> new ServiceException("Категорію не знайдено"));
         Post updatedPost = postFromDb.toBuilder()
                 .title(postDto.getTitle())
                 .pictureUrl(postDto.getPictureUrl())
@@ -97,15 +85,34 @@ public class PostServiceImpl implements PostService {
                 .content(postDto.getContent())
                 .active(postDto.isActive())
                 .build();
-
         postRepository.save(updatedPost);
     }
 
     @Override
+    public void activate(User user, Long id) {
+        Post post = findById(id);
+        checkUserAccessPermissions(post, user);
+
+        Post updatedPost = post.toBuilder()
+                .active(Boolean.TRUE)
+                .build();
+        postRepository.save(updatedPost);
+    }
+
+    @Override
+    public void delete(User user, Long id) {
+        Post post = findById(id);
+        checkUserAccessPermissions(post, user);
+        if (post.isActive()) {
+            throw new ServiceException("Пост повинен бути переміщеним в архів перед видаленням");
+        }
+        postRepository.deleteById(id);
+    }
+
+    @Override
     public void deactivate(User user, Long id) {
-
-        Post post = findById(user, id);
-
+        Post post = findById(id);
+        checkUserAccessPermissions(post, user);
         Post updatedPost = post.toBuilder()
                 .active(Boolean.FALSE)
                 .build();
@@ -113,14 +120,21 @@ public class PostServiceImpl implements PostService {
         postRepository.save(updatedPost);
     }
 
-    @Override
-    public void delete(User user, Long id) {
-
-        Post post = findById(user, id);
-        if (post.isActive()) {
-            throw new ServiceAdminException("Пост повинен бути переміщеним в архів перед видаленням");
+    private void checkUserAccessPermissions(Post post, User user) {
+        if (user.getRole() == UserRole.ROLE_ADMIN) {
+            return;
         }
+        checkWriterAccessPermissions(post, user);
+    }
 
-        postRepository.deleteById(id);
+    private void checkWriterAccessPermissions(Post post, User user) {
+        if (!post.getAuthorPublicAccount().getId().equals(user.getPublicAccount().getId())) {
+            throw new ServiceException("Ви не маєте доступ до цього поста");
+        }
+    }
+
+    private Post findById(Long id) {
+        return postRepository.findById(id)
+                .orElseThrow(() -> new ServiceException("Пост не знайдено"));
     }
 }

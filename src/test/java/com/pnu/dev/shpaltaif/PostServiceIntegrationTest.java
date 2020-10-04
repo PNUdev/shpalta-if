@@ -7,7 +7,7 @@ import com.pnu.dev.shpaltaif.domain.UserRole;
 import com.pnu.dev.shpaltaif.dto.CreateUserDto;
 import com.pnu.dev.shpaltaif.dto.PostDto;
 import com.pnu.dev.shpaltaif.dto.PostFiltersDto;
-import com.pnu.dev.shpaltaif.exception.ServiceAdminException;
+import com.pnu.dev.shpaltaif.exception.ServiceException;
 import com.pnu.dev.shpaltaif.listener.ApplicationReadyEventListener;
 import com.pnu.dev.shpaltaif.repository.CategoryRepository;
 import com.pnu.dev.shpaltaif.repository.PostRepository;
@@ -39,7 +39,6 @@ public class PostServiceIntegrationTest {
 
     private final Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
 
-
     @Autowired
     private PostService postService;
 
@@ -57,7 +56,6 @@ public class PostServiceIntegrationTest {
 
     @MockBean // present here to disable default admin user creation
     private ApplicationReadyEventListener applicationReadyEventListener;
-
 
     @Test
     @Transactional
@@ -149,7 +147,7 @@ public class PostServiceIntegrationTest {
 
         User writerNotAuthor = createUserWriter("writerNotAuthor");
 
-        assertThrows(ServiceAdminException.class,
+        assertThrows(ServiceException.class,
                 () -> postService.findById(writerNotAuthor, post.getId()),
                 "Пост не знайдено");
     }
@@ -203,7 +201,7 @@ public class PostServiceIntegrationTest {
         User writer = createUserWriter("writer");
         Category category = createCategory("title");
         Post post = createPost(writer, category);
-        assertThrows(ServiceAdminException.class,
+        assertThrows(ServiceException.class,
                 () -> postService.delete(writer, post.getId()),
                 "Пост повинен бути переміщеним в архів перед видаленням");
     }
@@ -217,7 +215,7 @@ public class PostServiceIntegrationTest {
         Post post = createPost(writer, category);
         postService.deactivate(writer, post.getId());
         postService.delete(writer, post.getId());
-        assertThrows(ServiceAdminException.class,
+        assertThrows(ServiceException.class,
                 () -> postService.findById(writer, post.getId()),
                 "Пост не знайдено");
     }

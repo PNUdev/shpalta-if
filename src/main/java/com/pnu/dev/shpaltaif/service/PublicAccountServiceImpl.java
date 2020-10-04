@@ -4,7 +4,7 @@ import com.pnu.dev.shpaltaif.domain.PublicAccount;
 import com.pnu.dev.shpaltaif.domain.User;
 import com.pnu.dev.shpaltaif.domain.UserRole;
 import com.pnu.dev.shpaltaif.dto.PublicAccountDto;
-import com.pnu.dev.shpaltaif.exception.ServiceAdminException;
+import com.pnu.dev.shpaltaif.exception.ServiceException;
 import com.pnu.dev.shpaltaif.repository.PostRepository;
 import com.pnu.dev.shpaltaif.repository.PublicAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,7 @@ public class PublicAccountServiceImpl implements PublicAccountService {
     @Override
     public PublicAccount findById(Long accountId) {
         return publicAccountRepository.findById(accountId)
-                .orElseThrow(() -> new ServiceAdminException("Акаунт не знайдено"));
+                .orElseThrow(() -> new ServiceException("Акаунт не знайдено"));
     }
 
     @Override
@@ -45,7 +45,7 @@ public class PublicAccountServiceImpl implements PublicAccountService {
     public PublicAccount create(PublicAccountDto publicAccountDto, User user) {
 
         if (user.getRole() != UserRole.ROLE_WRITER) {
-            throw new ServiceAdminException("Тільки дописувачі можуть мати публічні акаунти");
+            throw new ServiceException("Тільки дописувачі можуть мати публічні акаунти");
         }
 
         LocalDateTime now = LocalDateTime.now();
@@ -83,7 +83,7 @@ public class PublicAccountServiceImpl implements PublicAccountService {
     public void delete(Long accountId) {
 
         if (postRepository.existsPostsByAuthorPublicAccountId(accountId)) {
-            throw new ServiceAdminException("Неможливо видалити акаунт користувача, який має існуючі пости");
+            throw new ServiceException("Неможливо видалити акаунт користувача, який має існуючі пости");
         }
 
         publicAccountRepository.deleteById(accountId);

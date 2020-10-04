@@ -92,48 +92,66 @@
                 .prop('name', '');
         });
     </script>
-    <div class="container py-3 <#if !active>text-white bg-dark</#if>">
+    <div class="container py-3">
         <#if !posts.content?has_content >
             <h2 class="text-center"><#if active>Список постів пустий<#else>Архів пустий</#if></h2>
         <#else>
-
-            <#list posts.content?chunk(2) as row>
-                <div class="row">
-                    <#list row as post>
-                        <div class="col-6">
-                            <div class="row mb-4">
-                                <div class="col-6">
-                                    <div class="row pl-4 d-flex justify-content-center">
-                                        <img class="img-thumbnail" style="height: 150px; width: 200px"
-                                             src="${post.pictureUrl}">
-                                    </div>
-                                </div>
-                                <div class="col-6 d-flex align-items-start flex-column">
-                                    <div class="row d-flex justify-content-center w-100">
-                                        <span class="font-weight-bold text-secondary pr-2">Заголовок:</span><span
-                                                class="font-weight-normal">"${post.title}"</span>
-                                    </div>
-                                    <div class="row d-flex justify-content-center w-100 mt-auto">
-                                        <span class="font-weight-bold text-secondary pr-2">Дата:</span><span
-                                                class="font-weight-normal">"${post.createdAt}"</span>
-                                    </div>
-                                    <div class="row d-flex justify-content-center">
-                                        <a href="/admin/posts/${post.id}" role="button"
-                                           class="btn btn-info btn-sm btn-block m-1">Переглянути</a>
-                                        <@security.authorize access="hasRole('ROLE_WRITER')">
-                                            <a href="/admin/posts/edit/${post.id}" role="button"
-                                               class="btn btn-warning btn-sm m-1 w-40">Редагувати</a>
-                                        </@security.authorize>
-                                        <a href="/admin/posts/<#if active>deactivate<#else>delete</#if>/${post.id}"
-                                           role="button"
-                                           class="btn btn-danger btn-sm m-1 w-40">
-                                            <#if active>Перемістити в архів<#else>Видалити назавжди</#if>
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
+            <#list posts.content as post>
+                <div class="row border my-1 py-2 <#if !active>text-white bg-dark</#if>">
+                    <div class="col-3">
+                        <div class="row d-flex justify-content-center">
+                            <img class="img-thumbnail" style="height: 120px; width: 200px"
+                                 src="${post.pictureUrl}">
                         </div>
-                    </#list>
+                    </div>
+                    <div class="col-5 d-flex align-items-start flex-column">
+                        <div class="row d-flex justify-content-center w-100">
+                            <span class="font-weight-bold text-secondary pr-2">Заголовок:</span><span
+                                    class="font-weight-normal">"${post.title}"</span>
+                        </div>
+                        <div class="row d-flex justify-content-center w-100 mt-auto">
+                            <span class="font-weight-bold text-secondary pr-2">Дата:</span><span
+                                    class="font-weight-normal">"${post.createdAt}"</span>
+                        </div>
+                    </div>
+                    <div class="col-4">
+
+                        <form action="/admin/posts/activate/${post.id}" method="post">
+                            <div class="row d-flex justify-content-center p-1">
+                                <a href="/admin/posts/${post.id}" role="button"
+                                   class="btn btn-info btn-sm align-middle m-1">Переглянути</a>
+                                <#if !active>
+                                    <button class="btn btn-success btn-sm m-1">Активувати</button>
+                                    <input type="hidden" name="${_csrf.parameterName}"
+                                           value="${_csrf.token}"/>
+                                </#if>
+                            </div>
+                        </form>
+
+
+                        <div class="row d-flex justify-content-center p-1">
+                            <@security.authorize access="hasRole('ROLE_WRITER')">
+
+                                <a href="/admin/posts/edit/${post.id}" role="button"
+                                   class="btn btn-warning btn-sm m-1 w-40">Редагувати</a>
+                            </@security.authorize>
+
+                            <#if active>
+                                <a href="/admin/posts/deactivate/${post.id}"
+                                   role="button"
+                                   class="btn btn-danger btn-sm m-1 w-40">
+                                    Перемістити в архів
+                                </a>
+                            <#else >
+                                <a href="/admin/posts/delete/${post.id}"
+                                   role="button"
+                                   class="btn btn-danger btn-sm m-1 w-40">
+                                    Видалити назавжди
+                                </a>
+                            </#if>
+                        </div>
+
+                    </div>
                 </div>
             </#list>
         </#if>
@@ -142,22 +160,21 @@
         <ul class="pagination mx-auto">
             <#list 1..posts.totalPages as pageNumber>
                 <form action="/admin/posts" method="get">
-                    <input type="hidden" name="postFiltersDto" value="${postFilters}">
-                    <input type="hidden" name="page" value="${pageNumber -1}">
                     <li class="page-item">
                         <button type="submit"
-                                <#if pageNumber - 1 == pageable.pageNumber>style="background-color: gray" </#if>
+                                <#if pageNumber - 1 == posts.number>style="background-color: gray" </#if>
                                 class="page-link">${pageNumber}
                         </button>
                     </li>
-                    <#if name??>
-                        <input type="hidden" name="name" value="${name}">
+                    <#if active??><input type="hidden" name="active"
+                                         value="${postFilters.active?string('true', 'false')}"></#if>
+                    <#if postFilters.title??><input type="hidden" name="title" value="${postFilters.title}"></#if>
+                    <#if postFilters.categoryId??><input type="hidden" name="categoryId"
+                                                         value="${postFilters.categoryId}"></#if>
+                    <#if postFilters.authorPublicAccountId??>
+                        <input type="hidden" name="authorPublicAccountId" value="${postFilters.authorPublicAccountId}">
                     </#if>
-                    <#if active??>
-                        <input type="hidden" name="active" value="${active?string("true", "false")}">
-                    </#if>
-                    <input type="hidden" name="page" value="${pageNumber}">
-                    <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
+                    <input type="hidden" name="page" value="${pageNumber - 1}">
                 </form>
             </#list>
         </ul>

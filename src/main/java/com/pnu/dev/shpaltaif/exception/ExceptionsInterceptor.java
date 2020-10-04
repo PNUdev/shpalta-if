@@ -18,19 +18,13 @@ import static com.pnu.dev.shpaltaif.util.FlashMessageConstants.FLASH_MESSAGE_ERR
 @Slf4j
 public class ExceptionsInterceptor {
 
-    @ExceptionHandler(ServiceAdminException.class)
-    public String serviceAdminException(ServiceAdminException serviceException, RedirectAttributes redirectAttributes,
+    @ExceptionHandler(ServiceException.class)
+    public String serviceAdminException(ServiceException serviceException, RedirectAttributes redirectAttributes,
                                         HttpServletRequest request) {
 
-        log.error("ServiceAdminException was thrown, httpServletRequest: {}", request, serviceException);
+        log.error("ServiceException was thrown, httpServletRequest: {}", request, serviceException);
 
         redirectAttributes.addFlashAttribute(FLASH_MESSAGE_ERROR, serviceException.getMessage());
-
-        return getRedirectUrl(request);
-    }
-
-    @ExceptionHandler(ServiceException.class)
-    public String serviceException(HttpServletRequest request) {
 
         return getRedirectUrl(request);
     }

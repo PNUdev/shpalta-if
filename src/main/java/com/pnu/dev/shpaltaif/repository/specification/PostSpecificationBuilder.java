@@ -6,7 +6,7 @@ import com.pnu.dev.shpaltaif.domain.PublicAccount;
 import com.pnu.dev.shpaltaif.domain.User;
 import com.pnu.dev.shpaltaif.domain.UserRole;
 import com.pnu.dev.shpaltaif.dto.PostFiltersDto;
-import com.pnu.dev.shpaltaif.exception.ServiceAdminException;
+import com.pnu.dev.shpaltaif.exception.ServiceException;
 import com.pnu.dev.shpaltaif.repository.CategoryRepository;
 import com.pnu.dev.shpaltaif.repository.PublicAccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,7 @@ public class PostSpecificationBuilder {
             specification.add(new SearchCriteria("authorPublicAccount", user.getPublicAccount(), SearchOperation.EQUAL));
         } else if (nonNull(postFiltersDto.getAuthorPublicAccountId())) {
             PublicAccount publicAccount = publicAccountRepository.findById(postFiltersDto.getAuthorPublicAccountId())
-                    .orElseThrow(() -> new ServiceAdminException("Акаунт не знайдено"));
+                    .orElseThrow(() -> new ServiceException("Акаунт не знайдено"));
             specification.add(new SearchCriteria("authorPublicAccount", publicAccount, SearchOperation.EQUAL));
         }
 
@@ -48,7 +48,7 @@ public class PostSpecificationBuilder {
 
         if (nonNull(postFiltersDto.getCategoryId())) {
             Category category = categoryRepository.findById(postFiltersDto.getCategoryId())
-                    .orElseThrow(() -> new ServiceAdminException("Категорію не знайдено"));
+                    .orElseThrow(() -> new ServiceException("Категорію не знайдено"));
             specification.add(new SearchCriteria("category", category, SearchOperation.EQUAL));
         }
 
