@@ -6,9 +6,8 @@ import com.pnu.dev.shpaltaif.domain.PublicAccount;
 import com.pnu.dev.shpaltaif.domain.User;
 import com.pnu.dev.shpaltaif.domain.UserRole;
 import com.pnu.dev.shpaltaif.dto.PostFiltersDto;
-import com.pnu.dev.shpaltaif.exception.ServiceException;
-import com.pnu.dev.shpaltaif.repository.CategoryRepository;
-import com.pnu.dev.shpaltaif.repository.PublicAccountRepository;
+import com.pnu.dev.shpaltaif.service.CategoryService;
+import com.pnu.dev.shpaltaif.service.PublicAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
@@ -18,14 +17,14 @@ import static java.util.Objects.nonNull;
 @Component
 public class PostSpecificationBuilder {
 
-    private final PublicAccountRepository publicAccountRepository;
+    private final PublicAccountService publicAccountRepository;
 
-    private final CategoryRepository categoryRepository;
+    private final CategoryService categoryRepository;
 
     @Autowired
-    public PostSpecificationBuilder(PublicAccountRepository publicAccountRepository, CategoryRepository categoryRepository) {
-        this.publicAccountRepository = publicAccountRepository;
-        this.categoryRepository = categoryRepository;
+    public PostSpecificationBuilder(PublicAccountService publicAccountService, CategoryService categoryService) {
+        this.publicAccountRepository = publicAccountService;
+        this.categoryRepository = categoryService;
     }
 
     public Specification<Post> buildPostSpecification(User user, PostFiltersDto postFiltersDto) {
@@ -37,8 +36,7 @@ public class PostSpecificationBuilder {
         if (user.getRole().equals(UserRole.ROLE_WRITER)) {
             specification.add(new SearchCriteria("authorPublicAccount", user.getPublicAccount(), SearchOperation.EQUAL));
         } else if (nonNull(postFiltersDto.getAuthorPublicAccountId())) {
-            PublicAccount publicAccount = publicAccountRepository.findById(postFiltersDto.getAuthorPublicAccountId())
-                    .orElseThrow(() -> new ServiceException("Акаунт не знайдено"));
+            PublicAccount publicAccount = publicAccountRepository.findById(postFiltersDto.getAuthorPublicAccountId());
             specification.add(new SearchCriteria("authorPublicAccount", publicAccount, SearchOperation.EQUAL));
         }
 
@@ -47,8 +45,7 @@ public class PostSpecificationBuilder {
         }
 
         if (nonNull(postFiltersDto.getCategoryId())) {
-            Category category = categoryRepository.findById(postFiltersDto.getCategoryId())
-                    .orElseThrow(() -> new ServiceException("Категорію не знайдено"));
+            Category category = categoryRepository.findById(postFiltersDto.getCategoryId());
             specification.add(new SearchCriteria("category", category, SearchOperation.EQUAL));
         }
 

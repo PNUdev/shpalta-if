@@ -1,10 +1,12 @@
 package com.pnu.dev.shpaltaif.controller;
 
+import com.pnu.dev.shpaltaif.domain.Category;
 import com.pnu.dev.shpaltaif.domain.Post;
 import com.pnu.dev.shpaltaif.domain.PublicAccount;
 import com.pnu.dev.shpaltaif.domain.User;
 import com.pnu.dev.shpaltaif.dto.PostDto;
 import com.pnu.dev.shpaltaif.dto.PostFiltersDto;
+import com.pnu.dev.shpaltaif.service.CategoryService;
 import com.pnu.dev.shpaltaif.service.PostService;
 import com.pnu.dev.shpaltaif.service.PublicAccountService;
 import com.pnu.dev.shpaltaif.util.HttpUtils;
@@ -36,10 +38,13 @@ public class PostAdminController {
 
     private final PublicAccountService publicAccountService;
 
+    private final CategoryService categoryService;
+
     @Autowired
-    public PostAdminController(PostService postService, PublicAccountService publicAccountService) {
+    public PostAdminController(PostService postService, PublicAccountService publicAccountService, CategoryService categoryService) {
         this.postService = postService;
         this.publicAccountService = publicAccountService;
+        this.categoryService = categoryService;
     }
 
     @GetMapping
@@ -51,7 +56,8 @@ public class PostAdminController {
                           PostFiltersDto postFiltersDto) {
         Page<Post> posts = postService.findAll(user, postFiltersDto, pageable);
         List<PublicAccount> publicAccounts = publicAccountService.findAll();
-
+        List<Category> categories = categoryService.findAll();
+        model.addAttribute("categories", categories);
         model.addAttribute("publicAccounts", publicAccounts);
         model.addAttribute("posts", posts);
         model.addAttribute("postFilters", postFiltersDto);
@@ -67,6 +73,8 @@ public class PostAdminController {
 
     @GetMapping("/new")
     public String createForm(Model model) {
+        List<Category> categories = categoryService.findAll();
+        model.addAttribute("categories", categories);
         return "admin/post/form";
     }
 
@@ -80,6 +88,8 @@ public class PostAdminController {
     @GetMapping("/edit/{id}")
     public String editForm(@AuthenticationPrincipal User user, @PathVariable("id") Long id, Model model) {
         Post post = postService.findById(user, id);
+        List<Category> categories = categoryService.findAll();
+        model.addAttribute("categories", categories);
         model.addAttribute("post", post);
         return "admin/post/form";
     }

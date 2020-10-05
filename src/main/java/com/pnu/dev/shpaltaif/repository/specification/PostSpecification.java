@@ -12,7 +12,7 @@ import java.util.List;
 
 public class PostSpecification implements Specification<Post> {
 
-    private List<SearchCriteria> list;
+    private final List<SearchCriteria> list;
 
     public PostSpecification() {
         this.list = new ArrayList<>();
@@ -27,16 +27,13 @@ public class PostSpecification implements Specification<Post> {
 
         List<Predicate> predicates = new ArrayList<>();
 
-        for (SearchCriteria criteria : list) {
-            if (criteria.getOperation().equals(SearchOperation.EQUAL)) {
-                predicates.add(builder.equal(
-                        root.get(criteria.getKey()), criteria.getValue()));
-            } else if (criteria.getOperation().equals(SearchOperation.MATCH)) {
-                predicates.add(builder.like(
+        list.stream().filter(criteria -> criteria.getOperation().equals(SearchOperation.EQUAL))
+                .forEach(criteria -> predicates.add(builder.equal(
+                        root.get(criteria.getKey()), criteria.getValue())));
+        list.stream().filter(criteria -> criteria.getOperation().equals(SearchOperation.MATCH))
+                .forEach(criteria -> predicates.add(builder.like(
                         builder.lower(root.get(criteria.getKey())),
-                        "%" + criteria.getValue().toString().toLowerCase() + "%"));
-            }
-        }
+                        "%" + criteria.getValue().toString().toLowerCase() + "%")));
 
         return builder.and(predicates.toArray(new Predicate[0]));
     }

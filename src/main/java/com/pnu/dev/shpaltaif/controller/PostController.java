@@ -2,7 +2,6 @@ package com.pnu.dev.shpaltaif.controller;
 
 import com.pnu.dev.shpaltaif.domain.Post;
 import com.pnu.dev.shpaltaif.service.PostService;
-import com.pnu.dev.shpaltaif.service.PublicAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,12 +15,9 @@ public class PostController {
 
     private final PostService postService;
 
-    private final PublicAccountService publicAccountService;
-
     @Autowired
-    public PostController(PostService postService, PublicAccountService publicAccountService) {
+    public PostController(PostService postService) {
         this.postService = postService;
-        this.publicAccountService = publicAccountService;
     }
 
     @GetMapping("/{id}")

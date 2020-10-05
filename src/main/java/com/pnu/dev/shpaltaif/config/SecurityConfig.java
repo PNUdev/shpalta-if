@@ -34,7 +34,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll()
                 .and()
                 .authorizeRequests()
-                .antMatchers("/accounts/edit", "/accounts/update", "/admin/posts/new", "/admin/posts/edit/**")
+                .antMatchers("/accounts/edit", "/accounts/update",
+                        "/admin/posts/new", "/admin/posts/edit/**", "/admin/update/**")
                 .hasRole("WRITER")
                 .and()
                 .authorizeRequests()
