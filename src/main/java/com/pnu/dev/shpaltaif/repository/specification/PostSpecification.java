@@ -9,32 +9,39 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 public class PostSpecification implements Specification<Post> {
 
-    private final List<SearchCriteria> list;
+    private final List<SearchCriteria> criteriaList;
 
     public PostSpecification() {
-        this.list = new ArrayList<>();
+        this.criteriaList = new ArrayList<>();
     }
 
     public void add(SearchCriteria criteria) {
-        list.add(criteria);
+        criteriaList.add(criteria);
     }
 
     @Override
     public Predicate toPredicate(Root<Post> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
 
-        List<Predicate> predicates = new ArrayList<>();
+        return builder.and(
+                criteriaList.stream()
+                        .flatMap(criteria -> {
+                            if (criteria.getOperation().equals(SearchOperation.EQUAL)) {
+                                return Stream.of(
+                                        builder.equal(root.get(criteria.getKey()), criteria.getValue())
+                                );
+                            } else if (criteria.getOperation().equals(SearchOperation.MATCH)) {
+                                return Stream.of(
+                                        builder.like(
+                                                builder.lower(root.get(criteria.getKey())),
+                                                "%" + criteria.getValue().toString().toLowerCase() + "%")
+                                );
+                            }
 
-        list.stream().filter(criteria -> criteria.getOperation().equals(SearchOperation.EQUAL))
-                .forEach(criteria -> predicates.add(builder.equal(
-                        root.get(criteria.getKey()), criteria.getValue())));
-        list.stream().filter(criteria -> criteria.getOperation().equals(SearchOperation.MATCH))
-                .forEach(criteria -> predicates.add(builder.like(
-                        builder.lower(root.get(criteria.getKey())),
-                        "%" + criteria.getValue().toString().toLowerCase() + "%")));
-
-        return builder.and(predicates.toArray(new Predicate[0]));
+                            return Stream.empty();
+                        }).toArray(Predicate[]::new));
     }
 }
