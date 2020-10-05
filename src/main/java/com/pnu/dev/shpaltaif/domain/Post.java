@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -38,6 +40,14 @@ public class Post {
     @ManyToOne
     private Category category;
 
-    // ToDo add more fields
+    @NotNull
+    @Type(type = "text")
+    private String content;
 
+    @NotNull
+    private String pictureUrl;
+
+    private boolean active;
+
+    private LocalDateTime createdAt;
 }

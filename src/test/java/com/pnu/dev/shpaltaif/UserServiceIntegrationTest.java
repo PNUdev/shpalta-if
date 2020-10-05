@@ -6,7 +6,7 @@ import com.pnu.dev.shpaltaif.domain.PublicAccount;
 import com.pnu.dev.shpaltaif.domain.User;
 import com.pnu.dev.shpaltaif.domain.UserRole;
 import com.pnu.dev.shpaltaif.dto.CreateUserDto;
-import com.pnu.dev.shpaltaif.exception.ServiceAdminException;
+import com.pnu.dev.shpaltaif.exception.ServiceException;
 import com.pnu.dev.shpaltaif.listener.ApplicationReadyEventListener;
 import com.pnu.dev.shpaltaif.repository.CategoryRepository;
 import com.pnu.dev.shpaltaif.repository.PostRepository;
@@ -105,7 +105,7 @@ public class UserServiceIntegrationTest {
         // Delete
         userService.delete(actualUserId);
 
-        assertThrows(ServiceAdminException.class,
+        assertThrows(ServiceException.class,
                 () -> userService.findById(actualUserId),
                 "Користувача не знайдено");
 
@@ -120,7 +120,7 @@ public class UserServiceIntegrationTest {
         User actualUser = createUser();
 
         // Try to delete
-        assertThrows(ServiceAdminException.class,
+        assertThrows(ServiceException.class,
                 () -> userService.delete(actualUser.getId()),
                 "Користувач повинен буте неактивним, щоб його можна було видалити");
     }
@@ -147,7 +147,7 @@ public class UserServiceIntegrationTest {
         postRepository.save(post);
 
         // Try to delete user with posts
-        assertThrows(ServiceAdminException.class,
+        assertThrows(ServiceException.class,
                 () -> userService.delete(actualUser.getId()),
                 "Неможливо видалити акаунт користувача, який має існуючі пости");
     }

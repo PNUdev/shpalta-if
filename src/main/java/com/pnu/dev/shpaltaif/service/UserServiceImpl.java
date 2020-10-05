@@ -6,7 +6,7 @@ import com.pnu.dev.shpaltaif.domain.UserRole;
 import com.pnu.dev.shpaltaif.dto.CreateUserDto;
 import com.pnu.dev.shpaltaif.dto.PublicAccountDto;
 import com.pnu.dev.shpaltaif.dto.UpdatePasswordDto;
-import com.pnu.dev.shpaltaif.exception.ServiceAdminException;
+import com.pnu.dev.shpaltaif.exception.ServiceException;
 import com.pnu.dev.shpaltaif.repository.UserRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +61,7 @@ public class UserServiceImpl implements UserService, AdminUserInitializer, UserD
     @Override
     public User findById(Long userId) {
         return userRepository.findById(userId)
-                .orElseThrow(() -> new ServiceAdminException("Користувача не знайдено!"));
+                .orElseThrow(() -> new ServiceException("Користувача не знайдено!"));
     }
 
     @Transactional
@@ -69,11 +69,11 @@ public class UserServiceImpl implements UserService, AdminUserInitializer, UserD
     public void create(CreateUserDto createUserDto) {
 
         if (!StringUtils.equals(createUserDto.getPassword(), createUserDto.getRepeatedPassword())) {
-            throw new ServiceAdminException("Паролі не співпадають!");
+            throw new ServiceException("Паролі не співпадають!");
         }
 
         if (userRepository.existsByUsername(createUserDto.getUsername())) {
-            throw new ServiceAdminException("Логін уже використовується!");
+            throw new ServiceException("Логін уже використовується!");
         }
 
         User user = User.builder()
@@ -104,11 +104,11 @@ public class UserServiceImpl implements UserService, AdminUserInitializer, UserD
     public void updatePassword(User user, UpdatePasswordDto updatePasswordDto) {
 
         if (!bCryptPasswordEncoder.matches(updatePasswordDto.getOldPassword(), user.getPassword())) {
-            throw new ServiceAdminException("Неправильний старий пароль");
+            throw new ServiceException("Неправильний старий пароль");
         }
 
         if (!StringUtils.equals(updatePasswordDto.getNewPassword(), updatePasswordDto.getNewPasswordRepeated())) {
-            throw new ServiceAdminException("Паролі не співпадають!");
+            throw new ServiceException("Паролі не співпадають!");
         }
 
         User updatedUser = user.toBuilder()
@@ -131,7 +131,7 @@ public class UserServiceImpl implements UserService, AdminUserInitializer, UserD
         User user = findById(userId);
 
         if (user.getRole() == UserRole.ROLE_ADMIN) {
-            throw new ServiceAdminException("Неможливо деактивувати користувача-адміністратора");
+            throw new ServiceException("Неможливо деактивувати користувача-адміністратора");
         }
 
         setActive(user, Boolean.FALSE);
@@ -143,11 +143,11 @@ public class UserServiceImpl implements UserService, AdminUserInitializer, UserD
         User user = findById(userId);
 
         if (user.isActive()) {
-            throw new ServiceAdminException("Користувач повинен буте неактивним, щоб його можна було видалити");
+            throw new ServiceException("Користувач повинен буте неактивним, щоб його можна було видалити");
         }
 
         if (user.getRole() == UserRole.ROLE_ADMIN) {
-            throw new ServiceAdminException("Неможливо видалити користувача-адміністратора");
+            throw new ServiceException("Неможливо видалити користувача-адміністратора");
         }
 
         publicAccountService.delete(user.getPublicAccount().getId());

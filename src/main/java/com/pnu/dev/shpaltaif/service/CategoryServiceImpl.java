@@ -2,7 +2,7 @@ package com.pnu.dev.shpaltaif.service;
 
 import com.pnu.dev.shpaltaif.domain.Category;
 import com.pnu.dev.shpaltaif.dto.CategoryDto;
-import com.pnu.dev.shpaltaif.exception.ServiceAdminException;
+import com.pnu.dev.shpaltaif.exception.ServiceException;
 import com.pnu.dev.shpaltaif.repository.CategoryRepository;
 import com.pnu.dev.shpaltaif.repository.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category findById(Long id) {
         return categoryRepository.findById(id)
-                .orElseThrow(() -> new ServiceAdminException("Категорію не знайдено"));
+                .orElseThrow(() -> new ServiceException("Категорію не знайдено"));
     }
 
     @Override
@@ -61,7 +61,7 @@ public class CategoryServiceImpl implements CategoryService {
     public void deleteById(Long id) {
 
         if (postRepository.existsPostsByCategoryId(id)) {
-            throw new ServiceAdminException("Неможливо видалити категорію, яка має пости");
+            throw new ServiceException("Неможливо видалити категорію, яка має пости");
         }
 
         categoryRepository.deleteById(id);
