@@ -18,6 +18,8 @@ spring:
           cache:
             missing_cache_strategy: create
     hibernate.ddl-auto: validate
+  data:
+    web.pageable.one-indexed-parameters: true
 
 admin:
   default:

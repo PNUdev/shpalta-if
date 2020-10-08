@@ -174,7 +174,7 @@
                     <#if postFilters.authorPublicAccountId??>
                         <input type="hidden" name="authorPublicAccountId" value="${postFilters.authorPublicAccountId}">
                     </#if>
-                    <input type="hidden" name="page" value="${pageNumber - 1}">
+                    <input type="hidden" name="page" value="${pageNumber}">
                 </form>
             </#list>
         </ul>
