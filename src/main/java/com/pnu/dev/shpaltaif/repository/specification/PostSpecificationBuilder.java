@@ -12,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static java.util.Objects.nonNull;
 
 @Component
@@ -29,26 +32,40 @@ public class PostSpecificationBuilder {
 
     public Specification<Post> buildPostSpecification(User user, PostFiltersDto postFiltersDto) {
 
-        PostSpecification specification = new PostSpecification();
-
-        specification.add(new SearchCriteria("active", postFiltersDto.isActive(), SearchOperation.EQUAL));
+        List<SearchCriteria> searchCriteriaList = buildCommonSearchCriteriaList(postFiltersDto);
 
         if (user.getRole().equals(UserRole.ROLE_WRITER)) {
-            specification.add(new SearchCriteria("authorPublicAccount", user.getPublicAccount(), SearchOperation.EQUAL));
+            searchCriteriaList.add(new SearchCriteria("authorPublicAccount", user.getPublicAccount(), SearchOperation.EQUAL));
         } else if (nonNull(postFiltersDto.getAuthorPublicAccountId())) {
             PublicAccount publicAccount = publicAccountRepository.findById(postFiltersDto.getAuthorPublicAccountId());
-            specification.add(new SearchCriteria("authorPublicAccount", publicAccount, SearchOperation.EQUAL));
+            searchCriteriaList.add(new SearchCriteria("authorPublicAccount", publicAccount, SearchOperation.EQUAL));
         }
 
+        return new PostSpecification(searchCriteriaList);
+    }
+
+    public Specification<Post> buildPostSpecification(PostFiltersDto postFiltersDto) {
+
+        List<SearchCriteria> searchCriteriaList = buildCommonSearchCriteriaList(postFiltersDto);
+        return new PostSpecification(searchCriteriaList);
+    }
+
+    private List<SearchCriteria> buildCommonSearchCriteriaList(PostFiltersDto postFiltersDto) {
+
+        List<SearchCriteria> searchCriteriaList = new ArrayList<>();
+
+        searchCriteriaList.add(new SearchCriteria("active", postFiltersDto.isActive(), SearchOperation.EQUAL));
+
+
         if (nonNull(postFiltersDto.getTitle())) {
-            specification.add(new SearchCriteria("title", postFiltersDto.getTitle(), SearchOperation.MATCH));
+            searchCriteriaList.add(new SearchCriteria("title", postFiltersDto.getTitle(), SearchOperation.MATCH));
         }
 
         if (nonNull(postFiltersDto.getCategoryId())) {
             Category category = categoryRepository.findById(postFiltersDto.getCategoryId());
-            specification.add(new SearchCriteria("category", category, SearchOperation.EQUAL));
+            searchCriteriaList.add(new SearchCriteria("category", category, SearchOperation.EQUAL));
         }
 
-        return specification;
+        return searchCriteriaList;
     }
 }

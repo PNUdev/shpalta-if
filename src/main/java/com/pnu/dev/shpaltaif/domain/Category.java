@@ -24,7 +24,7 @@ import java.util.List;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Category {
+public class Category { // ToDo adding of new indexed field "publicUrl" should be considered (for url on feed page)
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

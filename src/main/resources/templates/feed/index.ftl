@@ -13,14 +13,26 @@
 <script>
     // ToDo feel free to rewrite this piece of code in scope of UI implementation
     //  (it's just a demo of desired behaviour) as long as you keep the same approach
+
+    let categoryParam = '${(category)!}';
+    let sortParam = '${(sort)!}';
+    let title = '${(title)!}';
+
     $(window).on('load scroll', function () {
             if ($(window).scrollTop() + $(window).height() === $(document).height()) {
 
                 let requestUrl = '/posts?page=1'; // ToDo store previous page number and increment it for every new segment
 
-                const sortParam = getUrlParameter('sort');
+                if (categoryParam) {
+                    requestUrl += '&categoryId=' + categoryParam;
+                }
+
                 if (sortParam) {
                     requestUrl += '&sort=' + sortParam;
+                }
+
+                if (title) {
+                    requestUrl += '&title=' + title;
                 }
 
                 $.get(requestUrl, response => {
@@ -29,13 +41,6 @@
             }
         }
     );
-
-    function getUrlParameter(name) {
-        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-        var results = regex.exec(location.search);
-        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-    }
 </script>
 
 <#include "../include/footer.ftl" >

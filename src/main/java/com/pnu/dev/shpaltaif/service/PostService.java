@@ -11,7 +11,7 @@ public interface PostService {
 
     Page<Post> findAll(User user, PostFiltersDto postFiltersDto, Pageable pageable);
 
-    Page<Post> findAll(Pageable pageable);
+    Page<Post> findAll(PostFiltersDto filtersDto, Pageable pageable);
 
     Post findById(User user, Long id);
 
