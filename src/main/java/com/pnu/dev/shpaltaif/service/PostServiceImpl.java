@@ -42,6 +42,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public Page<Post> findAll(Pageable pageable) {
+        return postRepository.findAll(pageable);
+    }
+
+    @Override
     public Post findActiveById(Long id) {
         return postRepository.findByIdAndActiveTrue(id)
                 .orElseThrow(() -> new ServiceException("Пост не знайдено"));
