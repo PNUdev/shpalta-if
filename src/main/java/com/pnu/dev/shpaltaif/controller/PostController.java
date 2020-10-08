@@ -2,6 +2,7 @@ package com.pnu.dev.shpaltaif.controller;
 
 import com.pnu.dev.shpaltaif.domain.Post;
 import com.pnu.dev.shpaltaif.dto.PostFiltersDto;
+import com.pnu.dev.shpaltaif.exception.ServiceException;
 import com.pnu.dev.shpaltaif.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -36,10 +37,14 @@ public class PostController {
     public String findAll(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
                                   Pageable pageable,
                           PostFiltersDto postFiltersDto,
-                          Model model) { // ToDo somehow handle exceptions
+                          Model model) {
 
-        Page<Post> posts = postService.findAll(postFiltersDto, pageable);
-        model.addAttribute("posts", posts);
+        try {
+            Page<Post> posts = postService.findAll(postFiltersDto, pageable);
+            model.addAttribute("posts", posts);
+        } catch (ServiceException ex) {
+            model.addAttribute("error", "Не знайдено");
+        }
 
         return "post/indexPartial";
     }
