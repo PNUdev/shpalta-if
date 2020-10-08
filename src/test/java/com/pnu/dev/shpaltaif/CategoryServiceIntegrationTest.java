@@ -29,9 +29,13 @@ public class CategoryServiceIntegrationTest {
 
     private static final String COLOR = "Color";
 
+    private static final String PUBLIC_URL = "Public url";
+
     private static final String UPDATED_TITLE = "Updated title";
 
     private static final String UPDATED_COLOR = "Updated color";
+
+    private static final String UPDATED_PUBLIC_URL = "Updated public url";
 
     @Autowired
     private PostRepository postRepository;
@@ -48,7 +52,7 @@ public class CategoryServiceIntegrationTest {
     @Test
     void createAndThenDeleteByIdCategoryWithoutPosts() {
 
-        Category category = createCategory();
+        Category category = createAndSaveCategory();
 
         categoryService.deleteById(category.getId());
 
@@ -78,7 +82,7 @@ public class CategoryServiceIntegrationTest {
 
         publicAccountRepository.save(publicAccount);
 
-        Category createdCategory = createCategory();
+        Category createdCategory = createAndSaveCategory();
 
         Post post = Post.builder()
                 .title(TITLE)
@@ -101,11 +105,12 @@ public class CategoryServiceIntegrationTest {
     @Test
     void createAndThenUpdateCategory() {
 
-        Category createdCategory = createCategory();
+        Category createdCategory = createAndSaveCategory();
 
         CategoryDto updatedCategoryDto = CategoryDto.builder()
                 .title(UPDATED_TITLE)
                 .colorTheme(UPDATED_COLOR)
+                .publicUrl(UPDATED_PUBLIC_URL)
                 .build();
 
         categoryService.update(createdCategory.getId(), updatedCategoryDto);
@@ -131,10 +136,26 @@ public class CategoryServiceIntegrationTest {
 
     }
 
-    private Category createCategory() {
+    @Test
+    public void createDuplicatedPublicUrl() {
+        createAndSaveCategory();
+
+        CategoryDto duplicateUrlCategoryDto = CategoryDto.builder()
+                .title(TITLE)
+                .colorTheme(COLOR)
+                .publicUrl(PUBLIC_URL)
+                .build();
+
+        assertThrows(ServiceException.class,
+                () -> categoryService.create(duplicateUrlCategoryDto),
+                "URL вже використовується");
+    }
+
+    private Category createAndSaveCategory() {
         CategoryDto categoryDto = CategoryDto.builder()
                 .title(TITLE)
                 .colorTheme(COLOR)
+                .publicUrl(PUBLIC_URL)
                 .build();
 
         List<Category> allCategoriesBeforeCreate = categoryService.findAll();
@@ -156,6 +177,7 @@ public class CategoryServiceIntegrationTest {
     private void assertValidCategoryBasedOnCategoryDto(CategoryDto categoryDto, Category category) {
         assertEquals(categoryDto.getTitle(), category.getTitle());
         assertEquals(categoryDto.getColorTheme(), category.getColorTheme());
+        assertEquals(categoryDto.getPublicUrl(), category.getPublicUrl());
     }
 
 }

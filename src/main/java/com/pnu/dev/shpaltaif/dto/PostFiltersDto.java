@@ -17,5 +17,7 @@ public class PostFiltersDto {
 
     private Long categoryId;
 
+    private String categoryUrl;
+
     private boolean active = true;
 }

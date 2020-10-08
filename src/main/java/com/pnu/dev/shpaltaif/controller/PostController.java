@@ -32,7 +32,7 @@ public class PostController {
         return "post/show";
     }
 
-    @GetMapping
+    @GetMapping("/partial")
     public String findAll(@PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC)
                                   Pageable pageable,
                           PostFiltersDto postFiltersDto,

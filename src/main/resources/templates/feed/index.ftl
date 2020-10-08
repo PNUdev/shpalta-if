@@ -21,10 +21,10 @@
     $(window).on('load scroll', function () {
             if ($(window).scrollTop() + $(window).height() === $(document).height()) {
 
-                let requestUrl = '/posts?page=1'; // ToDo store previous page number and increment it for every new segment
+                let requestUrl = '/posts/partial?page=1'; // ToDo store previous page number and increment it for every new segment
 
                 if (categoryParam) {
-                    requestUrl += '&categoryId=' + categoryParam;
+                    requestUrl += '&categoryUrl=' + categoryParam;
                 }
 
                 if (sortParam) {

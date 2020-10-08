@@ -24,7 +24,7 @@ import java.util.List;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Category { // ToDo adding of new indexed field "publicUrl" should be considered (for url on feed page)
+public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,6 +35,9 @@ public class Category { // ToDo adding of new indexed field "publicUrl" should b
 
     @NotNull
     private String colorTheme;
+
+    @NotNull
+    private String publicUrl;
 
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
     private List<Post> posts;

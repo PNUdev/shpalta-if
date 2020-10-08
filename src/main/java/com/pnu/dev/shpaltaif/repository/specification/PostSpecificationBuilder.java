@@ -22,12 +22,12 @@ public class PostSpecificationBuilder {
 
     private final PublicAccountService publicAccountRepository;
 
-    private final CategoryService categoryRepository;
+    private final CategoryService categoryService;
 
     @Autowired
     public PostSpecificationBuilder(PublicAccountService publicAccountService, CategoryService categoryService) {
         this.publicAccountRepository = publicAccountService;
-        this.categoryRepository = categoryService;
+        this.categoryService = categoryService;
     }
 
     public Specification<Post> buildPostSpecification(User user, PostFiltersDto postFiltersDto) {
@@ -62,7 +62,10 @@ public class PostSpecificationBuilder {
         }
 
         if (nonNull(postFiltersDto.getCategoryId())) {
-            Category category = categoryRepository.findById(postFiltersDto.getCategoryId());
+            Category category = categoryService.findById(postFiltersDto.getCategoryId());
+            searchCriteriaList.add(new SearchCriteria("category", category, SearchOperation.EQUAL));
+        } else if (nonNull(postFiltersDto.getCategoryUrl())) {
+            Category category = categoryService.findByPublicUrl(postFiltersDto.getCategoryUrl());
             searchCriteriaList.add(new SearchCriteria("category", category, SearchOperation.EQUAL));
         }
 

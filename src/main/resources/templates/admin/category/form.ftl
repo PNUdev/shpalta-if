@@ -18,6 +18,13 @@
             <input type="color" class="form-control" name="colorTheme"
                    value="${(category.colorTheme)!defaultColorTheme}" required>
         </div>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text">URL</span>
+            </div>
+            <input type="text" class="form-control" name="publicUrl"
+                   value="${(category.publicUrl)!}" required>
+        </div>
 
         <div class="p-3">
             <#if category??>
