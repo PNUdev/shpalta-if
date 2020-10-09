@@ -42,8 +42,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<Post> findAll(Pageable pageable) {
-        return postRepository.findAll(pageable);
+    public Page<Post> findAll(PostFiltersDto filtersDto, Pageable pageable) {
+
+        Specification<Post> specification = postSpecificationBuilder.buildPostSpecification(filtersDto);
+
+        return postRepository.findAll(specification, pageable);
     }
 
     @Override

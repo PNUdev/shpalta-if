@@ -35,11 +35,22 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    public Category findByPublicUrl(String publicUrl) {
+        return categoryRepository.findByPublicUrl(publicUrl)
+                .orElseThrow(() -> new ServiceException("Категорію не знайдено"));
+    }
+
+    @Override
     public void create(CategoryDto categoryDto) {
+
+        if (categoryRepository.existsByPublicUrl(categoryDto.getPublicUrl())) {
+            throw new ServiceException("URL вже використовується");
+        }
 
         Category category = Category.builder()
                 .title(categoryDto.getTitle())
                 .colorTheme(categoryDto.getColorTheme())
+                .publicUrl(categoryDto.getPublicUrl())
                 .build();
 
         categoryRepository.save(category);
@@ -52,6 +63,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category updatedCategory = categoryFromDb.toBuilder()
                 .title(categoryDto.getTitle())
                 .colorTheme(categoryDto.getColorTheme())
+                .publicUrl(categoryDto.getPublicUrl())
                 .build();
 
         categoryRepository.save(updatedCategory);

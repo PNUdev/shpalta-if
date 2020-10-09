@@ -7,7 +7,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -15,12 +14,8 @@ public class PostSpecification implements Specification<Post> {
 
     private final List<SearchCriteria> criteriaList;
 
-    public PostSpecification() {
-        this.criteriaList = new ArrayList<>();
-    }
-
-    public void add(SearchCriteria criteria) {
-        criteriaList.add(criteria);
+    public PostSpecification(List<SearchCriteria> criteriaList) {
+        this.criteriaList = criteriaList;
     }
 
     @Override

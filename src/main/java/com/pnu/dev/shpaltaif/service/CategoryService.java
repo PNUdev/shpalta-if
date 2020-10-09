@@ -11,6 +11,8 @@ public interface CategoryService {
 
     Category findById(Long id);
 
+    Category findByPublicUrl(String publicUrl);
+
     void create(CategoryDto categoryDto);
 
     void update(Long id, CategoryDto categoryDto);

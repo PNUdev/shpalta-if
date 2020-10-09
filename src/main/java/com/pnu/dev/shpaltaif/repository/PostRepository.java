@@ -12,8 +12,6 @@ public interface PostRepository extends JpaRepository<Post, Long>, JpaSpecificat
 
     boolean existsPostsByAuthorPublicAccountId(Long authorId);
 
-    Optional<Post> findByIdAndAuthorPublicAccountId(Long id, Long authorId);
-
     Optional<Post> findByIdAndActiveTrue(Long id);
 
 }

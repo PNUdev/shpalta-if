@@ -36,6 +36,9 @@ public class Category {
     @NotNull
     private String colorTheme;
 
+    @NotNull
+    private String publicUrl;
+
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
     private List<Post> posts;
 
