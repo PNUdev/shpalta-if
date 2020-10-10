@@ -5,7 +5,8 @@ import com.pnu.dev.shpaltaif.domain.Post;
 import com.pnu.dev.shpaltaif.domain.PublicAccount;
 import com.pnu.dev.shpaltaif.domain.User;
 import com.pnu.dev.shpaltaif.domain.UserRole;
-import com.pnu.dev.shpaltaif.dto.PostFiltersDto;
+import com.pnu.dev.shpaltaif.dto.filter.PostsAdminFilter;
+import com.pnu.dev.shpaltaif.dto.filter.PostsPublicFilter;
 import com.pnu.dev.shpaltaif.service.CategoryService;
 import com.pnu.dev.shpaltaif.service.PublicAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,45 +31,48 @@ public class PostSpecificationBuilder {
         this.categoryService = categoryService;
     }
 
-    public Specification<Post> buildPostSpecification(User user, PostFiltersDto postFiltersDto) {
+    public Specification<Post> buildPostSpecification(User user, PostsAdminFilter postsAdminFilter) {
 
-        List<SearchCriteria> searchCriteriaList = buildCommonSearchCriteriaList(postFiltersDto);
+        List<SearchCriteria> searchCriteriaList = new ArrayList<>();
+
+        searchCriteriaList.add(new SearchCriteria("active", postsAdminFilter.isActive(), SearchOperation.EQUAL));
+
+        if (nonNull(postsAdminFilter.getTitle())) {
+            searchCriteriaList.add(new SearchCriteria("title", postsAdminFilter.getTitle(), SearchOperation.MATCH));
+        }
+
+        if (nonNull(postsAdminFilter.getCategoryId())) {
+            Category category = categoryService.findById(postsAdminFilter.getCategoryId());
+            searchCriteriaList.add(new SearchCriteria("category", category, SearchOperation.EQUAL));
+        }
 
         if (user.getRole().equals(UserRole.ROLE_WRITER)) {
             searchCriteriaList.add(new SearchCriteria("authorPublicAccount", user.getPublicAccount(), SearchOperation.EQUAL));
-        } else if (nonNull(postFiltersDto.getAuthorPublicAccountId())) {
-            PublicAccount publicAccount = publicAccountRepository.findById(postFiltersDto.getAuthorPublicAccountId());
+        } else if (nonNull(postsAdminFilter.getAuthorPublicAccountId())) {
+            PublicAccount publicAccount = publicAccountRepository.findById(postsAdminFilter.getAuthorPublicAccountId());
             searchCriteriaList.add(new SearchCriteria("authorPublicAccount", publicAccount, SearchOperation.EQUAL));
         }
 
         return new PostSpecification(searchCriteriaList);
     }
 
-    public Specification<Post> buildPostSpecification(PostFiltersDto postFiltersDto) {
-
-        List<SearchCriteria> searchCriteriaList = buildCommonSearchCriteriaList(postFiltersDto);
-        return new PostSpecification(searchCriteriaList);
-    }
-
-    private List<SearchCriteria> buildCommonSearchCriteriaList(PostFiltersDto postFiltersDto) {
+    public Specification<Post> buildPostSpecification(PostsPublicFilter postsPublicFilter) {
 
         List<SearchCriteria> searchCriteriaList = new ArrayList<>();
 
-        searchCriteriaList.add(new SearchCriteria("active", postFiltersDto.isActive(), SearchOperation.EQUAL));
+        // only active posts should be publicly available
+        searchCriteriaList.add(new SearchCriteria("active", Boolean.TRUE, SearchOperation.EQUAL));
 
-
-        if (nonNull(postFiltersDto.getTitle())) {
-            searchCriteriaList.add(new SearchCriteria("title", postFiltersDto.getTitle(), SearchOperation.MATCH));
+        if (nonNull(postsPublicFilter.getTitle())) {
+            searchCriteriaList.add(new SearchCriteria("title", postsPublicFilter.getTitle(), SearchOperation.MATCH));
         }
 
-        if (nonNull(postFiltersDto.getCategoryId())) {
-            Category category = categoryService.findById(postFiltersDto.getCategoryId());
-            searchCriteriaList.add(new SearchCriteria("category", category, SearchOperation.EQUAL));
-        } else if (nonNull(postFiltersDto.getCategoryUrl())) {
-            Category category = categoryService.findByPublicUrl(postFiltersDto.getCategoryUrl());
+        if (nonNull(postsPublicFilter.getCategoryUrl())) {
+            Category category = categoryService.findByPublicUrl(postsPublicFilter.getCategoryUrl());
             searchCriteriaList.add(new SearchCriteria("category", category, SearchOperation.EQUAL));
         }
 
-        return searchCriteriaList;
+        return new PostSpecification(searchCriteriaList);
     }
+
 }

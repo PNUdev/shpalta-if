@@ -6,7 +6,8 @@ import com.pnu.dev.shpaltaif.domain.User;
 import com.pnu.dev.shpaltaif.domain.UserRole;
 import com.pnu.dev.shpaltaif.dto.CreateUserDto;
 import com.pnu.dev.shpaltaif.dto.PostDto;
-import com.pnu.dev.shpaltaif.dto.PostFiltersDto;
+import com.pnu.dev.shpaltaif.dto.filter.PostsAdminFilter;
+import com.pnu.dev.shpaltaif.dto.filter.PostsPublicFilter;
 import com.pnu.dev.shpaltaif.exception.ServiceException;
 import com.pnu.dev.shpaltaif.listener.ApplicationReadyEventListener;
 import com.pnu.dev.shpaltaif.repository.CategoryRepository;
@@ -37,7 +38,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class PostServiceIntegrationTest {
 
-    private final Pageable pageable = PageRequest.of(0, Integer.MAX_VALUE);
+    private static final String FIRST_CATEGORY_URL = "FIRST_CATEGORY_URL";
+
+    private static final String SECOND_CATEGORY_URL = "SECOND_CATEGORY_URL";
+
+    private static final Pageable PAGEABLE = PageRequest.of(0, Integer.MAX_VALUE);
 
     @Autowired
     private PostService postService;
@@ -59,10 +64,10 @@ public class PostServiceIntegrationTest {
 
     @Test
     @Transactional
-    public void findAllAdminTest() {
+    public void findAllAdminFilterTest() {
 
-        Category category1 = createCategory("category1");
-        Category category2 = createCategory("category2");
+        Category category1 = createAndSaveCategory("category1", FIRST_CATEGORY_URL);
+        Category category2 = createAndSaveCategory("category2", SECOND_CATEGORY_URL);
         User firstWriter = createUserWriter("firstWriter");
         User secondWriter = createUserWriter("secondWriter");
 
@@ -74,38 +79,38 @@ public class PostServiceIntegrationTest {
         createCustomPost(secondWriter, category1, false, "Canadian story", now.minusDays(1));
         createCustomPost(secondWriter, category1, true, "Carpathian walk", now.minusDays(10));
 
-        User admin = createUserAdmin("admin");
-        PostFiltersDto postFiltersDto = PostFiltersDto.builder()
+        User admin = createUserAdmin();
+        PostsAdminFilter postsAdminFilterOne = PostsAdminFilter.builder()
                 .active(true)
                 .title("story")
                 .categoryId(category1.getId())
                 .build();
 
-        List<Post> posts = postService.findAll(admin, postFiltersDto, pageable).getContent();
+        List<Post> posts = postService.findAll(admin, postsAdminFilterOne, PAGEABLE).getContent();
         for (Post post : posts) {
-            assertEquals(post.isActive(), postFiltersDto.isActive());
-            assertTrue(post.getTitle().contains(postFiltersDto.getTitle()));
+            assertEquals(post.isActive(), postsAdminFilterOne.isActive());
+            assertThat(post.getTitle()).contains(postsAdminFilterOne.getTitle());
             assertEquals(post.getCategory(), category1);
         }
 
-        postFiltersDto = PostFiltersDto.builder()
+        PostsAdminFilter postsAdminFilterTwo = PostsAdminFilter.builder()
                 .active(true)
                 .title("story")
                 .authorPublicAccountId(firstWriter.getPublicAccount().getId())
                 .build();
 
-        posts = postService.findAll(admin, postFiltersDto, pageable).getContent();
+        posts = postService.findAll(admin, postsAdminFilterTwo, PAGEABLE).getContent();
         for (Post post : posts) {
-            assertEquals(post.isActive(), postFiltersDto.isActive());
-            assertTrue(post.getTitle().contains(postFiltersDto.getTitle()));
+            assertEquals(post.isActive(), postsAdminFilterTwo.isActive());
+            assertThat(post.getTitle()).contains(postsAdminFilterTwo.getTitle());
             assertEquals(post.getAuthorPublicAccount(), firstWriter.getPublicAccount());
         }
 
-        postFiltersDto = PostFiltersDto.builder()
+        PostsAdminFilter postsAdminFilterThree = PostsAdminFilter.builder()
                 .categoryId(category1.getId())
                 .build();
 
-        posts = postService.findAll(firstWriter, postFiltersDto, pageable).getContent();
+        posts = postService.findAll(firstWriter, postsAdminFilterThree, PAGEABLE).getContent();
         for (Post post : posts) {
             assertEquals(post.getAuthorPublicAccount(), firstWriter.getPublicAccount());
             assertEquals(post.getCategory(), category1);
@@ -114,13 +119,52 @@ public class PostServiceIntegrationTest {
 
     @Test
     @Transactional
+    public void findAllPublicFilterTest() {
+
+        Category category1 = createAndSaveCategory("category1", FIRST_CATEGORY_URL);
+        Category category2 = createAndSaveCategory("category2", SECOND_CATEGORY_URL);
+        User firstWriter = createUserWriter("firstWriter");
+        User secondWriter = createUserWriter("secondWriter");
+
+        LocalDateTime now = LocalDateTime.now();
+        createCustomPost(firstWriter, category1, true, "American story", now.minusDays(4));
+        createCustomPost(firstWriter, category1, false, "Russian story", now.minusDays(1));
+        createCustomPost(firstWriter, category2, true, "Ukrainian story", now.minusDays(4));
+        createCustomPost(firstWriter, category2, true, "Indian story", now.minusDays(15));
+        createCustomPost(secondWriter, category1, false, "Canadian story", now.minusDays(1));
+        createCustomPost(secondWriter, category1, true, "Carpathian walk", now.minusDays(10));
+
+        PostsPublicFilter postsPublicFilterTitle = PostsPublicFilter.builder()
+                .title("story")
+                .build();
+
+        List<Post> posts = postService.findAll(postsPublicFilterTitle, PAGEABLE).getContent();
+        for (Post post : posts) {
+            assertTrue(post.isActive());
+            assertThat(post.getTitle()).contains(postsPublicFilterTitle.getTitle());
+        }
+
+        PostsPublicFilter postsPublicFilterCategoryUrl = PostsPublicFilter.builder()
+                .categoryUrl(FIRST_CATEGORY_URL)
+                .build();
+
+        posts = postService.findAll(postsPublicFilterCategoryUrl, PAGEABLE).getContent();
+        for (Post post : posts) {
+            assertTrue(post.isActive());
+            assertEquals(FIRST_CATEGORY_URL, post.getCategory().getPublicUrl());
+        }
+
+    }
+
+    @Test
+    @Transactional
     public void findPostByIdAdmin() {
 
         User writer = createUserWriter("writer");
-        Category category = createCategory("title");
+        Category category = createAndSaveCategory("title", FIRST_CATEGORY_URL);
         Post post = createPost(writer, category);
 
-        User admin = createUserAdmin("admin");
+        User admin = createUserAdmin();
         Post postFromDb = postService.findById(admin, post.getId());
         assertNotEquals(postFromDb.getAuthorPublicAccount().getUser(), admin);
     }
@@ -130,7 +174,7 @@ public class PostServiceIntegrationTest {
     public void findPostByIdWriterSuccessFlow() {
 
         User writer = createUserWriter("writer");
-        Category category = createCategory("title");
+        Category category = createAndSaveCategory("title", FIRST_CATEGORY_URL);
         Post post = createPost(writer, category);
 
         Post postFromDb = postService.findById(writer, post.getId());
@@ -142,7 +186,7 @@ public class PostServiceIntegrationTest {
     public void findPostByIdWriterExceptionFlow() {
 
         User writerAuthor = createUserWriter("writerAuthor");
-        Category category = createCategory("title");
+        Category category = createAndSaveCategory("title", FIRST_CATEGORY_URL);
         Post post = createPost(writerAuthor, category);
 
         User writerNotAuthor = createUserWriter("writerNotAuthor");
@@ -156,9 +200,9 @@ public class PostServiceIntegrationTest {
     @Transactional
     public void updatePostTest() {
         User writer = createUserWriter("writer");
-        Category category = createCategory("title");
+        Category category = createAndSaveCategory("title", FIRST_CATEGORY_URL);
         Post post = createPost(writer, category);
-        Category newCategory = createCategory("another title");
+        Category newCategory = createAndSaveCategory("another title", SECOND_CATEGORY_URL);
         PostDto postUpdateDto = PostDto.builder()
                 .content("new content")
                 .title("new title")
@@ -187,7 +231,7 @@ public class PostServiceIntegrationTest {
     public void deactivatePostTest() {
 
         User writer = createUserWriter("writer");
-        Category category = createCategory("title");
+        Category category = createAndSaveCategory("title", FIRST_CATEGORY_URL);
         Post post = createPost(writer, category);
         postService.deactivate(writer, post.getId());
         Post deactivatedPost = postService.findById(writer, post.getId());
@@ -199,7 +243,7 @@ public class PostServiceIntegrationTest {
     public void deleteActivePostTest() {
 
         User writer = createUserWriter("writer");
-        Category category = createCategory("title");
+        Category category = createAndSaveCategory("title", FIRST_CATEGORY_URL);
         Post post = createPost(writer, category);
         assertThrows(ServiceException.class,
                 () -> postService.delete(writer, post.getId()),
@@ -211,7 +255,7 @@ public class PostServiceIntegrationTest {
     public void deleteDeactivatedPostTest() {
 
         User writer = createUserWriter("writer");
-        Category category = createCategory("title");
+        Category category = createAndSaveCategory("title", FIRST_CATEGORY_URL);
         Post post = createPost(writer, category);
         postService.deactivate(writer, post.getId());
         postService.delete(writer, post.getId());
@@ -220,9 +264,9 @@ public class PostServiceIntegrationTest {
                 "Пост не знайдено");
     }
 
-    private User createUserAdmin(String username) {
+    private User createUserAdmin() {
         User user = User.builder()
-                .username(username)
+                .username("admin")
                 .password("password")
                 .role(UserRole.ROLE_ADMIN)
                 .active(true)
@@ -251,11 +295,12 @@ public class PostServiceIntegrationTest {
         return allUsers.get(usersNumberBeforeCreate);
     }
 
-    private Category createCategory(String title) {
+    private Category createAndSaveCategory(String title, String publicUrl) {
 
         Category category = Category.builder()
                 .colorTheme("colorTheme")
                 .title(title)
+                .publicUrl(publicUrl)
                 .build();
 
         return categoryRepository.save(category);
@@ -289,12 +334,12 @@ public class PostServiceIntegrationTest {
                 .content("content")
                 .build();
 
-        PostFiltersDto postFiltersDto = PostFiltersDto.builder()
+        PostsAdminFilter postsAdminFilter = PostsAdminFilter.builder()
                 .active(true)
                 .build();
 
         List<Post> allPostsBeforeCreate = postService
-                .findAll(user, postFiltersDto, pageable)
+                .findAll(user, postsAdminFilter, PAGEABLE)
                 .getContent();
 
         assertEquals(0, allPostsBeforeCreate.size());
@@ -302,7 +347,7 @@ public class PostServiceIntegrationTest {
         postService.create(user, postDto);
 
         List<Post> allPostsAfterCreate = postService
-                .findAll(user, postFiltersDto, pageable)
+                .findAll(user, postsAdminFilter, PAGEABLE)
                 .getContent();
 
         assertEquals(1, allPostsAfterCreate.size());

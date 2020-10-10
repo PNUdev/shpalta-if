@@ -72,7 +72,7 @@ public class UserServiceIntegrationTest {
     public void createThenDeactivateThenActivate() {
 
         // Create
-        User actualUser = createUser();
+        User actualUser = createAndSaveUser();
         Long actualUserId = actualUser.getId();
 
         // Deactivate
@@ -93,7 +93,7 @@ public class UserServiceIntegrationTest {
     public void createThenDeactivateThenDelete() {
 
         // Create
-        User actualUser = createUser();
+        User actualUser = createAndSaveUser();
         Long actualUserId = actualUser.getId();
 
         // Deactivate
@@ -117,7 +117,7 @@ public class UserServiceIntegrationTest {
     public void createThenTryToDeleteActive() {
 
         // Create
-        User actualUser = createUser();
+        User actualUser = createAndSaveUser();
 
         // Try to delete
         assertThrows(ServiceException.class,
@@ -129,7 +129,7 @@ public class UserServiceIntegrationTest {
     @Transactional
     public void createThenDeactivateThenTryToDeleteUserWithPosts() {
         // Create
-        User actualUser = createUser();
+        User actualUser = createAndSaveUser();
 
         // Add posts to user
         Category category = Category.builder()
@@ -152,7 +152,7 @@ public class UserServiceIntegrationTest {
                 "Неможливо видалити акаунт користувача, який має існуючі пости");
     }
 
-    private User createUser() {
+    private User createAndSaveUser() {
         List<User> usersBeforeCreate = userService.findAll();
         assertEquals(0, usersBeforeCreate.size());
 

@@ -1,4 +1,4 @@
-package com.pnu.dev.shpaltaif.dto;
+package com.pnu.dev.shpaltaif.dto.filter;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,15 +9,13 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostFiltersDto {
+public class PostsAdminFilter {
 
     private String title;
 
     private Long authorPublicAccountId;
 
     private Long categoryId;
-
-    private String categoryUrl;
 
     private boolean active = true;
 }

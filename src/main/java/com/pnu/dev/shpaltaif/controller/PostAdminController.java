@@ -5,7 +5,7 @@ import com.pnu.dev.shpaltaif.domain.Post;
 import com.pnu.dev.shpaltaif.domain.PublicAccount;
 import com.pnu.dev.shpaltaif.domain.User;
 import com.pnu.dev.shpaltaif.dto.PostDto;
-import com.pnu.dev.shpaltaif.dto.PostFiltersDto;
+import com.pnu.dev.shpaltaif.dto.filter.PostsAdminFilter;
 import com.pnu.dev.shpaltaif.service.CategoryService;
 import com.pnu.dev.shpaltaif.service.PostService;
 import com.pnu.dev.shpaltaif.service.PublicAccountService;
@@ -53,14 +53,14 @@ public class PostAdminController {
                                   sort = "createdAt",
                                   direction = Sort.Direction.DESC)
                                   Pageable pageable,
-                          PostFiltersDto postFiltersDto) {
-        Page<Post> posts = postService.findAll(user, postFiltersDto, pageable);
+                          PostsAdminFilter postsAdminFilter) {
+        Page<Post> posts = postService.findAll(user, postsAdminFilter, pageable);
         List<PublicAccount> publicAccounts = publicAccountService.findAll();
         List<Category> categories = categoryService.findAll();
         model.addAttribute("categories", categories);
         model.addAttribute("publicAccounts", publicAccounts);
         model.addAttribute("posts", posts);
-        model.addAttribute("postFilters", postFiltersDto);
+        model.addAttribute("postFilters", postsAdminFilter);
         return "admin/post/index";
     }
 
