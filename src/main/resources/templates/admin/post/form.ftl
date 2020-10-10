@@ -90,7 +90,7 @@
                         ],
                     });
                     <#if post??>
-                    $('#postContentEditor').summernote('code', '${post.content}');
+                    $('#postContentEditor').summernote('code', '${post.content?js_string}');
                     </#if>
                 </script>
             </div>
