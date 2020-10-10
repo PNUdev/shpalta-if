@@ -5,7 +5,8 @@ import com.pnu.dev.shpaltaif.domain.Post;
 import com.pnu.dev.shpaltaif.domain.User;
 import com.pnu.dev.shpaltaif.domain.UserRole;
 import com.pnu.dev.shpaltaif.dto.PostDto;
-import com.pnu.dev.shpaltaif.dto.PostFiltersDto;
+import com.pnu.dev.shpaltaif.dto.filter.PostsAdminFilter;
+import com.pnu.dev.shpaltaif.dto.filter.PostsPublicFilter;
 import com.pnu.dev.shpaltaif.exception.ServiceException;
 import com.pnu.dev.shpaltaif.repository.CategoryRepository;
 import com.pnu.dev.shpaltaif.repository.PostRepository;
@@ -35,16 +36,16 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Page<Post> findAll(User user, PostFiltersDto filtersDto, Pageable pageable) {
+    public Page<Post> findAll(User user, PostsAdminFilter postsAdminFilter, Pageable pageable) {
 
-        Specification<Post> specification = postSpecificationBuilder.buildPostSpecification(user, filtersDto);
+        Specification<Post> specification = postSpecificationBuilder.buildPostSpecification(user, postsAdminFilter);
         return postRepository.findAll(specification, pageable);
     }
 
     @Override
-    public Page<Post> findAll(PostFiltersDto filtersDto, Pageable pageable) {
+    public Page<Post> findAll(PostsPublicFilter postsPublicFilter, Pageable pageable) {
 
-        Specification<Post> specification = postSpecificationBuilder.buildPostSpecification(filtersDto);
+        Specification<Post> specification = postSpecificationBuilder.buildPostSpecification(postsPublicFilter);
 
         return postRepository.findAll(specification, pageable);
     }

@@ -3,15 +3,16 @@ package com.pnu.dev.shpaltaif.service;
 import com.pnu.dev.shpaltaif.domain.Post;
 import com.pnu.dev.shpaltaif.domain.User;
 import com.pnu.dev.shpaltaif.dto.PostDto;
-import com.pnu.dev.shpaltaif.dto.PostFiltersDto;
+import com.pnu.dev.shpaltaif.dto.filter.PostsAdminFilter;
+import com.pnu.dev.shpaltaif.dto.filter.PostsPublicFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface PostService {
 
-    Page<Post> findAll(User user, PostFiltersDto postFiltersDto, Pageable pageable);
+    Page<Post> findAll(User user, PostsAdminFilter postsAdminFilter, Pageable pageable);
 
-    Page<Post> findAll(PostFiltersDto filtersDto, Pageable pageable);
+    Page<Post> findAll(PostsPublicFilter postsPublicFilter, Pageable pageable);
 
     Post findById(User user, Long id);
 
