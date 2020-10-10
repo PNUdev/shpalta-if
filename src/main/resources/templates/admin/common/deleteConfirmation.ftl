@@ -7,7 +7,7 @@
                 <div class="btn btn-outline-primary mx-4">Ні, відмінити дію</div>
             </a>
             <form method="POST" action="${actionUrl}" class="mt-2">
-                <button class="btn btn-outline-danger mx-4">Так, видалити!</button>
+                <button class="btn btn-outline-danger mx-4">Так, продовжити!</button>
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
             </form>
         </div>
