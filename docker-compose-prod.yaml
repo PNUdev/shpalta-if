@@ -1,0 +1,12 @@
+version: '3'
+services:
+  app:
+    build: .
+    ports:
+      - 8080:8080
+    environment:
+      DB_PASSWORD: <db-password>
+      DB_URL: <db-url>
+      DB_USERNAME: <db-username>
+      ADMIN_DEFAULT_USERNAME: admin
+      ADMIN_DEFAULT_PASSWORD: admin
