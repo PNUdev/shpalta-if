@@ -55,9 +55,9 @@ public class PublicAccountServiceIntegrationTest {
 
         assertEquals(0, publicAccountService.findAll().size());
 
-        assertThrows(ServiceException.class,
-                () -> publicAccountService.findById(Long.MAX_VALUE),
-                "Акаунт не знайдено");
+        ServiceException thrown = assertThrows(ServiceException.class,
+                () -> publicAccountService.findById(Long.MAX_VALUE));
+        assertEquals(thrown.getMessage(), "Акаунт не знайдено");
     }
 
     @Test
@@ -145,9 +145,9 @@ public class PublicAccountServiceIntegrationTest {
                 .pseudonymUsed(true)
                 .build();
 
-        assertThrows(ServiceException.class,
-                () -> publicAccountService.update(publicAccountDtoWithoutPseudonym, publicAccount1.getId()),
-                "Щоб використовувати псевдонім, введіть його коректно");
+        ServiceException thrown = assertThrows(ServiceException.class,
+                () -> publicAccountService.update(publicAccountDtoWithoutPseudonym, publicAccount1.getId()));
+        assertEquals(thrown.getMessage(), "Щоб використовувати псевдонім, введіть його коректно");
 
         PublicAccountDto publicAccountDtoWithPseudonym = PublicAccountDto.builder()
                 .name(publicAccount1.getName())
@@ -169,9 +169,9 @@ public class PublicAccountServiceIntegrationTest {
                 .pseudonym("Pseudonym")
                 .build();
 
-        assertThrows(ServiceException.class,
-                () -> publicAccountService.update(publicAccountDtoWithExistsPseudonym, publicAccount2.getId()),
-                "Псевдонім зайнятий");
+        thrown = assertThrows(ServiceException.class,
+                () -> publicAccountService.update(publicAccountDtoWithExistsPseudonym, publicAccount2.getId()));
+        assertEquals(thrown.getMessage(), "Псевдонім зайнятий");
     }
 
     private User createUserWriter(String username) {

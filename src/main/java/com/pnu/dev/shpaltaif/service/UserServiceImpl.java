@@ -143,7 +143,7 @@ public class UserServiceImpl implements UserService, AdminUserInitializer, UserD
         User user = findById(userId);
 
         if (user.isActive()) {
-            throw new ServiceException("Користувач повинен буте неактивним, щоб його можна було видалити");
+            throw new ServiceException("Користувач повинен бути неактивним, щоб його можна було видалити");
         }
 
         if (user.getRole() == UserRole.ROLE_ADMIN) {
