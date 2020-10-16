@@ -7,7 +7,7 @@ import com.pnu.dev.shpaltaif.dto.PublicAccountDto;
 import com.pnu.dev.shpaltaif.exception.ServiceException;
 import com.pnu.dev.shpaltaif.repository.PostRepository;
 import com.pnu.dev.shpaltaif.repository.PublicAccountRepository;
-import org.apache.logging.log4j.util.Strings;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -79,7 +79,7 @@ public class PublicAccountServiceImpl implements PublicAccountService {
         }
 
         if (publicAccountDto.isPseudonymUsed()) {
-            if (isNull(publicAccountDto.getPseudonym()) || Strings.isBlank(publicAccountDto.getPseudonym())) {
+            if (isNull(publicAccountDto.getPseudonym()) || StringUtils.isBlank(publicAccountDto.getPseudonym())) {
                 throw new ServiceException("Щоб використовувати псевдонім, введіть його коректно");
             }
         }
