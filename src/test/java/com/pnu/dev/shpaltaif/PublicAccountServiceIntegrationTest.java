@@ -3,10 +3,12 @@ package com.pnu.dev.shpaltaif;
 import com.pnu.dev.shpaltaif.domain.PublicAccount;
 import com.pnu.dev.shpaltaif.domain.User;
 import com.pnu.dev.shpaltaif.domain.UserRole;
+import com.pnu.dev.shpaltaif.dto.CreateUserDto;
 import com.pnu.dev.shpaltaif.dto.PublicAccountDto;
 import com.pnu.dev.shpaltaif.exception.ServiceException;
 import com.pnu.dev.shpaltaif.repository.UserRepository;
 import com.pnu.dev.shpaltaif.service.PublicAccountService;
+import com.pnu.dev.shpaltaif.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,6 +43,9 @@ public class PublicAccountServiceIntegrationTest {
 
     @Autowired
     private PublicAccountService publicAccountService;
+
+    @Autowired
+    private UserService userService;
 
     @Autowired
     private UserRepository userRepository;
@@ -126,6 +131,67 @@ public class PublicAccountServiceIntegrationTest {
         publicAccountService.delete(actualPublicAccount.getId());
         List<PublicAccount> publicAccountsAfterDelete = publicAccountService.findAll();
         assertEquals(0, publicAccountsAfterDelete.size());
+    }
+
+    @Test
+    @Transactional
+    public void updatePseudonymTest() {
+
+        PublicAccount publicAccount1 = createUserWriter("username1").getPublicAccount();
+
+        PublicAccountDto publicAccountDtoWithoutPseudonym = PublicAccountDto.builder()
+                .name(publicAccount1.getName())
+                .surname(publicAccount1.getSurname())
+                .pseudonymUsed(true)
+                .build();
+
+        assertThrows(ServiceException.class,
+                () -> publicAccountService.update(publicAccountDtoWithoutPseudonym, publicAccount1.getId()),
+                "Щоб використовувати псевдонім, введіть його коректно");
+
+        PublicAccountDto publicAccountDtoWithPseudonym = PublicAccountDto.builder()
+                .name(publicAccount1.getName())
+                .surname(publicAccount1.getSurname())
+                .pseudonymUsed(true)
+                .pseudonym(" Pseudonym ")
+                .build();
+
+        publicAccountService.update(publicAccountDtoWithPseudonym, publicAccount1.getId());
+        PublicAccount updatedPublicAccount = publicAccountService.findById(publicAccount1.getId());
+        assertEquals(updatedPublicAccount.getPseudonym(), publicAccountDtoWithPseudonym.getPseudonym().trim());
+        assertEquals(updatedPublicAccount.isPseudonymUsed(), publicAccountDtoWithPseudonym.isPseudonymUsed());
+
+        PublicAccount publicAccount2 = createUserWriter("username2").getPublicAccount();
+        PublicAccountDto publicAccountDtoWithExistsPseudonym = PublicAccountDto.builder()
+                .name(publicAccount2.getName())
+                .surname(publicAccount2.getSurname())
+                .pseudonymUsed(true)
+                .pseudonym("Pseudonym")
+                .build();
+
+        assertThrows(ServiceException.class,
+                () -> publicAccountService.update(publicAccountDtoWithExistsPseudonym, publicAccount2.getId()),
+                "Псевдонім зайнятий");
+    }
+
+    private User createUserWriter(String username) {
+
+        int usersNumberBeforeCreate = userRepository.findAll().size();
+
+        CreateUserDto createUserDto = CreateUserDto
+                .builder()
+                .username(username)
+                .password("password")
+                .repeatedPassword("password")
+                .name("name")
+                .surname("surname")
+                .build();
+
+        userService.create(createUserDto);
+        List<User> allUsers = userRepository.findAll();
+        assertEquals(usersNumberBeforeCreate + 1, allUsers.size());
+
+        return allUsers.get(usersNumberBeforeCreate);
     }
 
 }
