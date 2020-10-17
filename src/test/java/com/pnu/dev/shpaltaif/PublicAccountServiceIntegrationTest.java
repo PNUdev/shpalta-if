@@ -3,12 +3,10 @@ package com.pnu.dev.shpaltaif;
 import com.pnu.dev.shpaltaif.domain.PublicAccount;
 import com.pnu.dev.shpaltaif.domain.User;
 import com.pnu.dev.shpaltaif.domain.UserRole;
-import com.pnu.dev.shpaltaif.dto.CreateUserDto;
 import com.pnu.dev.shpaltaif.dto.PublicAccountDto;
 import com.pnu.dev.shpaltaif.exception.ServiceException;
 import com.pnu.dev.shpaltaif.repository.UserRepository;
 import com.pnu.dev.shpaltaif.service.PublicAccountService;
-import com.pnu.dev.shpaltaif.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -43,9 +41,6 @@ public class PublicAccountServiceIntegrationTest {
 
     @Autowired
     private PublicAccountService publicAccountService;
-
-    @Autowired
-    private UserService userService;
 
     @Autowired
     private UserRepository userRepository;
@@ -134,64 +129,108 @@ public class PublicAccountServiceIntegrationTest {
     }
 
     @Test
-    @Transactional
-    public void updatePseudonymTest() {
+    public void updateSignatureTest() {
 
-        PublicAccount publicAccount1 = createUserWriter("username1").getPublicAccount();
+        //Create PublicAccount
+        PublicAccount publicAccount = createPublicAccount("name", "surname");
+        PublicAccount publicAccountFromDb = publicAccountService.findById(publicAccount.getId());
 
-        PublicAccountDto publicAccountDtoWithoutPseudonym = PublicAccountDto.builder()
-                .name(publicAccount1.getName())
-                .surname(publicAccount1.getSurname())
+        //Test default signature
+        String expectedSignature = "name surname";
+        assertEquals(expectedSignature, publicAccountFromDb.getSignature());
+
+        //Set pseudonym
+        String pseudonym = " pseudonym ";
+        PublicAccountDto publicAccountDto = PublicAccountDto.builder()
+                .name(publicAccountFromDb.getName())
+                .surname(publicAccountFromDb.getSurname())
+                .pseudonymUsed(false)
+                .pseudonym(pseudonym)
+                .build();
+        publicAccountService.update(publicAccountDto, publicAccountFromDb.getId());
+
+        //Test signature when pseudonym has been set, but pseudonym is disabled
+        publicAccountFromDb = publicAccountService.findById(publicAccount.getId());
+        assertEquals(expectedSignature, publicAccountFromDb.getSignature());
+
+        //Activate pseudonym usage
+        publicAccountDto = PublicAccountDto.builder()
+                .name(publicAccountFromDb.getName())
+                .surname(publicAccountFromDb.getSurname())
                 .pseudonymUsed(true)
+                .pseudonym(pseudonym)
+                .build();
+        publicAccountService.update(publicAccountDto, publicAccountFromDb.getId());
+
+        //Test signature when pseudonym has been set and pseudonym is active
+        publicAccountFromDb = publicAccountService.findById(publicAccount.getId());
+        expectedSignature = pseudonym.trim();
+        assertEquals(expectedSignature, publicAccountFromDb.getSignature());
+
+    }
+
+    @Test
+    public void updateSignatureTestExceptionFlow() {
+
+        //Create PublicAccount
+        PublicAccount publicAccount = createPublicAccount("name", "surname");
+        PublicAccount publicAccountFromDb1 = publicAccountService.findById(publicAccount.getId());
+
+        //Set blank pseudonym
+        String blankPseudonym = " ";
+        PublicAccountDto publicAccountDtoWithBlankSignature = PublicAccountDto.builder()
+                .name(publicAccountFromDb1.getName())
+                .surname(publicAccountFromDb1.getSurname())
+                .pseudonymUsed(true)
+                .pseudonym(blankPseudonym)
                 .build();
 
         ServiceException thrown = assertThrows(ServiceException.class,
-                () -> publicAccountService.update(publicAccountDtoWithoutPseudonym, publicAccount1.getId()));
+                () -> publicAccountService.update(publicAccountDtoWithBlankSignature, publicAccountFromDb1.getId()));
         assertEquals(thrown.getMessage(), "Щоб використовувати псевдонім, введіть його коректно");
 
-        PublicAccountDto publicAccountDtoWithPseudonym = PublicAccountDto.builder()
-                .name(publicAccount1.getName())
-                .surname(publicAccount1.getSurname())
+        //Set correct pseudonym to publicAccount1
+        String pseudonym = "pseudonym";
+        PublicAccountDto publicAccountDto = PublicAccountDto.builder()
+                .name(publicAccountFromDb1.getName())
+                .surname(publicAccountFromDb1.getSurname())
                 .pseudonymUsed(true)
-                .pseudonym(" Pseudonym ")
+                .pseudonym(pseudonym)
                 .build();
+        publicAccountService.update(publicAccountDto, publicAccountFromDb1.getId());
 
-        publicAccountService.update(publicAccountDtoWithPseudonym, publicAccount1.getId());
-        PublicAccount updatedPublicAccount = publicAccountService.findById(publicAccount1.getId());
-        assertEquals(updatedPublicAccount.getPseudonym(), publicAccountDtoWithPseudonym.getPseudonym().trim());
-        assertEquals(updatedPublicAccount.isPseudonymUsed(), publicAccountDtoWithPseudonym.isPseudonymUsed());
-
-        PublicAccount publicAccount2 = createUserWriter("username2").getPublicAccount();
-        PublicAccountDto publicAccountDtoWithExistsPseudonym = PublicAccountDto.builder()
-                .name(publicAccount2.getName())
-                .surname(publicAccount2.getSurname())
-                .pseudonymUsed(true)
-                .pseudonym("Pseudonym")
-                .build();
-
+        //Set booked pseudonym to publicAccount2
+        publicAccount = createPublicAccount("name", "surname");
+        PublicAccount publicAccountFromDb2 = publicAccountService.findById(publicAccount.getId());
         thrown = assertThrows(ServiceException.class,
-                () -> publicAccountService.update(publicAccountDtoWithExistsPseudonym, publicAccount2.getId()));
+                () -> publicAccountService.update(publicAccountDto, publicAccountFromDb2.getId()));
         assertEquals(thrown.getMessage(), "Псевдонім зайнятий");
     }
 
-    private User createUserWriter(String username) {
+    private PublicAccount createPublicAccount(String name, String surname) {
 
-        int usersNumberBeforeCreate = userRepository.findAll().size();
+        User user = createUserWriter();
 
-        CreateUserDto createUserDto = CreateUserDto
-                .builder()
-                .username(username)
-                .password("password")
-                .repeatedPassword("password")
-                .name("name")
-                .surname("surname")
+        PublicAccountDto publicAccountDto = PublicAccountDto.builder()
+                .name(name)
+                .surname(surname)
                 .build();
 
-        userService.create(createUserDto);
-        List<User> allUsers = userRepository.findAll();
-        assertEquals(usersNumberBeforeCreate + 1, allUsers.size());
-
-        return allUsers.get(usersNumberBeforeCreate);
+        return publicAccountService.create(publicAccountDto, user);
     }
+
+    private User createUserWriter() {
+        int usersNumberBeforeCreate = userRepository.findAll().size();
+        long userId = usersNumberBeforeCreate + 1;
+        User user = User.builder()
+                .id(userId)
+                .username(String.format("username%s", userId))
+                .password("password")
+                .role(UserRole.ROLE_WRITER)
+                .build();
+
+        return userRepository.save(user);
+    }
+
 
 }

@@ -16,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Service
@@ -73,15 +72,13 @@ public class PublicAccountServiceImpl implements PublicAccountService {
 
         if (nonNull(publicAccountDto.getPseudonym())) {
             publicAccountDto.setPseudonym(publicAccountDto.getPseudonym().trim());
-            if (publicAccountRepository.existsByPseudonym(publicAccountDto.getPseudonym())) {
+            if (publicAccountRepository.existsByPseudonymAndIdNot(publicAccountDto.getPseudonym(), accountId)) {
                 throw new ServiceException("Псевдонім зайнятий");
             }
         }
 
-        if (publicAccountDto.isPseudonymUsed()) {
-            if (isNull(publicAccountDto.getPseudonym()) || StringUtils.isBlank(publicAccountDto.getPseudonym())) {
-                throw new ServiceException("Щоб використовувати псевдонім, введіть його коректно");
-            }
+        if (publicAccountDto.isPseudonymUsed() && StringUtils.isBlank(publicAccountDto.getPseudonym())) {
+            throw new ServiceException("Щоб використовувати псевдонім, введіть його коректно");
         }
 
         PublicAccount publicAccount = findById(accountId);
