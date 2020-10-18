@@ -132,7 +132,17 @@ public class PublicAccountServiceIntegrationTest {
     public void updateSignatureTest() {
 
         //Create PublicAccount
-        PublicAccount publicAccount = createPublicAccount("name", "surname");
+        User user = User.builder()
+                .username("username")
+                .password("password")
+                .role(UserRole.ROLE_WRITER)
+                .build();
+        User userFromDb = userRepository.save(user);
+        PublicAccountDto publicAccountDto = PublicAccountDto.builder()
+                .name("name")
+                .surname("surname")
+                .build();
+        PublicAccount publicAccount = publicAccountService.create(publicAccountDto, userFromDb);
 
         //Test default signature
         String expectedSignature = "name surname";
@@ -169,7 +179,17 @@ public class PublicAccountServiceIntegrationTest {
     public void updateSignatureTestExceptionFlow() {
 
         //Create PublicAccount
-        PublicAccount publicAccount = createPublicAccount("name", "surname");
+        User user = User.builder()
+                .username("username")
+                .password("password")
+                .role(UserRole.ROLE_WRITER)
+                .build();
+        User userFromDb = userRepository.save(user);
+        PublicAccountDto publicAccountDto = PublicAccountDto.builder()
+                .name("name")
+                .surname("surname")
+                .build();
+        PublicAccount publicAccount = publicAccountService.create(publicAccountDto, userFromDb);
 
         //Set blank pseudonym
         String blankPseudonym = " ";
@@ -186,16 +206,27 @@ public class PublicAccountServiceIntegrationTest {
 
         //Set correct pseudonym to publicAccount
         String pseudonym = "pseudonym";
-        PublicAccountDto publicAccountDto = PublicAccountDto.builder()
+        PublicAccountDto publicAccountDtoWithPseudonym = PublicAccountDto.builder()
                 .name(publicAccount.getName())
                 .surname(publicAccount.getSurname())
                 .pseudonymUsed(true)
                 .pseudonym(pseudonym)
                 .build();
-        publicAccountService.update(publicAccountDto, publicAccount.getId());
+        publicAccountService.update(publicAccountDtoWithPseudonym, publicAccount.getId());
 
+        //Create another PublicAccount
+        User anotherUser = User.builder()
+                .username("anotherUsername")
+                .password("password")
+                .role(UserRole.ROLE_WRITER)
+                .build();
+        User anotherUserFromDb = userRepository.save(anotherUser);
+        PublicAccountDto anotherPublicAccountDto = PublicAccountDto.builder()
+                .name("name")
+                .surname("surname")
+                .build();
+        PublicAccount anotherPublicAccount = publicAccountService.create(anotherPublicAccountDto, anotherUserFromDb);
         //Set booked pseudonym to AnotherPublicAccount
-        PublicAccount anotherPublicAccount = createPublicAccount("name", "surname");
         PublicAccount publicAccountFromDbWithPseudonym = publicAccountService.findById(publicAccount.getId());
         String bookedPseudonym = publicAccountFromDbWithPseudonym.getPseudonym();
         PublicAccountDto publicAccountDtoWithBookedPseudonym = PublicAccountDto.builder()
@@ -208,31 +239,5 @@ public class PublicAccountServiceIntegrationTest {
                 () -> publicAccountService.update(publicAccountDtoWithBookedPseudonym, anotherPublicAccount.getId()));
         assertEquals("Псевдонім зайнятий", pseudonymAlreadyBookedException.getMessage());
     }
-
-    private PublicAccount createPublicAccount(String name, String surname) {
-
-        User user = createUserWriter();
-
-        PublicAccountDto publicAccountDto = PublicAccountDto.builder()
-                .name(name)
-                .surname(surname)
-                .build();
-
-        return publicAccountService.create(publicAccountDto, user);
-    }
-
-    private User createUserWriter() {
-        int usersNumberBeforeCreate = userRepository.findAll().size();
-        long userId = usersNumberBeforeCreate + 1;
-        User user = User.builder()
-                .id(userId)
-                .username(String.format("username%s", userId))
-                .password("password")
-                .role(UserRole.ROLE_WRITER)
-                .build();
-
-        return userRepository.save(user);
-    }
-
 
 }
