@@ -1,5 +1,7 @@
 package com.pnu.dev.shpaltaif.service;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -8,11 +10,13 @@ import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import static java.util.Objects.isNull;
 
+@Slf4j
 @Service
-public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTelegramBot {
+public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTelegramBot, TelegramMessageSender {
 
     @Value("${telegrambot.username}")
     private String botUsername;
@@ -28,9 +32,12 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
 
     private RestTemplate restTemplate;
 
+    private TelegramBotUserService telegramBotUserService;
+
     @Autowired
-    public TelegramBot(RestTemplate restTemplate) {
+    public TelegramBot(RestTemplate restTemplate, TelegramBotUserService telegramBotUserService) {
         this.restTemplate = restTemplate;
+        this.telegramBotUserService = telegramBotUserService;
     }
 
     @Override
@@ -41,9 +48,24 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
         }
 
         Long chatId = update.getMessage().getChatId();
+        String message = update.getMessage().getText();
 
-        return new SendMessage(chatId, "Hello, your chat id is " + chatId);
+        if (StringUtils.equals(message, "/start")) { // ToDo maybe, have to be rewritten using command
+            telegramBotUserService.create(chatId);
+            return new SendMessage(chatId, "Привіт, Ви стали користувачем нашого бота!");
+        }
+
+        if (StringUtils.equals(message, "/settings")) {
+            return new SendMessage(chatId, "Посилання на сторінку з налаштуваннями бота");
+        }
+
+        if (StringUtils.equals(message, "/help")) {
+            return new SendMessage(chatId, "Повідомлення з доступними командами");
+        }
+
+        return new SendMessage(chatId, "Повідомлення з доступними командами і описом бота");
     }
+
 
     @Override
     public String getBotUsername() {
@@ -62,10 +84,21 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
 
     @Override
     public void register() {
+
+        log.info("Telegram bot webhook was registered");
+
         restTemplate.getForEntity(
                 String.format("https://api.telegram.org/bot%s/setWebhook?url=%s", botToken, getBotPath()),
                 String.class
         );
     }
 
+    @Override
+    public void sendMessage(SendMessage sendMessage) {
+        try {
+            execute(sendMessage);
+        } catch (TelegramApiException e) {
+            log.error("Error while sending message to telegram", e);
+        }
+    }
 }
