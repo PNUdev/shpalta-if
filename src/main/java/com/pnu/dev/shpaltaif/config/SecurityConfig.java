@@ -25,6 +25,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .csrf()
+                .ignoringAntMatchers("/telegram-bot-webhook-**")
+                .and()
                 .formLogin()
                 .loginPage("/login")
                 .defaultSuccessUrl("/admin")
