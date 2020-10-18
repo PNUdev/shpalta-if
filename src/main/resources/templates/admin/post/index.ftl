@@ -60,7 +60,7 @@
                                 <option value="${publicAccount.id}"
                                         <#if postFilters?? && postFilters.authorPublicAccountId?? && publicAccount.id == postFilters.authorPublicAccountId>selected</#if>
                                 >
-                                    ${publicAccount.name} ${publicAccount.surname}
+                                    ${publicAccount.getSignature()}
                                 </option>
                             </#list>
                         </select>

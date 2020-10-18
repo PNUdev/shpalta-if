@@ -50,9 +50,9 @@ public class PublicAccountServiceIntegrationTest {
 
         assertEquals(0, publicAccountService.findAll().size());
 
-        assertThrows(ServiceException.class,
-                () -> publicAccountService.findById(Long.MAX_VALUE),
-                "Акаунт не знайдено");
+        ServiceException thrown = assertThrows(ServiceException.class,
+                () -> publicAccountService.findById(Long.MAX_VALUE));
+        assertEquals("Акаунт не знайдено", thrown.getMessage());
     }
 
     @Test
@@ -126,6 +126,118 @@ public class PublicAccountServiceIntegrationTest {
         publicAccountService.delete(actualPublicAccount.getId());
         List<PublicAccount> publicAccountsAfterDelete = publicAccountService.findAll();
         assertEquals(0, publicAccountsAfterDelete.size());
+    }
+
+    @Test
+    public void updateSignatureTest() {
+
+        //Create PublicAccount
+        User user = User.builder()
+                .username("username")
+                .password("password")
+                .role(UserRole.ROLE_WRITER)
+                .build();
+        User userFromDb = userRepository.save(user);
+        PublicAccountDto publicAccountDto = PublicAccountDto.builder()
+                .name("name")
+                .surname("surname")
+                .build();
+        PublicAccount publicAccount = publicAccountService.create(publicAccountDto, userFromDb);
+
+        //Test default signature
+        String expectedSignature = "name surname";
+        assertEquals(expectedSignature, publicAccountService.findById(publicAccount.getId()).getSignature());
+
+        //Set pseudonym
+        String pseudonym = "pseudonym";
+        PublicAccountDto publicAccountDtoWithUnusedPseudonym = PublicAccountDto.builder()
+                .name(publicAccount.getName())
+                .surname(publicAccount.getSurname())
+                .pseudonymUsed(false)
+                .pseudonym(pseudonym)
+                .build();
+        publicAccountService.update(publicAccountDtoWithUnusedPseudonym, publicAccount.getId());
+
+        //Test signature when pseudonym has been set, but pseudonym is disabled
+        assertEquals(expectedSignature, publicAccountService.findById(publicAccount.getId()).getSignature());
+
+        //Activate pseudonym usage
+        PublicAccountDto publicAccountDtoWithUsedPseudonym = PublicAccountDto.builder()
+                .name(publicAccount.getName())
+                .surname(publicAccount.getSurname())
+                .pseudonymUsed(true)
+                .pseudonym(pseudonym)
+                .build();
+        publicAccountService.update(publicAccountDtoWithUsedPseudonym, publicAccount.getId());
+
+        //Test signature when pseudonym has been set and pseudonym is active
+        assertEquals(publicAccountDtoWithUsedPseudonym.getPseudonym(),
+                publicAccountService.findById(publicAccount.getId()).getSignature());
+    }
+
+    @Test
+    public void updateSignatureTestExceptionFlow() {
+
+        //Create PublicAccount
+        User user = User.builder()
+                .username("username")
+                .password("password")
+                .role(UserRole.ROLE_WRITER)
+                .build();
+        User userFromDb = userRepository.save(user);
+        PublicAccountDto publicAccountDto = PublicAccountDto.builder()
+                .name("name")
+                .surname("surname")
+                .build();
+        PublicAccount publicAccount = publicAccountService.create(publicAccountDto, userFromDb);
+
+        //Set blank pseudonym
+        String blankPseudonym = " ";
+        PublicAccountDto publicAccountDtoWithBlankSignature = PublicAccountDto.builder()
+                .name(publicAccount.getName())
+                .surname(publicAccount.getSurname())
+                .pseudonymUsed(true)
+                .pseudonym(blankPseudonym)
+                .build();
+
+        ServiceException incorrectPseudonymException = assertThrows(ServiceException.class,
+                () -> publicAccountService.update(publicAccountDtoWithBlankSignature, publicAccount.getId()));
+        assertEquals("Щоб використовувати псевдонім, введіть його коректно", incorrectPseudonymException.getMessage());
+
+        //Set correct pseudonym to publicAccount
+        String pseudonym = "pseudonym";
+        PublicAccountDto publicAccountDtoWithPseudonym = PublicAccountDto.builder()
+                .name(publicAccount.getName())
+                .surname(publicAccount.getSurname())
+                .pseudonymUsed(true)
+                .pseudonym(pseudonym)
+                .build();
+        publicAccountService.update(publicAccountDtoWithPseudonym, publicAccount.getId());
+
+        //Create another PublicAccount
+        User anotherUser = User.builder()
+                .username("anotherUsername")
+                .password("password")
+                .role(UserRole.ROLE_WRITER)
+                .build();
+        User anotherUserFromDb = userRepository.save(anotherUser);
+        PublicAccountDto anotherPublicAccountDto = PublicAccountDto.builder()
+                .name("name")
+                .surname("surname")
+                .build();
+        PublicAccount anotherPublicAccount = publicAccountService.create(anotherPublicAccountDto, anotherUserFromDb);
+        //Set booked pseudonym to AnotherPublicAccount
+        PublicAccount publicAccountFromDbWithPseudonym = publicAccountService.findById(publicAccount.getId());
+        String bookedPseudonym = publicAccountFromDbWithPseudonym.getPseudonym();
+        PublicAccountDto publicAccountDtoWithBookedPseudonym = PublicAccountDto.builder()
+                .name(anotherPublicAccount.getName())
+                .surname(anotherPublicAccount.getSurname())
+                .pseudonymUsed(true)
+                .pseudonym(bookedPseudonym)
+                .build();
+        ServiceException pseudonymAlreadyBookedException = assertThrows(ServiceException.class,
+                () -> publicAccountService.update(publicAccountDtoWithBookedPseudonym, anotherPublicAccount.getId()));
+        assertEquals("Псевдонім зайнятий", pseudonymAlreadyBookedException.getMessage());
     }
 
 }

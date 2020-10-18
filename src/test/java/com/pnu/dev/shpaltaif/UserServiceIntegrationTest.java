@@ -105,10 +105,9 @@ public class UserServiceIntegrationTest {
         // Delete
         userService.delete(actualUserId);
 
-        assertThrows(ServiceException.class,
-                () -> userService.findById(actualUserId),
-                "Користувача не знайдено");
-
+        ServiceException thrown = assertThrows(ServiceException.class,
+                () -> userService.findById(actualUserId));
+        assertEquals("Користувача не знайдено!", thrown.getMessage());
         assertEquals(0, userService.findAll().size());
     }
 
@@ -120,9 +119,9 @@ public class UserServiceIntegrationTest {
         User actualUser = createAndSaveUser();
 
         // Try to delete
-        assertThrows(ServiceException.class,
-                () -> userService.delete(actualUser.getId()),
-                "Користувач повинен буте неактивним, щоб його можна було видалити");
+        ServiceException thrown = assertThrows(ServiceException.class,
+                () -> userService.delete(actualUser.getId()));
+        assertEquals("Користувач повинен бути неактивним, щоб його можна було видалити", thrown.getMessage());
     }
 
     @Test
@@ -147,9 +146,9 @@ public class UserServiceIntegrationTest {
         postRepository.save(post);
 
         // Try to delete user with posts
-        assertThrows(ServiceException.class,
-                () -> userService.delete(actualUser.getId()),
-                "Неможливо видалити акаунт користувача, який має існуючі пости");
+        ServiceException thrown = assertThrows(ServiceException.class,
+                () -> userService.delete(actualUser.getId()));
+        assertEquals("Користувач повинен бути неактивним, щоб його можна було видалити", thrown.getMessage());
     }
 
     private User createAndSaveUser() {
@@ -185,7 +184,6 @@ public class UserServiceIntegrationTest {
 
         assertThat(actualUser.getPublicAccount())
                 .isEqualToIgnoringGivenFields(expectedPublicAccount, "id", "createdAt", "updatedAt", "user");
-
 
         Optional<PublicAccount> actualPublicAccount = publicAccountRepository.findByUserId(actualUser.getId());
         assertEquals(actualUser.getPublicAccount(), actualPublicAccount.get());

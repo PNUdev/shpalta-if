@@ -9,4 +9,6 @@ public interface PublicAccountRepository extends JpaRepository<PublicAccount, Lo
 
     Optional<PublicAccount> findByUserId(Long userId);
 
+    boolean existsByPseudonymAndIdNot(String pseudonym, Long id);
+
 }

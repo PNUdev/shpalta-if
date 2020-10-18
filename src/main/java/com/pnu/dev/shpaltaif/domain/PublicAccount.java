@@ -6,8 +6,11 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -36,6 +39,10 @@ public class PublicAccount {
     @NotNull
     private String surname;
 
+    private String pseudonym;
+
+    private boolean pseudonymUsed;
+
     private String profileImageUrl;
 
     private String description;
@@ -53,5 +60,13 @@ public class PublicAccount {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private User user;
+
+    public String getSignature() {
+
+        if (pseudonymUsed) {
+            return this.pseudonym;
+        }
+        return String.format("%s %s", this.name, this.surname);
+    }
 
 }

@@ -191,9 +191,10 @@ public class PostServiceIntegrationTest {
 
         User writerNotAuthor = createUserWriter("writerNotAuthor");
 
-        assertThrows(ServiceException.class,
-                () -> postService.findById(writerNotAuthor, post.getId()),
-                "Пост не знайдено");
+        ServiceException thrown = assertThrows(ServiceException.class,
+                () -> postService.findById(writerNotAuthor, post.getId()));
+        assertEquals("Ви не маєте доступ до цього поста", thrown.getMessage());
+
     }
 
     @Test
@@ -245,9 +246,10 @@ public class PostServiceIntegrationTest {
         User writer = createUserWriter("writer");
         Category category = createAndSaveCategory("title", FIRST_CATEGORY_URL);
         Post post = createPost(writer, category);
-        assertThrows(ServiceException.class,
-                () -> postService.delete(writer, post.getId()),
-                "Пост повинен бути переміщеним в архів перед видаленням");
+        ServiceException thrown = assertThrows(ServiceException.class,
+                () -> postService.delete(writer, post.getId()));
+        assertEquals("Пост повинен бути переміщеним в архів перед видаленням", thrown.getMessage());
+
     }
 
     @Test
@@ -259,9 +261,9 @@ public class PostServiceIntegrationTest {
         Post post = createPost(writer, category);
         postService.deactivate(writer, post.getId());
         postService.delete(writer, post.getId());
-        assertThrows(ServiceException.class,
-                () -> postService.findById(writer, post.getId()),
-                "Пост не знайдено");
+        ServiceException thrown = assertThrows(ServiceException.class,
+                () -> postService.findById(writer, post.getId()));
+        assertEquals("Пост не знайдено", thrown.getMessage());
     }
 
     private User createUserAdmin() {

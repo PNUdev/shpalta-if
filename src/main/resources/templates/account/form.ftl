@@ -20,6 +20,19 @@
             </div>
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
+                    <span class="input-group-text">
+                        <input type="checkbox" name="pseudonymUsed" id="pseudonym_checkbox" class="mr-2"
+                               <#if principalAccount.pseudonymUsed>checked</#if>>
+                         <label class="form-check-label" for="pseudonym_checkbox">
+                                Використовувати псевдонім
+                         </label>
+
+                    </span>
+                </div>
+                <input type="text" class="form-control" name="pseudonym" value="${principalAccount.pseudonym!}">
+            </div>
+            <div class="input-group mb-3">
+                <div class="input-group-prepend">
                     <span class="input-group-text">Зображення акаунту</span>
                 </div>
                 <input type="text" class="form-control" name="imageUrl" id="image-url"
