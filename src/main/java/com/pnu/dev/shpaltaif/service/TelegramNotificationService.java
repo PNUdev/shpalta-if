@@ -4,6 +4,6 @@ import com.pnu.dev.shpaltaif.domain.Post;
 
 public interface TelegramNotificationService {
 
-    void sendNotificationAboutNewPost(Post post);
+    void sendNotificationsOfNewPost(Post post);
 
 }

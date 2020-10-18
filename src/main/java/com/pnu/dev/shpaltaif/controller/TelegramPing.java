@@ -24,7 +24,7 @@ public class TelegramPing { // ToDo remove
                         .build())
                 .build();
 
-        telegramNotificationService.sendNotificationAboutNewPost(post);
+        telegramNotificationService.sendNotificationsOfNewPost(post);
 
     }
 

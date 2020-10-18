@@ -52,18 +52,18 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
 
         if (StringUtils.equals(message, "/start")) { // ToDo maybe, have to be rewritten using command
             telegramBotUserService.create(chatId);
-            return new SendMessage(chatId, "Привіт, Ви стали користувачем нашого бота!");
+            return buildSendMessageHtml(chatId, "Привіт, Ви стали користувачем нашого бота!");
         }
 
         if (StringUtils.equals(message, "/settings")) {
-            return new SendMessage(chatId, "Посилання на сторінку з налаштуваннями бота");
+            return buildSendMessageHtml(chatId, "Посилання на сторінку з налаштуваннями бота");
         }
 
         if (StringUtils.equals(message, "/help")) {
-            return new SendMessage(chatId, "Повідомлення з доступними командами");
+            return buildSendMessageHtml(chatId, "Повідомлення з доступними командами");
         }
 
-        return new SendMessage(chatId, "Повідомлення з доступними командами і описом бота");
+        return buildSendMessageHtml(chatId, "Повідомлення з доступними командами і описом бота");
     }
 
 
@@ -94,11 +94,17 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
     }
 
     @Override
-    public void sendMessage(SendMessage sendMessage) {
+    public void sendMessageHtml(Long chatId, String content) {
         try {
-            execute(sendMessage);
+            execute(buildSendMessageHtml(chatId, content));
         } catch (TelegramApiException e) {
             log.error("Error while sending message to telegram", e);
         }
+    }
+
+    private SendMessage buildSendMessageHtml(Long chatId, String content) {
+        SendMessage sendMessage = new SendMessage(chatId, content);
+        sendMessage.enableHtml(true);
+        return sendMessage;
     }
 }
