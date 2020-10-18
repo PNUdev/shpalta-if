@@ -107,7 +107,7 @@ public class UserServiceIntegrationTest {
 
         ServiceException thrown = assertThrows(ServiceException.class,
                 () -> userService.findById(actualUserId));
-        assertEquals(thrown.getMessage(), "Користувача не знайдено!");
+        assertEquals("Користувача не знайдено!", thrown.getMessage());
         assertEquals(0, userService.findAll().size());
     }
 
@@ -121,7 +121,7 @@ public class UserServiceIntegrationTest {
         // Try to delete
         ServiceException thrown = assertThrows(ServiceException.class,
                 () -> userService.delete(actualUser.getId()));
-        assertEquals(thrown.getMessage(), "Користувач повинен бути неактивним, щоб його можна було видалити");
+        assertEquals("Користувач повинен бути неактивним, щоб його можна було видалити", thrown.getMessage());
     }
 
     @Test
@@ -148,7 +148,7 @@ public class UserServiceIntegrationTest {
         // Try to delete user with posts
         ServiceException thrown = assertThrows(ServiceException.class,
                 () -> userService.delete(actualUser.getId()));
-        assertEquals(thrown.getMessage(), "Користувач повинен бути неактивним, щоб його можна було видалити");
+        assertEquals("Користувач повинен бути неактивним, щоб його можна було видалити", thrown.getMessage());
     }
 
     private User createAndSaveUser() {

@@ -95,7 +95,7 @@ public class CategoryServiceIntegrationTest {
         ServiceException thrown = assertThrows(ServiceException.class,
                 () -> categoryService.deleteById(createdCategory.getId())
         );
-        assertEquals(thrown.getMessage(), "Неможливо видалити категорію, яка має пости");
+        assertEquals("Неможливо видалити категорію, яка має пости", thrown.getMessage());
 
         List<Category> allCategoriesAfterDelete = categoryService.findAll();
         assertEquals(1, allCategoriesAfterDelete.size());
@@ -131,7 +131,7 @@ public class CategoryServiceIntegrationTest {
 
         ServiceException thrown = assertThrows(ServiceException.class,
                 () -> categoryService.findById(Long.MAX_VALUE));
-        assertEquals(thrown.getMessage(), "Категорію не знайдено");
+        assertEquals("Категорію не знайдено", thrown.getMessage());
 
     }
 
@@ -147,7 +147,7 @@ public class CategoryServiceIntegrationTest {
 
         ServiceException thrown = assertThrows(ServiceException.class,
                 () -> categoryService.create(duplicateUrlCategoryDto));
-        assertEquals(thrown.getMessage(), "URL вже використовується");
+        assertEquals("URL вже використовується", thrown.getMessage());
     }
 
     private Category createAndSaveCategory() {
