@@ -15,7 +15,11 @@
 <script>
     $(function () {
         $('#search-bar').on('input', function () {
-            title = $('#search-bar').val();
+            title = $('#search-bar').val().trim();
+            if (!title) {
+                $('#search-result').html("");
+                return;
+            }
             const resultSize = 5;
             $.ajax({
                 url: 'http://localhost:8080/posts/search-result-partial',
@@ -25,7 +29,6 @@
                     'size': resultSize
                 },
                 success: function (response) {
-                    console.log(response);
                     $('#search-result').html(response);
                 }
             });
