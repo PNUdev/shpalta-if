@@ -13,11 +13,13 @@ import com.pnu.dev.shpaltaif.repository.PostRepository;
 import com.pnu.dev.shpaltaif.repository.specification.PostSpecificationBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -46,8 +48,13 @@ public class PostServiceImpl implements PostService {
     public Page<Post> findAll(PostsPublicFilter postsPublicFilter, Pageable pageable) {
 
         Specification<Post> specification = postSpecificationBuilder.buildPostSpecification(postsPublicFilter);
-
         return postRepository.findAll(specification, pageable);
+    }
+
+    @Override
+    public List<Post> findByTitleContains(String title, int size) {
+        Pageable pageable = PageRequest.of(0, size);
+        return postRepository.findAllByTitleContainsAndActiveTrue(title.trim(), pageable);
     }
 
     @Override

@@ -8,11 +8,15 @@ import com.pnu.dev.shpaltaif.dto.filter.PostsPublicFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+
 public interface PostService {
 
     Page<Post> findAll(User user, PostsAdminFilter postsAdminFilter, Pageable pageable);
 
     Page<Post> findAll(PostsPublicFilter postsPublicFilter, Pageable pageable);
+
+    List<Post> findByTitleContains(String title, int size);
 
     Post findById(User user, Long id);
 
