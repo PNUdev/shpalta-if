@@ -105,6 +105,7 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
     private SendMessage buildSendMessageHtml(Long chatId, String content) {
         SendMessage sendMessage = new SendMessage(chatId, content);
         sendMessage.enableHtml(true);
+        sendMessage.enableWebPagePreview();
         return sendMessage;
     }
 }

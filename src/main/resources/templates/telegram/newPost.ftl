@@ -1,2 +1,2 @@
-It works!
-<b>Continue reading: ${appBasePath}/posts/id</b>
+<b>Новий пост на Shpalta IF!</b>
+<b>${postUrl}</b>

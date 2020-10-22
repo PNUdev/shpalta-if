@@ -7,9 +7,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class TelegramNotificationServiceImpl implements TelegramNotificationService {
@@ -41,13 +40,13 @@ public class TelegramNotificationServiceImpl implements TelegramNotificationServ
 
         telegramBotUsersToNotify.forEach(telegramBotUser -> {
 
-            Map<String, Object> params = new HashMap<>();
-            params.put("post", post);
-            params.put("appBasePath", appBasePath);
+            String messageContent = freemarkerTemplateResolver.resolve(
+                    "/telegram/newPost.ftl",
+                    Collections.singletonMap("postUrl", String.format("%s/posts/%s", appBasePath, post.getId()))
+            );
 
-            String messageContent = freemarkerTemplateResolver.resolve("/telegram/newPost.ftl", params);
-
-            telegramMessageSender.sendMessageHtml(telegramBotUser.getChatId(), messageContent);
+            telegramMessageSender
+                    .sendMessageHtml(telegramBotUser.getChatId(), messageContent);
         });
 
     }
