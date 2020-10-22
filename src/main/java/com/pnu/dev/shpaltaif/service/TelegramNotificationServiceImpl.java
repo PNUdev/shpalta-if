@@ -4,6 +4,7 @@ import com.pnu.dev.shpaltaif.domain.Post;
 import com.pnu.dev.shpaltaif.domain.TelegramBotUser;
 import com.pnu.dev.shpaltaif.util.FreemarkerTemplateResolver;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -32,7 +33,8 @@ public class TelegramNotificationServiceImpl implements TelegramNotificationServ
     }
 
     @Override
-    public void sendNotificationsOfNewPost(Post post) { // ToDo have to be async
+    @Async
+    public void sendNotificationsOfNewPost(Post post) {
 
         List<TelegramBotUser> telegramBotUsersToNotify = telegramBotUserService // ToDo probably, have to use batch strategy
                 .findAllByCategoryId(post.getCategory());

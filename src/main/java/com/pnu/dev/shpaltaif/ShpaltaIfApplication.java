@@ -2,12 +2,14 @@ package com.pnu.dev.shpaltaif;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 import org.telegram.telegrambots.ApiContextInitializer;
 
 import static java.util.Collections.singletonList;
 
 @SpringBootApplication
+@EnableAsync
 public class ShpaltaIfApplication {
 
     public ShpaltaIfApplication(FreeMarkerConfigurer freeMarkerConfigurer) {
