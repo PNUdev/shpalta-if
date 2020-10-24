@@ -13,7 +13,6 @@ import com.pnu.dev.shpaltaif.repository.PostRepository;
 import com.pnu.dev.shpaltaif.repository.specification.PostSpecificationBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
@@ -29,6 +28,7 @@ public class PostServiceImpl implements PostService {
     private final CategoryRepository categoryRepository;
 
     private final PostSpecificationBuilder postSpecificationBuilder;
+
 
     @Autowired
     public PostServiceImpl(PostRepository postRepository, CategoryRepository categoryRepository, PostSpecificationBuilder postSpecificationBuilder) {
@@ -52,9 +52,8 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<Post> findByTitleContains(String title, int size) {
-        Pageable pageable = PageRequest.of(0, size);
-        return postRepository.findAllByTitleContainsAndActiveTrue(title.trim(), pageable);
+    public List<Post> findTop5ByTitleContains(String title) {
+        return postRepository.findTop5ByTitleContainsAndActiveTrue(title.trim());
     }
 
     @Override

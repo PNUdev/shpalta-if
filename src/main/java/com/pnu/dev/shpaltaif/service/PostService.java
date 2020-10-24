@@ -16,7 +16,7 @@ public interface PostService {
 
     Page<Post> findAll(PostsPublicFilter postsPublicFilter, Pageable pageable);
 
-    List<Post> findByTitleContains(String title, int size);
+    List<Post> findTop5ByTitleContains(String title);
 
     Post findById(User user, Long id);
 

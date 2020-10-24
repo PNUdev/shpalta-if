@@ -20,18 +20,14 @@
                 $('#search-result').html("");
                 return;
             }
-            const resultSize = 5;
-            $.ajax({
-                url: 'http://localhost:8080/posts/search-result-partial',
-                type: 'GET',
-                data: {
+            $.get(
+                '/posts/search-result-partial',
+                {
                     'title': title,
-                    'size': resultSize
-                },
-                success: function (response) {
+                }, function (response) {
                     $('#search-result').html(response);
-                }
-            });
+
+                })
         })
     });
 </script>

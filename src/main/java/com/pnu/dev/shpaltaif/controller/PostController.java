@@ -51,10 +51,8 @@ public class PostController {
     }
 
     @GetMapping("/search-result-partial")
-    public String getSearchResult(@RequestParam("title") String title,
-                                  @RequestParam(value = "size", required = false, defaultValue = "5") int size,
-                                  Model model) {
-        model.addAttribute("posts", postService.findByTitleContains(title, size));
+    public String getSearchResult(@RequestParam("title") String title, Model model) {
+        model.addAttribute("posts", postService.findTop5ByTitleContains(title));
         return "post/searchResultPartial";
     }
 }
