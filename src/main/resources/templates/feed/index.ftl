@@ -6,6 +6,11 @@
 <!-- ToDo we should have dropdown with possible sort variations;
  applying of sort, that is different then current, should trigger reload of the page with new "sort" query param -->
 
+<#if title??>
+    <p>
+        Results by title '${title}'
+    </p>
+</#if>
 <div id="feed-main">
 
 </div>

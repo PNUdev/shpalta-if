@@ -18,6 +18,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -27,6 +28,7 @@ public class PostServiceImpl implements PostService {
     private final CategoryRepository categoryRepository;
 
     private final PostSpecificationBuilder postSpecificationBuilder;
+
 
     @Autowired
     public PostServiceImpl(PostRepository postRepository, CategoryRepository categoryRepository, PostSpecificationBuilder postSpecificationBuilder) {
@@ -46,8 +48,12 @@ public class PostServiceImpl implements PostService {
     public Page<Post> findAll(PostsPublicFilter postsPublicFilter, Pageable pageable) {
 
         Specification<Post> specification = postSpecificationBuilder.buildPostSpecification(postsPublicFilter);
-
         return postRepository.findAll(specification, pageable);
+    }
+
+    @Override
+    public List<Post> findTop5ByTitleContains(String title) {
+        return postRepository.findTop5ByTitleContainsAndActiveTrue(title.trim());
     }
 
     @Override

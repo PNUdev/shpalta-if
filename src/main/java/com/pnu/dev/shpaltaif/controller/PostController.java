@@ -14,6 +14,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequestMapping("/posts")
@@ -47,5 +48,11 @@ public class PostController {
         }
 
         return "post/indexPartial";
+    }
+
+    @GetMapping("/search-result-partial")
+    public String getSearchResult(@RequestParam("title") String title, Model model) {
+        model.addAttribute("posts", postService.findTop5ByTitleContains(title));
+        return "post/searchResultPartial";
     }
 }
