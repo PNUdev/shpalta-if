@@ -4,11 +4,13 @@ import com.pnu.dev.shpaltaif.domain.Post;
 import com.pnu.dev.shpaltaif.domain.TelegramBotUser;
 import com.pnu.dev.shpaltaif.util.FreemarkerTemplateResolver;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
-import java.util.List;
 
 @Service
 public class TelegramNotificationServiceImpl implements TelegramNotificationService {
@@ -35,20 +37,26 @@ public class TelegramNotificationServiceImpl implements TelegramNotificationServ
     @Async
     public void sendNotificationsOfNewPost(Post post) {
 
-        List<TelegramBotUser> telegramBotUsersToNotify = telegramBotUserService // ToDo probably, have to use batch strategy
-                .findAllByCategory(post.getCategory());
+        Pageable pageable = PageRequest.of(0, 10);
 
-        telegramBotUsersToNotify.forEach(telegramBotUser -> {
+        Page<TelegramBotUser> telegramBotUsersToNotify;
+        do {
 
-            String messageContent = freemarkerTemplateResolver.resolve(
-                    "/telegram/newPost.ftl",
-                    Collections.singletonMap("postUrl", String.format("%s/posts/%s", appBasePath, post.getId()))
-            );
+            telegramBotUsersToNotify = telegramBotUserService.findAllByCategory(post.getCategory(), pageable);
 
-            telegramMessageSender.sendMessageHtml(telegramBotUser.getChatId(), messageContent);
+            telegramBotUsersToNotify.forEach(telegramBotUser -> {
 
-        });
+                String messageContent = freemarkerTemplateResolver.resolve(
+                        "/telegram/newPost.ftl",
+                        Collections.singletonMap("postUrl", String.format("%s/posts/%s", appBasePath, post.getId()))
+                );
+
+                telegramMessageSender.sendMessageHtml(telegramBotUser.getChatId(), messageContent);
+
+            });
+
+            pageable = pageable.next();
+        } while (!telegramBotUsersToNotify.isLast());
 
     }
-
 }

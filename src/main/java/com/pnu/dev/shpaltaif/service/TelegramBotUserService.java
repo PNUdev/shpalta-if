@@ -3,8 +3,8 @@ package com.pnu.dev.shpaltaif.service;
 import com.pnu.dev.shpaltaif.domain.Category;
 import com.pnu.dev.shpaltaif.domain.TelegramBotUser;
 import com.pnu.dev.shpaltaif.dto.TelegramUserCategorySubscriptions;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface TelegramBotUserService {
 
@@ -12,7 +12,7 @@ public interface TelegramBotUserService {
 
     TelegramBotUser findByChatId(Long chatId);
 
-    List<TelegramBotUser> findAllByCategory(Category category);
+    Page<TelegramBotUser> findAllByCategory(Category category, Pageable pageable);
 
     TelegramUserCategorySubscriptions findUserCategorySubscriptions(String settingsToken);
 

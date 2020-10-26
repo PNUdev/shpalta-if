@@ -8,6 +8,8 @@ import com.pnu.dev.shpaltaif.exception.ServiceException;
 import com.pnu.dev.shpaltaif.repository.TelegramBotUserRepository;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -50,8 +52,8 @@ public class TelegramBotUserServiceImpl implements TelegramBotUserService { // T
     }
 
     @Override
-    public List<TelegramBotUser> findAllByCategory(Category category) {
-        return telegramBotUserRepository.findAllSubscribedBySubscribedCategoriesContains(category);
+    public Page<TelegramBotUser> findAllByCategory(Category category, Pageable pageable) {
+        return telegramBotUserRepository.findAllSubscribedBySubscribedCategoriesContains(category, pageable);
     }
 
     @Override
