@@ -1,5 +1,8 @@
 package com.pnu.dev.shpaltaif.service;
 
+import com.pnu.dev.shpaltaif.domain.TelegramBotUser;
+import com.pnu.dev.shpaltaif.exception.ServiceException;
+import com.pnu.dev.shpaltaif.util.FreemarkerTemplateResolver;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +14,10 @@ import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import static java.util.Objects.isNull;
 
@@ -28,16 +35,22 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
     private String urlSecret;
 
     @Value("${app.base_path}")
-    private String appPath;
+    private String appBasePath;
 
     private RestTemplate restTemplate;
 
     private TelegramBotUserService telegramBotUserService;
 
+    private FreemarkerTemplateResolver freemarkerTemplateResolver;
+
     @Autowired
-    public TelegramBot(RestTemplate restTemplate, TelegramBotUserService telegramBotUserService) {
+    public TelegramBot(RestTemplate restTemplate,
+                       TelegramBotUserService telegramBotUserService,
+                       FreemarkerTemplateResolver freemarkerTemplateResolver) {
+
         this.restTemplate = restTemplate;
         this.telegramBotUserService = telegramBotUserService;
+        this.freemarkerTemplateResolver = freemarkerTemplateResolver;
     }
 
     @Override
@@ -50,22 +63,16 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
         Long chatId = update.getMessage().getChatId();
         String message = update.getMessage().getText();
 
-        if (StringUtils.equals(message, "/start")) { // ToDo maybe, have to be rewritten using command
-            telegramBotUserService.create(chatId);
-            return buildSendMessageHtml(chatId, "Привіт, Ви стали користувачем нашого бота!");
+        try {
+            return handleMessage(chatId, message);
+        } catch (ServiceException e) {
+            log.error("Error while handling telegram message", e);
+            return new SendMessage(chatId, "Помилка: " + e.getMessage());
+        } catch (Exception e) {
+            log.error("Error while handling telegram message", e);
+            return new SendMessage(chatId, "Внутрішня помилка сервера");
         }
-
-        if (StringUtils.equals(message, "/settings")) {
-            return buildSendMessageHtml(chatId, "Посилання на сторінку з налаштуваннями бота");
-        }
-
-        if (StringUtils.equals(message, "/help")) {
-            return buildSendMessageHtml(chatId, "Повідомлення з доступними командами");
-        }
-
-        return buildSendMessageHtml(chatId, "Повідомлення з доступними командами і описом бота");
     }
-
 
     @Override
     public String getBotUsername() {
@@ -79,7 +86,7 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
 
     @Override
     public String getBotPath() {
-        return appPath + "/telegram-bot-webhook-" + urlSecret;
+        return appBasePath + "/telegram-bot-webhook-" + urlSecret;
     }
 
     @Override
@@ -100,6 +107,34 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
         } catch (TelegramApiException e) {
             log.error("Error while sending message to telegram", e);
         }
+    }
+
+    private SendMessage handleMessage(Long chatId, String message) {
+
+        if (StringUtils.equals(message, "/start")) {
+            telegramBotUserService.create(chatId);
+            return buildSendMessageHtmlFromTemplate(chatId,
+                    "/telegram/start.ftl",
+                    Collections.singletonMap("appBasePath", appBasePath));
+        }
+
+        if (StringUtils.equals(message, "/settings")) {
+
+            TelegramBotUser telegramBotUser = telegramBotUserService.findByChatId(chatId);
+
+            Map<String, Object> params = new HashMap<>();
+            params.put("appBasePath", this.appBasePath);
+            params.put("settingsToken", telegramBotUser.getSettingsToken());
+
+            return buildSendMessageHtmlFromTemplate(chatId, "/telegram/settings.ftl", params);
+        }
+
+        return buildSendMessageHtmlFromTemplate(chatId, "/telegram/help.ftl", Collections.emptyMap());
+    }
+
+    private SendMessage buildSendMessageHtmlFromTemplate(Long chatId, String templateName, Map<String, Object> params) {
+        String content = freemarkerTemplateResolver.resolve(templateName, params);
+        return buildSendMessageHtml(chatId, content);
     }
 
     private SendMessage buildSendMessageHtml(Long chatId, String content) {

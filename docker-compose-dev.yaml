@@ -13,8 +13,8 @@ services:
       ADMIN_DEFAULT_PASSWORD: admin
       TELEGRAM_BOT_USERNAME: <telegram-bot-username>
       TELEGRAM_BOT_TOKEN: <telegram-bot-token>
-      APP_BASE_PATH: <app-base-path>
       TELEGRAM_BOT_URL_SECRET: "secret"
+      APP_BASE_PATH: <app-base-path>
     volumes:
       - ./target:/target
     command: ["java", "-jar", "/target/shpalta-if-1.0.0.jar"]

@@ -9,13 +9,12 @@ import java.util.Optional;
 
 public interface TelegramBotUserRepository extends JpaRepository<TelegramBotUser, Long> {
 
+    Optional<TelegramBotUser> findByChatId(Long chatId);
+
     boolean existsByChatId(Long chatId);
 
     Optional<TelegramBotUser> findBySettingsToken(String settingsToken);
 
-    //    @Query(nativeQuery = true, value = "select * from telegram_bot_user as tu " +
-//            "join telegram_user_category_subscriptions as ts on tu.chat_id = ts.chat_id " +
-//            "where ts.category_id = ?")
     List<TelegramBotUser> findAllSubscribedBySubscribedCategoriesContains(Category category);
 
 }

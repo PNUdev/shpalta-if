@@ -36,7 +36,7 @@ public class TelegramNotificationServiceImpl implements TelegramNotificationServ
     public void sendNotificationsOfNewPost(Post post) {
 
         List<TelegramBotUser> telegramBotUsersToNotify = telegramBotUserService // ToDo probably, have to use batch strategy
-                .findAllByCategoryId(post.getCategory());
+                .findAllByCategory(post.getCategory());
 
         telegramBotUsersToNotify.forEach(telegramBotUser -> {
 
@@ -45,8 +45,8 @@ public class TelegramNotificationServiceImpl implements TelegramNotificationServ
                     Collections.singletonMap("postUrl", String.format("%s/posts/%s", appBasePath, post.getId()))
             );
 
-            telegramMessageSender
-                    .sendMessageHtml(telegramBotUser.getChatId(), messageContent);
+            telegramMessageSender.sendMessageHtml(telegramBotUser.getChatId(), messageContent);
+
         });
 
     }
