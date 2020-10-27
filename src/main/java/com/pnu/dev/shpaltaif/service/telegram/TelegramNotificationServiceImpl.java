@@ -1,4 +1,4 @@
-package com.pnu.dev.shpaltaif.service;
+package com.pnu.dev.shpaltaif.service.telegram;
 
 import com.pnu.dev.shpaltaif.domain.Post;
 import com.pnu.dev.shpaltaif.domain.TelegramBotUser;

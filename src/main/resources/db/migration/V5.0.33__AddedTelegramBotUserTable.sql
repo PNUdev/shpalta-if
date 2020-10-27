@@ -1,7 +1,7 @@
 create table if not exists telegram_bot_user
 (
   chat_id        bigint       not null,
-  settings_token varchar(255) not null,
+  previous_settings_message_id int,
   primary key (chat_id)
 );
 

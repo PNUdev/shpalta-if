@@ -1,4 +1,4 @@
-package com.pnu.dev.shpaltaif.service;
+package com.pnu.dev.shpaltaif.service.telegram;
 
 public interface SelfRegisteringTelegramBot {
 

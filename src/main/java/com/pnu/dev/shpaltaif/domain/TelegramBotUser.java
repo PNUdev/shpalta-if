@@ -23,8 +23,7 @@ public class TelegramBotUser {
     @Id
     private Long chatId;
 
-    @NotNull
-    private String settingsToken;
+    private Integer previousSettingsMessageId;
 
     @NotNull
     @ManyToMany

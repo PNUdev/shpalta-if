@@ -1,7 +1,7 @@
 package com.pnu.dev.shpaltaif.listener;
 
 import com.pnu.dev.shpaltaif.service.AdminUserInitializer;
-import com.pnu.dev.shpaltaif.service.SelfRegisteringTelegramBot;
+import com.pnu.dev.shpaltaif.service.telegram.SelfRegisteringTelegramBot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;

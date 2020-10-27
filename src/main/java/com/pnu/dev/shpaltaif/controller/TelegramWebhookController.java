@@ -1,6 +1,6 @@
 package com.pnu.dev.shpaltaif.controller;
 
-import com.pnu.dev.shpaltaif.service.TelegramBot;
+import com.pnu.dev.shpaltaif.service.telegram.TelegramBot;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

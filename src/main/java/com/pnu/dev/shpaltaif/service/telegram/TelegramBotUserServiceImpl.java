@@ -1,12 +1,11 @@
-package com.pnu.dev.shpaltaif.service;
+package com.pnu.dev.shpaltaif.service.telegram;
 
 import com.pnu.dev.shpaltaif.domain.Category;
 import com.pnu.dev.shpaltaif.domain.TelegramBotUser;
 import com.pnu.dev.shpaltaif.dto.TelegramUserCategorySubscription;
-import com.pnu.dev.shpaltaif.dto.TelegramUserCategorySubscriptions;
 import com.pnu.dev.shpaltaif.exception.ServiceException;
 import com.pnu.dev.shpaltaif.repository.TelegramBotUserRepository;
-import org.apache.commons.lang3.RandomStringUtils;
+import com.pnu.dev.shpaltaif.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,7 +36,6 @@ public class TelegramBotUserServiceImpl implements TelegramBotUserService { // T
 
         TelegramBotUser telegramBotUser = TelegramBotUser.builder()
                 .chatId(chatId)
-                .settingsToken(RandomStringUtils.randomAlphanumeric(15))
                 .subscribedCategories(categoryService.findAll())
                 .build();
 
@@ -57,44 +55,62 @@ public class TelegramBotUserServiceImpl implements TelegramBotUserService { // T
     }
 
     @Override
-    public TelegramUserCategorySubscriptions findUserCategorySubscriptions(String settingsToken) {
+    public void updatePreviousSettingsMessageId(Long chatId, Integer messageId) {
 
-        TelegramBotUser telegramBotUser = telegramBotUserRepository.findBySettingsToken(settingsToken)
-                .orElseThrow(() -> new ServiceException("Не коректний ключ до налаштувань"));
+        TelegramBotUser telegramBotUser = findTelegramBotUserById(chatId);
+
+        TelegramBotUser updatedTelegramBotUser = telegramBotUser.toBuilder()
+                .previousSettingsMessageId(messageId)
+                .build();
+
+        telegramBotUserRepository.save(updatedTelegramBotUser);
+
+    }
+
+    @Override
+    public List<TelegramUserCategorySubscription> findUserCategorySubscriptions(Long chatId) {
+
+        TelegramBotUser telegramBotUser = findTelegramBotUserById(chatId);
 
         List<Category> subscribedCategories = telegramBotUser.getSubscribedCategories();
 
         List<Category> allCategories = categoryService.findAll();
 
-        List<TelegramUserCategorySubscription> subscriptions = allCategories.stream()
+        return allCategories.stream()
                 .map(category -> TelegramUserCategorySubscription.builder()
                         .category(category)
                         .subscribed(subscribedCategories.contains(category))
                         .build())
                 .collect(Collectors.toList());
 
-        return TelegramUserCategorySubscriptions.builder()
-                .userCategorySubscriptions(subscriptions)
-                .build();
     }
 
     @Override
-    public void updateUserCategorySubscriptions(String settingsToken, TelegramUserCategorySubscriptions subscriptions) {
+    public void toggleUserCategorySubscription(Long chatId, Long categoryId) {
 
-        TelegramBotUser telegramBotUser = telegramBotUserRepository.findBySettingsToken(settingsToken)
-                .orElseThrow(() -> new ServiceException("Не коректний ключ до налаштувань"));
+        TelegramBotUser telegramBotUser = findTelegramBotUserById(chatId);
 
-        List<Category> updatedSubscribedCategories = subscriptions.getUserCategorySubscriptions().stream()
-                .filter(TelegramUserCategorySubscription::isSubscribed)
-                .map(TelegramUserCategorySubscription::getCategory)
-                .collect(Collectors.toList());
+        Category category = categoryService.findById(categoryId);
+
+        List<Category> subscribedCategories = telegramBotUser.getSubscribedCategories();
+
+        if (subscribedCategories.contains(category)) {
+            subscribedCategories.remove(category);
+        } else {
+            subscribedCategories.add(category);
+        }
 
         TelegramBotUser updatedTelegramBotUser = telegramBotUser.toBuilder()
-                .subscribedCategories(updatedSubscribedCategories)
+                .subscribedCategories(subscribedCategories)
                 .build();
 
         telegramBotUserRepository.save(updatedTelegramBotUser);
 
+    }
+
+    private TelegramBotUser findTelegramBotUserById(Long chatId) {
+        return telegramBotUserRepository.findByChatId(chatId)
+                .orElseThrow(() -> new ServiceException("Не коректний ідентифікатор чату"));
     }
 
 }

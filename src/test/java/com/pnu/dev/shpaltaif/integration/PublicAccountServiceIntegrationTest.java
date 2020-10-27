@@ -1,4 +1,4 @@
-package com.pnu.dev.shpaltaif;
+package com.pnu.dev.shpaltaif.integration;
 
 import com.pnu.dev.shpaltaif.domain.PublicAccount;
 import com.pnu.dev.shpaltaif.domain.User;
