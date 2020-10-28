@@ -15,13 +15,13 @@ import com.pnu.dev.shpaltaif.repository.PostRepository;
 import com.pnu.dev.shpaltaif.repository.UserRepository;
 import com.pnu.dev.shpaltaif.service.PostService;
 import com.pnu.dev.shpaltaif.service.UserService;
+import com.pnu.dev.shpaltaif.service.telegram.TelegramNotificationService;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -34,9 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class PostServiceIntegrationTest {
+public class PostServiceIntegrationTest extends BaseIntegrationTest {
 
     private static final String FIRST_CATEGORY_URL = "FIRST_CATEGORY_URL";
 
@@ -61,6 +59,9 @@ public class PostServiceIntegrationTest {
 
     @MockBean // present here to disable default admin user creation
     private ApplicationReadyEventListener applicationReadyEventListener;
+
+    @MockBean
+    private TelegramNotificationService telegramNotificationService;
 
     @Test
     @Transactional
@@ -366,6 +367,9 @@ public class PostServiceIntegrationTest {
                 .build();
 
         assertThat(post).isEqualToIgnoringGivenFields(expectedPost, "id", "createdAt");
+
+        Mockito.verify(telegramNotificationService, Mockito.only()).sendNotificationsOfNewPost(post);
+
         return post;
     }
 

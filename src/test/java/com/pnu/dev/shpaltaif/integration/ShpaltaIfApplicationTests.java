@@ -1,10 +1,8 @@
 package com.pnu.dev.shpaltaif.integration;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class ShpaltaIfApplicationTests {
+class ShpaltaIfApplicationTests extends BaseIntegrationTest {
 
     @Test
     void contextLoads() {

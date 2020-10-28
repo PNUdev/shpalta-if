@@ -9,8 +9,6 @@ import com.pnu.dev.shpaltaif.repository.UserRepository;
 import com.pnu.dev.shpaltaif.service.PublicAccountService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -19,9 +17,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class PublicAccountServiceIntegrationTest {
+public class PublicAccountServiceIntegrationTest extends BaseIntegrationTest {
 
     private static final String NAME = "name";
 

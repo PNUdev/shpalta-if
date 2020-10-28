@@ -13,17 +13,13 @@ import com.pnu.dev.shpaltaif.repository.UserRepository;
 import com.pnu.dev.shpaltaif.service.CategoryService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-@SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class CategoryServiceIntegrationTest {
+public class CategoryServiceIntegrationTest extends BaseIntegrationTest {
 
     private static final String TITLE = "Title";
 
