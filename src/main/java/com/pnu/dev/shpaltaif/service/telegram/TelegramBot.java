@@ -43,6 +43,12 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
 
     private static final String UNSELECTED_CATEGORY = EmojiParser.parseToUnicode(":white_medium_square:");
 
+    private static final String CATEGORY_CHECKBOX_CALLBACK_ACTION = "category-checkbox";
+
+    private static final String START_COMMAND = "/start";
+
+    private static final String SETTING_COMMAND = "/settings";
+
     @Value("${telegrambot.username}")
     private String botUsername;
 
@@ -107,19 +113,9 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
         String action = callbackQueryDataParts[0];
         String data = callbackQueryDataParts[1];
 
-        if (StringUtils.equals(action, "category-checkbox")) {
+        if (StringUtils.equals(action, CATEGORY_CHECKBOX_CALLBACK_ACTION)) {
 
-            if (canBeDeleted(callbackQuery.getMessage())) {
-                Long categoryId = Long.parseLong(data);
-                telegramBotUserService.toggleUserCategorySubscription(chatId, categoryId);
-            }
-
-            try {
-                return handleMessage(chatId, "/settings");
-            } catch (Exception e) {
-                log.error("Error while handling telegram message", e);
-                return new SendMessage(chatId, "Внутрішня помилка сервера");
-            }
+            return handleCategoryCheckboxAction(callbackQuery, chatId, data);
         }
 
         return new SendMessage();
@@ -141,7 +137,7 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
     }
 
     @Override
-    public void register() {
+    public void registerWebhook() {
 
         log.info("Telegram bot webhook was registered");
 
@@ -160,45 +156,36 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
         }
     }
 
+    private BotApiMethod handleCategoryCheckboxAction(CallbackQuery callbackQuery, Long chatId, String data) {
+
+        if (isNotOutdated(callbackQuery.getMessage())) {
+            Long categoryId = Long.parseLong(data);
+            telegramBotUserService.toggleUserCategorySubscription(chatId, categoryId);
+        }
+
+        try {
+            return handleMessage(chatId, SETTING_COMMAND);
+        } catch (Exception e) {
+            log.error("Error while handling telegram message", e);
+            return new SendMessage(chatId, "Внутрішня помилка сервера");
+        }
+    }
+
     private SendMessage handleMessage(Long chatId, String message) throws TelegramApiException {
 
-        if (StringUtils.equals(message, "/start")) {
+        if (StringUtils.equals(message, START_COMMAND)) {
             telegramBotUserService.create(chatId);
             return buildSendMessageHtmlFromTemplate(chatId,
                     "/telegram/start.ftl",
                     Collections.singletonMap("appBasePath", appBasePath));
         }
 
-        if (StringUtils.equals(message, "/settings")) {
+        if (StringUtils.equals(message, SETTING_COMMAND)) {
 
             SendMessage sendMessage = buildSendMessageHtmlFromTemplate(chatId,
                     "/telegram/settings.ftl", Collections.emptyMap());
 
-            List<TelegramUserCategorySubscription> userCategorySubscriptions = telegramBotUserService
-                    .findUserCategorySubscriptions(chatId);
-
-            InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
-            List<List<InlineKeyboardButton>> keyboardButtons = userCategorySubscriptions.stream()
-                    .map(subscription -> {
-
-                        Category category = subscription.getCategory();
-
-                        InlineKeyboardButton keyboardButton = new InlineKeyboardButton();
-                        keyboardButton.setText(
-                                String.join(StringUtils.SPACE,
-                                        subscription.isSubscribed() ? SELECTED_CATEGORY : UNSELECTED_CATEGORY,
-                                        category.getTitle()
-                                )
-                        );
-
-                        keyboardButton.setCallbackData("category-checkbox:" + category.getId());
-
-                        return Collections.singletonList(keyboardButton);
-                    })
-                    .collect(Collectors.toList());
-
-            keyboardMarkup.setKeyboard(keyboardButtons);
-            sendMessage.setReplyMarkup(keyboardMarkup);
+            sendMessage.setReplyMarkup(buildCategoriesCheckboxListMarkup(chatId));
 
             TelegramBotUser telegramBotUser = telegramBotUserService.findByChatId(chatId);
             Integer previousSettingsMessageId = telegramBotUser.getPreviousSettingsMessageId();
@@ -212,13 +199,41 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
             }
 
             Integer currentMessageId = execute(sendMessage).getMessageId();
-
             telegramBotUserService.updatePreviousSettingsMessageId(chatId, currentMessageId);
 
             return new SendMessage();
         }
 
         return buildSendMessageHtmlFromTemplate(chatId, "/telegram/help.ftl", Collections.emptyMap());
+    }
+
+    private InlineKeyboardMarkup buildCategoriesCheckboxListMarkup(Long chatId) {
+
+        List<TelegramUserCategorySubscription> userCategorySubscriptions = telegramBotUserService
+                .findUserCategorySubscriptions(chatId);
+
+        InlineKeyboardMarkup keyboardMarkup = new InlineKeyboardMarkup();
+        List<List<InlineKeyboardButton>> keyboardButtons = userCategorySubscriptions.stream()
+                .map(subscription -> {
+
+                    Category category = subscription.getCategory();
+
+                    InlineKeyboardButton keyboardButton = new InlineKeyboardButton();
+                    keyboardButton.setText(
+                            String.join(StringUtils.SPACE,
+                                    subscription.isSubscribed() ? SELECTED_CATEGORY : UNSELECTED_CATEGORY,
+                                    category.getTitle()
+                            )
+                    );
+
+                    keyboardButton.setCallbackData(CATEGORY_CHECKBOX_CALLBACK_ACTION + ":" + category.getId());
+
+                    return Collections.singletonList(keyboardButton);
+                })
+                .collect(Collectors.toList());
+
+        keyboardMarkup.setKeyboard(keyboardButtons);
+        return keyboardMarkup;
     }
 
     private SendMessage buildSendMessageHtmlFromTemplate(Long chatId, String templateName, Map<String, Object> params) {
@@ -233,7 +248,7 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
         return sendMessage;
     }
 
-    private boolean canBeDeleted(Message message) {
+    private boolean isNotOutdated(Message message) {
         LocalDateTime sentTime = LocalDateTime
                 .ofInstant(Instant.ofEpochSecond(message.getDate()), ZoneId.of("Europe/Kiev"));
 

@@ -25,7 +25,7 @@ public class ApplicationReadyEventListener implements ApplicationListener<Applic
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
         adminUserInitializer.createAdminUserIfNotExists();
-        telegramBot.register();
+        telegramBot.registerWebhook();
     }
 
 }
