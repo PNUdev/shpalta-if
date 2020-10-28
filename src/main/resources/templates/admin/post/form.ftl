@@ -60,7 +60,7 @@
             <div class="input-group-prepend">
                 <label for="category_selection" class="input-group-text">Категорія</label>
             </div>
-            <select data-live-search="false" title="Categories" class="form-control selectpicker" name="categoryId"
+            <select data-live-search="false" title="Категорії" class="form-control selectpicker" name="categoryId"
                     id="category_selection" required>
                 <option disabled selected value> -- Виберіть категорію --</option>
                 <#list categories as category>
