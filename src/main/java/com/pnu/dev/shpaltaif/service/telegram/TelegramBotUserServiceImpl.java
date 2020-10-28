@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class TelegramBotUserServiceImpl implements TelegramBotUserService { // ToDo cover by tests
+public class TelegramBotUserServiceImpl implements TelegramBotUserService { // ToDo cover by integration tests
 
     private TelegramBotUserRepository telegramBotUserRepository;
 
