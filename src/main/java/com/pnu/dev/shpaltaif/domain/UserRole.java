@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public enum UserRole {
-    ROLE_ADMIN("Адмін"),
+    ROLE_ADMIN("Адміністратор"),
     ROLE_WRITER("Журналіст"),
     ROLE_EDITOR("Головний редактор");
 
@@ -14,7 +14,4 @@ public enum UserRole {
         return ukrainianName;
     }
 
-    public static UserRole[] getAvailableRolesForNewUser() {
-        return new UserRole[]{ROLE_WRITER, ROLE_EDITOR};
-    }
 }
