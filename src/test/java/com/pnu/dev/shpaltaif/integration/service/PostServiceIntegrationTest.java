@@ -280,6 +280,7 @@ public class PostServiceIntegrationTest extends BaseIntegrationTest {
                 .repeatedPassword("password")
                 .name("name")
                 .surname("surname")
+                .role(UserRole.ROLE_WRITER)
                 .build();
 
         userService.create(createUserDto);

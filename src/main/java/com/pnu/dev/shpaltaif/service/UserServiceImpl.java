@@ -89,12 +89,7 @@ public class UserServiceImpl implements UserService, AdminUserInitializer, UserD
             throw new ServiceException("Логін уже використовується!");
         }
         if (createUserDto.getRole().equals(UserRole.ROLE_WRITER)) {
-            if (isBlank(createUserDto.getName())) {
-                throw new ServiceException("Ім'я повинно бути вказаним");
-            }
-            if (isBlank(createUserDto.getSurname())) {
-                throw new ServiceException("Прізвище повинно бути вказаним");
-            }
+            validatePublicAccountInfo(createUserDto);
         }
 
         User user = User.builder()
@@ -106,23 +101,20 @@ public class UserServiceImpl implements UserService, AdminUserInitializer, UserD
 
         User savedUser = userRepository.save(user);
 
-        if (savedUser.getRole().equals(UserRole.ROLE_EDITOR)) {
-            return;
+        if (savedUser.getRole().equals(UserRole.ROLE_WRITER)) {
+            PublicAccountDto publicAccountDto = PublicAccountDto.builder()
+                    .name(createUserDto.getName())
+                    .surname(createUserDto.getSurname())
+                    .build();
+
+            PublicAccount publicAccount = publicAccountService.create(publicAccountDto, user);
+
+            User userWithPublicAccount = savedUser.toBuilder()
+                    .publicAccount(publicAccount)
+                    .build();
+
+            userRepository.save(userWithPublicAccount);
         }
-
-        PublicAccountDto publicAccountDto = PublicAccountDto.builder()
-                .name(createUserDto.getName())
-                .surname(createUserDto.getSurname())
-                .build();
-
-        PublicAccount publicAccount = publicAccountService.create(publicAccountDto, user);
-
-        User userWithPublicAccount = savedUser.toBuilder()
-                .publicAccount(publicAccount)
-                .build();
-
-        userRepository.save(userWithPublicAccount);
-
     }
 
     @Override
@@ -209,6 +201,15 @@ public class UserServiceImpl implements UserService, AdminUserInitializer, UserD
 
         userRepository.save(newAdminUser);
 
+    }
+
+    private void validatePublicAccountInfo(CreateUserDto createUserDto) {
+        if (isBlank(createUserDto.getName())) {
+            throw new ServiceException("Ім'я повинно бути вказаним");
+        }
+        if (isBlank(createUserDto.getSurname())) {
+            throw new ServiceException("Прізвище повинно бути вказаним");
+        }
     }
 
     private void setActive(User user, boolean active) {

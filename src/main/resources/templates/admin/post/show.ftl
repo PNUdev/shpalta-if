@@ -3,7 +3,7 @@
 <div class="container">
 
     <div class="row mt-4 d-flex align-items-center  justify-content-end">
-        <@security.authorize access="!hasRole('ROLE_ADMIN')">
+        <@security.authorize access="hasAnyRole('ROLE_WRITER', 'ROLE_EDITOR')">
             <a href="/admin/posts/edit/${post.id}" role="button"
                class="btn btn-warning btn-sm m-1 w-40">Редагувати</a>
         </@security.authorize>
@@ -14,7 +14,7 @@
                 Перемістити в архів
             </a>
         <#else >
-            <@security.authorize access="!hasRole('ROLE_EDITOR')">
+            <@security.authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_WRITER')">
                 <a href="/admin/posts/delete/${post.id}"
                    role="button"
                    class="btn btn-danger btn-sm m-1 w-40">

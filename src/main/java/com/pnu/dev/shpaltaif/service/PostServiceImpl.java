@@ -102,7 +102,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public void update(User user, Long id, PostDto postDto) {
         Post postFromDb = findById(id);
-        checkWriterAccessPermissions(postFromDb, user);
+        checkUserEditOnlyAccessPermissions(postFromDb, user);
 
         Category category = categoryRepository.findById(postDto.getCategoryId())
                 .orElseThrow(() -> new ServiceException("Категорію не знайдено"));
@@ -152,7 +152,7 @@ public class PostServiceImpl implements PostService {
     }
 
     private void checkUserAccessPermissions(Post post, User user) {
-        if (user.getRole() == UserRole.ROLE_ADMIN || user.getRole() == UserRole.ROLE_EDITOR) {
+        if (user.getRole() == UserRole.ROLE_ADMIN) {
             return;
         }
         checkWriterAccessPermissions(post, user);
@@ -162,6 +162,13 @@ public class PostServiceImpl implements PostService {
         if (!post.getAuthorPublicAccount().getId().equals(user.getPublicAccount().getId())) {
             throw new ServiceException("Ви не маєте доступ до цього поста");
         }
+    }
+
+    private void checkUserEditOnlyAccessPermissions(Post post, User user) {
+        if (user.getRole() == UserRole.ROLE_EDITOR) {
+            return;
+        }
+        checkWriterAccessPermissions(post, user);
     }
 
     private Post findById(Long id) {
