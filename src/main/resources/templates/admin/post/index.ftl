@@ -47,7 +47,7 @@
                         </#list>
                     </select>
                 </div>
-                <@security.authorize access="hasRole('ROLE_ADMIN')">
+                <@security.authorize access="!hasRole('ROLE_WRITER')">
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
                             <label for="public_account_selection" class="input-group-text">Автор</label>
@@ -128,9 +128,8 @@
                             </div>
                         </form>
 
-
                         <div class="row d-flex justify-content-center p-1">
-                            <@security.authorize access="hasRole('ROLE_WRITER')">
+                            <@security.authorize access="!hasRole('ROLE_ADMIN')">
 
                                 <a href="/admin/posts/edit/${post.id}" role="button"
                                    class="btn btn-warning btn-sm m-1 w-40">Редагувати</a>
@@ -143,11 +142,13 @@
                                     Перемістити в архів
                                 </a>
                             <#else >
-                                <a href="/admin/posts/delete/${post.id}"
-                                   role="button"
-                                   class="btn btn-danger btn-sm m-1 w-40">
-                                    Видалити назавжди
-                                </a>
+                                <@security.authorize access="!hasRole('ROLE_EDITOR')">
+                                    <a href="/admin/posts/delete/${post.id}"
+                                       role="button"
+                                       class="btn btn-danger btn-sm m-1 w-40">
+                                        Видалити назавжди
+                                    </a>
+                                </@security.authorize>
                             </#if>
                         </div>
 

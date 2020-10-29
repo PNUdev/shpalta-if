@@ -129,6 +129,9 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public void delete(User user, Long id) {
+        if (user.getRole() == UserRole.ROLE_EDITOR) {
+            throw new ServiceException("Редактор не може видалити пост назавжди");
+        }
         Post post = findById(id);
         checkUserAccessPermissions(post, user);
         if (post.isActive()) {
@@ -149,7 +152,7 @@ public class PostServiceImpl implements PostService {
     }
 
     private void checkUserAccessPermissions(Post post, User user) {
-        if (user.getRole() == UserRole.ROLE_ADMIN) {
+        if (user.getRole() == UserRole.ROLE_ADMIN || user.getRole() == UserRole.ROLE_EDITOR) {
             return;
         }
         checkWriterAccessPermissions(post, user);
