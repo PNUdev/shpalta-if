@@ -142,7 +142,7 @@
                                     Перемістити в архів
                                 </a>
                             <#else >
-                                <@security.authorize access="!hasAnyRole('ROLE_WRITER', 'ROLE_ADMIN')">
+                                <@security.authorize access="hasAnyRole('ROLE_WRITER', 'ROLE_ADMIN')">
                                     <a href="/admin/posts/delete/${post.id}"
                                        role="button"
                                        class="btn btn-danger btn-sm m-1 w-40">
