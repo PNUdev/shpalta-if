@@ -1,10 +1,11 @@
-package com.pnu.dev.shpaltaif.integration;
+package com.pnu.dev.shpaltaif.integration.service;
 
 import com.pnu.dev.shpaltaif.domain.PublicAccount;
 import com.pnu.dev.shpaltaif.domain.User;
 import com.pnu.dev.shpaltaif.domain.UserRole;
 import com.pnu.dev.shpaltaif.dto.PublicAccountDto;
 import com.pnu.dev.shpaltaif.exception.ServiceException;
+import com.pnu.dev.shpaltaif.integration.BaseIntegrationTest;
 import com.pnu.dev.shpaltaif.repository.UserRepository;
 import com.pnu.dev.shpaltaif.service.PublicAccountService;
 import org.junit.jupiter.api.Test;

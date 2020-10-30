@@ -61,8 +61,8 @@ class TelegramNotificationServiceImplTest {
                 .build();
 
         List<TelegramBotUser> telegramBotUsersForPageOne = LongStream.range(0, PAGE_SIZE)
-                .mapToObj(idx -> TelegramBotUser.builder()
-                        .chatId(idx)
+                .mapToObj(charId -> TelegramBotUser.builder()
+                        .chatId(charId)
                         .build()
                 )
                 .collect(Collectors.toList());

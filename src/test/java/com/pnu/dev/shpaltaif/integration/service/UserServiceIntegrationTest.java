@@ -1,4 +1,4 @@
-package com.pnu.dev.shpaltaif.integration;
+package com.pnu.dev.shpaltaif.integration.service;
 
 import com.pnu.dev.shpaltaif.domain.Category;
 import com.pnu.dev.shpaltaif.domain.Post;
@@ -7,6 +7,7 @@ import com.pnu.dev.shpaltaif.domain.User;
 import com.pnu.dev.shpaltaif.domain.UserRole;
 import com.pnu.dev.shpaltaif.dto.CreateUserDto;
 import com.pnu.dev.shpaltaif.exception.ServiceException;
+import com.pnu.dev.shpaltaif.integration.BaseIntegrationTest;
 import com.pnu.dev.shpaltaif.listener.ApplicationReadyEventListener;
 import com.pnu.dev.shpaltaif.repository.CategoryRepository;
 import com.pnu.dev.shpaltaif.repository.PostRepository;

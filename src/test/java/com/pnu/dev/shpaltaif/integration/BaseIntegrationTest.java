@@ -4,9 +4,15 @@ import com.pnu.dev.shpaltaif.service.telegram.TelegramBot;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
+
+import static org.springframework.test.annotation.DirtiesContext.ClassMode.BEFORE_CLASS;
 
 @SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
+@Transactional
+@Rollback
+@DirtiesContext(classMode = BEFORE_CLASS)
 public abstract class BaseIntegrationTest {
 
     @MockBean

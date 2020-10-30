@@ -1,7 +1,8 @@
-package com.pnu.dev.shpaltaif.integration;
+package com.pnu.dev.shpaltaif.integration.service;
 
 import com.pnu.dev.shpaltaif.domain.User;
 import com.pnu.dev.shpaltaif.domain.UserRole;
+import com.pnu.dev.shpaltaif.integration.BaseIntegrationTest;
 import com.pnu.dev.shpaltaif.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
