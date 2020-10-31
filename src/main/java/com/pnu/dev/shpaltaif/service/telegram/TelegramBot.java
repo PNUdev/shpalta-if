@@ -47,7 +47,7 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
 
     private static final String START_COMMAND = "/start";
 
-    private static final String SETTING_COMMAND = "/settings";
+    private static final String SETTINGS_COMMAND = "/settings";
 
     @Value("${telegrambot.username}")
     private String botUsername;
@@ -164,7 +164,7 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
         }
 
         try {
-            return handleMessage(chatId, SETTING_COMMAND);
+            return handleMessage(chatId, SETTINGS_COMMAND);
         } catch (Exception e) {
             log.error("Error while handling telegram message", e);
             return new SendMessage(chatId, "Внутрішня помилка сервера");
@@ -180,7 +180,7 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
                     Collections.singletonMap("appBasePath", appBasePath));
         }
 
-        if (StringUtils.equals(message, SETTING_COMMAND)) {
+        if (StringUtils.equals(message, SETTINGS_COMMAND)) {
 
             SendMessage sendMessage = buildSendMessageHtmlFromTemplate(chatId,
                     "/telegram/settings.ftl", Collections.emptyMap());

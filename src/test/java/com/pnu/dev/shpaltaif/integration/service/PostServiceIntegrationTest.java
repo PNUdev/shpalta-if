@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -65,7 +64,6 @@ public class PostServiceIntegrationTest extends BaseIntegrationTest {
     private TelegramNotificationService telegramNotificationService;
 
     @Test
-    @Transactional
     public void findAllAdminFilterTest() {
 
         Category category1 = createAndSaveCategory("category1", FIRST_CATEGORY_URL);
@@ -120,7 +118,6 @@ public class PostServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    @Transactional
     public void findAllPublicFilterTest() {
 
         Category category1 = createAndSaveCategory("category1", FIRST_CATEGORY_URL);
@@ -159,7 +156,6 @@ public class PostServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    @Transactional
     public void findPostByIdAdmin() {
 
         User writer = createUserWriter("writer");
@@ -172,7 +168,6 @@ public class PostServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    @Transactional
     public void findPostByIdWriterSuccessFlow() {
 
         User writer = createUserWriter("writer");
@@ -184,7 +179,6 @@ public class PostServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    @Transactional
     public void findPostByIdWriterExceptionFlow() {
 
         User writerAuthor = createUserWriter("writerAuthor");
@@ -200,7 +194,6 @@ public class PostServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    @Transactional
     public void updatePostTest() {
         User writer = createUserWriter("writer");
         Category category = createAndSaveCategory("title", FIRST_CATEGORY_URL);
@@ -230,7 +223,6 @@ public class PostServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    @Transactional
     public void deactivatePostTest() {
 
         User writer = createUserWriter("writer");
@@ -242,7 +234,6 @@ public class PostServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    @Transactional
     public void deleteActivePostTest() {
 
         User writer = createUserWriter("writer");
@@ -255,7 +246,6 @@ public class PostServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    @Transactional
     public void deleteDeactivatedPostTest() {
 
         User writer = createUserWriter("writer");

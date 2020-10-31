@@ -10,7 +10,6 @@ import com.pnu.dev.shpaltaif.repository.UserRepository;
 import com.pnu.dev.shpaltaif.service.PublicAccountService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -53,7 +52,6 @@ public class PublicAccountServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
-    @Transactional
     public void createAndThenReadAndThenUpdateAndThenDeleteSuccessFlow() {
         List<PublicAccount> publicAccountsBeforeCreate = publicAccountService.findAll();
         assertEquals(0, publicAccountsBeforeCreate.size());
