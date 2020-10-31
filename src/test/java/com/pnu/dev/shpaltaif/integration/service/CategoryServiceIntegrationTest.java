@@ -12,13 +12,18 @@ import com.pnu.dev.shpaltaif.repository.PostRepository;
 import com.pnu.dev.shpaltaif.repository.PublicAccountRepository;
 import com.pnu.dev.shpaltaif.repository.UserRepository;
 import com.pnu.dev.shpaltaif.service.CategoryService;
+import com.pnu.dev.shpaltaif.service.telegram.TelegramBotUserService;
+import com.pnu.dev.shpaltaif.service.telegram.TelegramNotificationService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.verify;
 
 public class CategoryServiceIntegrationTest extends BaseIntegrationTest {
 
@@ -45,6 +50,13 @@ public class CategoryServiceIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @MockBean
+    private TelegramBotUserService telegramBotUserService;
+
+    @MockBean
+    private TelegramNotificationService telegramNotificationService;
+
 
     @Test
     void createAndThenDeleteByIdCategoryWithoutPosts() {
@@ -165,6 +177,9 @@ public class CategoryServiceIntegrationTest extends BaseIntegrationTest {
         Category category = allCategoriesAfterCreate.get(0);
 
         assertValidCategoryBasedOnCategoryDto(categoryDto, category);
+
+        verify(telegramBotUserService, only()).addCategorySubscriptionForAllUsers(category);
+        verify(telegramNotificationService, only()).sendNotificationsOfNewCategory(category);
 
         return category;
     }

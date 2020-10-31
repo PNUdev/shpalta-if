@@ -15,6 +15,8 @@ public interface TelegramBotUserService {
 
     TelegramBotUser findByChatId(Long chatId);
 
+    Page<TelegramBotUser> findAll(Pageable pageable);
+
     Page<TelegramBotUser> findAllByCategory(Category category, Pageable pageable);
 
     TelegramSubscriptionsDashboardInfo getSubscriptionsDashboardInfo();
@@ -24,5 +26,7 @@ public interface TelegramBotUserService {
     List<TelegramUserCategorySubscription> findUserCategorySubscriptions(Long chatId);
 
     void toggleUserCategorySubscription(Long chatId, Long categoryId);
+
+    void addCategorySubscriptionForAllUsers(Category category);
 
 }

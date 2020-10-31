@@ -8,7 +8,6 @@ import com.pnu.dev.shpaltaif.dto.telegram.TelegramUserCategorySubscription;
 import com.pnu.dev.shpaltaif.integration.BaseIntegrationTest;
 import com.pnu.dev.shpaltaif.repository.CategoryRepository;
 import com.pnu.dev.shpaltaif.service.telegram.TelegramBotUserService;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
@@ -222,7 +221,6 @@ public class TelegramBotUserServiceTest extends BaseIntegrationTest { // ToDO fi
     }
 
     @Test
-    @Ignore
     public void getSubscriptionsDashboardInfo() {
 
         Category firstCategory = allCategories.get(0);
@@ -249,11 +247,7 @@ public class TelegramBotUserServiceTest extends BaseIntegrationTest { // ToDO fi
 
         TelegramSubscriptionsDashboardInfo actualDashboardInfo = telegramBotUserService.getSubscriptionsDashboardInfo();
 
-        Assertions.assertThat(actualDashboardInfo)
-                //.usingComparatorForType(new DoubleComparator(0.001), Double.class)
-                .usingRecursiveComparison()
-                .ignoringFields("posts")
-                .isEqualTo(expectedDashboardInfo);
+        Assertions.assertThat(actualDashboardInfo).isEqualTo(expectedDashboardInfo);
 
     }
 

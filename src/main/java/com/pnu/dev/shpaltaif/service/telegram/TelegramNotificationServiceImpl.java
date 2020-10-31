@@ -1,5 +1,6 @@
 package com.pnu.dev.shpaltaif.service.telegram;
 
+import com.pnu.dev.shpaltaif.domain.Category;
 import com.pnu.dev.shpaltaif.domain.Post;
 import com.pnu.dev.shpaltaif.domain.TelegramBotUser;
 import com.pnu.dev.shpaltaif.util.FreemarkerTemplateResolver;
@@ -10,7 +11,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @Service
 public class TelegramNotificationServiceImpl implements TelegramNotificationService {
@@ -38,10 +40,11 @@ public class TelegramNotificationServiceImpl implements TelegramNotificationServ
     @Async
     public void sendNotificationsOfNewPost(Post post) {
 
-        String messageContent = freemarkerTemplateResolver.resolve(
-                "/telegram/newPost.ftl",
-                Collections.singletonMap("postUrl", String.format("%s/posts/%s", appBasePath, post.getId()))
-        );
+        Map<String, Object> templateParams = new HashMap<>();
+        templateParams.put("postId", post.getId());
+        templateParams.put("appBasePath", appBasePath);
+
+        String messageContent = freemarkerTemplateResolver.resolve("/telegram/newPost.ftl", templateParams);
 
         Pageable pageable = PageRequest.of(0, 10);
 
@@ -57,5 +60,31 @@ public class TelegramNotificationServiceImpl implements TelegramNotificationServ
             pageable = pageable.next();
         } while (!telegramBotUsersToNotify.isLast());
 
+    }
+
+    @Override
+    @Async
+    public void sendNotificationsOfNewCategory(Category category) {
+
+        Map<String, Object> templateParams = new HashMap<>();
+        templateParams.put("category", category);
+        templateParams.put("appBasePath", appBasePath);
+
+        String messageContent = freemarkerTemplateResolver
+                .resolve("/telegram/newCategory.ftl", templateParams);
+
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Page<TelegramBotUser> telegramBotUsersToNotify;
+        do {
+
+            telegramBotUsersToNotify = telegramBotUserService.findAll(pageable);
+
+            telegramBotUsersToNotify.forEach(telegramBotUser ->
+                    telegramMessageSender.sendMessageHtml(telegramBotUser.getChatId(), messageContent)
+            );
+
+            pageable = pageable.next();
+        } while (!telegramBotUsersToNotify.isLast());
     }
 }

@@ -6,12 +6,15 @@ import com.pnu.dev.shpaltaif.dto.telegram.CategorySubscriptionsInfo;
 import com.pnu.dev.shpaltaif.dto.telegram.TelegramSubscriptionsDashboardInfo;
 import com.pnu.dev.shpaltaif.dto.telegram.TelegramUserCategorySubscription;
 import com.pnu.dev.shpaltaif.exception.ServiceException;
+import com.pnu.dev.shpaltaif.repository.CategoryRepository;
 import com.pnu.dev.shpaltaif.repository.TelegramBotUserRepository;
-import com.pnu.dev.shpaltaif.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,12 +24,13 @@ public class TelegramBotUserServiceImpl implements TelegramBotUserService {
 
     private TelegramBotUserRepository telegramBotUserRepository;
 
-    private CategoryService categoryService;
+    private CategoryRepository categoryRepository;
 
     @Autowired
-    public TelegramBotUserServiceImpl(TelegramBotUserRepository telegramBotUserRepository, CategoryService categoryService) {
+    public TelegramBotUserServiceImpl(TelegramBotUserRepository telegramBotUserRepository,
+                                      CategoryRepository categoryRepository) {
         this.telegramBotUserRepository = telegramBotUserRepository;
-        this.categoryService = categoryService;
+        this.categoryRepository = categoryRepository;
     }
 
     @Override
@@ -38,7 +42,7 @@ public class TelegramBotUserServiceImpl implements TelegramBotUserService {
 
         TelegramBotUser telegramBotUser = TelegramBotUser.builder()
                 .chatId(chatId)
-                .subscribedCategories(categoryService.findAll())
+                .subscribedCategories(categoryRepository.findAll())
                 .build();
 
         telegramBotUserRepository.save(telegramBotUser);
@@ -52,6 +56,11 @@ public class TelegramBotUserServiceImpl implements TelegramBotUserService {
     }
 
     @Override
+    public Page<TelegramBotUser> findAll(Pageable pageable) {
+        return telegramBotUserRepository.findAll(pageable);
+    }
+
+    @Override
     public Page<TelegramBotUser> findAllByCategory(Category category, Pageable pageable) {
         return telegramBotUserRepository.findAllSubscribedBySubscribedCategoriesContains(category, pageable);
     }
@@ -59,7 +68,7 @@ public class TelegramBotUserServiceImpl implements TelegramBotUserService {
     @Override
     public TelegramSubscriptionsDashboardInfo getSubscriptionsDashboardInfo() {
 
-        List<Category> categories = categoryService.findAll();
+        List<Category> categories = categoryRepository.findAll();
 
         long totalUsersCount = telegramBotUserRepository.count();
 
@@ -105,7 +114,7 @@ public class TelegramBotUserServiceImpl implements TelegramBotUserService {
 
         List<Category> subscribedCategories = telegramBotUser.getSubscribedCategories();
 
-        List<Category> allCategories = categoryService.findAll();
+        List<Category> allCategories = categoryRepository.findAll();
 
         return allCategories.stream()
                 .map(category -> TelegramUserCategorySubscription.builder()
@@ -121,7 +130,8 @@ public class TelegramBotUserServiceImpl implements TelegramBotUserService {
 
         TelegramBotUser telegramBotUser = findTelegramBotUserById(chatId);
 
-        Category category = categoryService.findById(categoryId);
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new ServiceException("Категорії не існує"));
 
         List<Category> subscribedCategories = telegramBotUser.getSubscribedCategories();
 
@@ -137,6 +147,29 @@ public class TelegramBotUserServiceImpl implements TelegramBotUserService {
 
         telegramBotUserRepository.save(updatedTelegramBotUser);
 
+    }
+
+    @Override
+    @Async
+    @Transactional
+    public void addCategorySubscriptionForAllUsers(Category category) {
+
+        Pageable pageable = PageRequest.of(0, 10);
+
+        Page<TelegramBotUser> telegramBotUsers;
+        do {
+
+            telegramBotUsers = findAll(pageable);
+
+            telegramBotUsers.forEach(telegramBotUser -> {
+                List<Category> subscribedCategories = telegramBotUser.getSubscribedCategories();
+                subscribedCategories.add(category);
+            });
+
+            telegramBotUserRepository.saveAll(telegramBotUsers);
+
+            pageable = pageable.next();
+        } while (!telegramBotUsers.isLast());
     }
 
     private TelegramBotUser findTelegramBotUserById(Long chatId) {
