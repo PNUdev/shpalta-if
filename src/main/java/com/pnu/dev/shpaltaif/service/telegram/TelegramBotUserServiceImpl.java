@@ -5,6 +5,7 @@ import com.pnu.dev.shpaltaif.domain.TelegramBotUser;
 import com.pnu.dev.shpaltaif.dto.telegram.CategorySubscriptionsInfo;
 import com.pnu.dev.shpaltaif.dto.telegram.TelegramSubscriptionsDashboardInfo;
 import com.pnu.dev.shpaltaif.dto.telegram.TelegramUserCategorySubscription;
+import com.pnu.dev.shpaltaif.dto.telegram.UserSubscriptionsInfo;
 import com.pnu.dev.shpaltaif.exception.ServiceException;
 import com.pnu.dev.shpaltaif.repository.CategoryRepository;
 import com.pnu.dev.shpaltaif.repository.TelegramBotUserRepository;
@@ -16,6 +17,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -72,6 +74,9 @@ public class TelegramBotUserServiceImpl implements TelegramBotUserService {
 
         long totalUsersCount = telegramBotUserRepository.count();
 
+        long subscribedToAtLeastOneCategory =
+                totalUsersCount - telegramBotUserRepository.countAllBySubscribedCategoriesEmpty();
+
         List<CategorySubscriptionsInfo> subscriptionsInfos = categories.stream()
                 .map(category -> {
 
@@ -80,16 +85,21 @@ public class TelegramBotUserServiceImpl implements TelegramBotUserService {
 
                     return CategorySubscriptionsInfo.builder()
                             .category(category)
-                            .subscribedUsersCount(subscribedUsersCount)
-                            .percentOfTotalUsersCount(
-                                    calculatePercentOfTotalUsersCount(subscribedUsersCount, totalUsersCount)
-                            )
+                            .userSubscriptionsInfo(buildUserSubscriptionsInfo(totalUsersCount, subscribedUsersCount))
                             .build();
                 })
+                .sorted(Comparator
+                        .comparingLong(subscriptionInfo -> ((CategorySubscriptionsInfo) subscriptionInfo)
+                                .getUserSubscriptionsInfo().getSubscribedUsersCount())
+                        .reversed()
+                )
                 .collect(Collectors.toList());
 
         return TelegramSubscriptionsDashboardInfo.builder()
                 .totalUsersCount(totalUsersCount)
+                .subscribedToAtLeastOneCategory(
+                        buildUserSubscriptionsInfo(totalUsersCount, subscribedToAtLeastOneCategory)
+                )
                 .subscriptionsInfos(subscriptionsInfos)
                 .build();
     }
@@ -175,6 +185,13 @@ public class TelegramBotUserServiceImpl implements TelegramBotUserService {
     private TelegramBotUser findTelegramBotUserById(Long chatId) {
         return telegramBotUserRepository.findByChatId(chatId)
                 .orElseThrow(() -> new ServiceException("Не коректний ідентифікатор чату"));
+    }
+
+    private UserSubscriptionsInfo buildUserSubscriptionsInfo(long totalUsersCount, long subscribedUsersCount) {
+        return UserSubscriptionsInfo.builder()
+                .subscribedUsersCount(subscribedUsersCount)
+                .percentOfTotalUsersCount(calculatePercentOfTotalUsersCount(subscribedUsersCount, totalUsersCount))
+                .build();
     }
 
     private Double calculatePercentOfTotalUsersCount(long usersSubscribed, long totalUsersCount) {

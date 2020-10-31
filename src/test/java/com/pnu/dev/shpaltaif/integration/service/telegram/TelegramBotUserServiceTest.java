@@ -5,6 +5,7 @@ import com.pnu.dev.shpaltaif.domain.TelegramBotUser;
 import com.pnu.dev.shpaltaif.dto.telegram.CategorySubscriptionsInfo;
 import com.pnu.dev.shpaltaif.dto.telegram.TelegramSubscriptionsDashboardInfo;
 import com.pnu.dev.shpaltaif.dto.telegram.TelegramUserCategorySubscription;
+import com.pnu.dev.shpaltaif.dto.telegram.UserSubscriptionsInfo;
 import com.pnu.dev.shpaltaif.integration.BaseIntegrationTest;
 import com.pnu.dev.shpaltaif.repository.CategoryRepository;
 import com.pnu.dev.shpaltaif.service.telegram.TelegramBotUserService;
@@ -208,16 +209,27 @@ public class TelegramBotUserServiceTest extends BaseIntegrationTest {
 
         TelegramSubscriptionsDashboardInfo expectedDashboardInfo = TelegramSubscriptionsDashboardInfo.builder()
                 .totalUsersCount(2L)
+                .subscribedToAtLeastOneCategory(UserSubscriptionsInfo.builder()
+                        .subscribedUsersCount(2L)
+                        .percentOfTotalUsersCount(100.0)
+                        .build())
                 .subscriptionsInfos(Arrays.asList(
                         CategorySubscriptionsInfo.builder()
                                 .category(firstCategory)
-                                .subscribedUsersCount(2L)
-                                .percentOfTotalUsersCount(100.0)
+                                .userSubscriptionsInfo(
+                                        UserSubscriptionsInfo.builder()
+                                                .subscribedUsersCount(2L)
+                                                .percentOfTotalUsersCount(100.0)
+                                                .build())
                                 .build(),
                         CategorySubscriptionsInfo.builder()
                                 .category(secondCategory)
-                                .subscribedUsersCount(1L)
-                                .percentOfTotalUsersCount(50.0)
+                                .userSubscriptionsInfo(
+                                        UserSubscriptionsInfo.builder()
+                                                .subscribedUsersCount(1L)
+                                                .percentOfTotalUsersCount(50.0)
+                                                .build()
+                                )
                                 .build()
                 ))
                 .build();

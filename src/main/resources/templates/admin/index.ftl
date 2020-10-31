@@ -15,15 +15,20 @@
         </thead>
         <tbody>
         <tr>
-            <td>Загалом</td>
+            <th scope="row">Загалом користувачів</th>
             <td>${telegramDashboard.totalUsersCount}</td>
             <td></td>
+        </tr>
+        <tr>
+            <th scope="row">Підписаних хоча б на одну категорію</td>
+            <td>${telegramDashboard.subscribedToAtLeastOneCategory.subscribedUsersCount}</td>
+            <td>${telegramDashboard.subscribedToAtLeastOneCategory.percentOfTotalUsersCount?string("#.##")}%</td>
         </tr>
         <#list telegramDashboard.subscriptionsInfos as subscriptionsInfo>
             <tr>
                 <td>${subscriptionsInfo.category.title}</td>
-                <td>${subscriptionsInfo.subscribedUsersCount}</td>
-                <td>${subscriptionsInfo.percentOfTotalUsersCount?string("#.##")}%</td>
+                <td>${subscriptionsInfo.userSubscriptionsInfo.subscribedUsersCount}</td>
+                <td>${subscriptionsInfo.userSubscriptionsInfo.percentOfTotalUsersCount?string("#.##")}%</td>
             </tr>
         </#list>
         </tbody>

@@ -1,6 +1,5 @@
 package com.pnu.dev.shpaltaif.dto.telegram;
 
-import com.pnu.dev.shpaltaif.domain.Category;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -10,10 +9,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class CategorySubscriptionsInfo {
+public class UserSubscriptionsInfo {
 
-    private Category category;
+    private Long subscribedUsersCount;
 
-    private UserSubscriptionsInfo userSubscriptionsInfo;
+    private Double percentOfTotalUsersCount;
 
 }

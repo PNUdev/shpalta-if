@@ -15,6 +15,8 @@ public class TelegramSubscriptionsDashboardInfo {
 
     private Long totalUsersCount;
 
+    private UserSubscriptionsInfo subscribedToAtLeastOneCategory;
+
     private List<CategorySubscriptionsInfo> subscriptionsInfos;
 
 }
