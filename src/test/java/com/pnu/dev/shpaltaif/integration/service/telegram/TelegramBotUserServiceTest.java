@@ -2,11 +2,14 @@ package com.pnu.dev.shpaltaif.integration.service.telegram;
 
 import com.pnu.dev.shpaltaif.domain.Category;
 import com.pnu.dev.shpaltaif.domain.TelegramBotUser;
-import com.pnu.dev.shpaltaif.dto.TelegramUserCategorySubscription;
+import com.pnu.dev.shpaltaif.dto.telegram.CategorySubscriptionsInfo;
+import com.pnu.dev.shpaltaif.dto.telegram.TelegramSubscriptionsDashboardInfo;
+import com.pnu.dev.shpaltaif.dto.telegram.TelegramUserCategorySubscription;
 import com.pnu.dev.shpaltaif.integration.BaseIntegrationTest;
 import com.pnu.dev.shpaltaif.repository.CategoryRepository;
 import com.pnu.dev.shpaltaif.service.telegram.TelegramBotUserService;
-import org.assertj.core.api.AssertionsForClassTypes;
+import jdk.nashorn.internal.ir.annotations.Ignore;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Order;
@@ -27,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
-public class TelegramBotUserServiceTest extends BaseIntegrationTest {
+public class TelegramBotUserServiceTest extends BaseIntegrationTest { // ToDO fix tests
 
     private static final Long CHAT_ID_ONE = 33L;
 
@@ -219,6 +222,42 @@ public class TelegramBotUserServiceTest extends BaseIntegrationTest {
     }
 
     @Test
+    @Ignore
+    public void getSubscriptionsDashboardInfo() {
+
+        Category firstCategory = allCategories.get(0);
+        Category secondCategory = allCategories.get(1);
+
+        TelegramSubscriptionsDashboardInfo expectedDashboardInfo = TelegramSubscriptionsDashboardInfo.builder()
+                .totalUsersCount(2L)
+                .subscriptionsInfos(Arrays.asList(
+                        CategorySubscriptionsInfo.builder()
+                                .category(firstCategory)
+                                .subscribedUsersCount(2L)
+                                .percentOfTotalUsersCount(100.0)
+                                .build(),
+                        CategorySubscriptionsInfo.builder()
+                                .category(secondCategory)
+                                .subscribedUsersCount(1L)
+                                .percentOfTotalUsersCount(50.0)
+                                .build()
+                ))
+                .build();
+
+        // toggle second category for one of the users
+        telegramBotUserService.toggleUserCategorySubscription(CHAT_ID_TWO, secondCategory.getId());
+
+        TelegramSubscriptionsDashboardInfo actualDashboardInfo = telegramBotUserService.getSubscriptionsDashboardInfo();
+
+        Assertions.assertThat(actualDashboardInfo)
+                //.usingComparatorForType(new DoubleComparator(0.001), Double.class)
+                .usingRecursiveComparison()
+                .ignoringFields("posts")
+                .isEqualTo(expectedDashboardInfo);
+
+    }
+
+    @Test
     public void findUserCategorySubscriptions() {
 
         Category subscribedCategory = allCategories.get(0);
@@ -263,9 +302,7 @@ public class TelegramBotUserServiceTest extends BaseIntegrationTest {
     }
 
     private void assertCategoriesEquals(Category expectedCategory, Category actualCategory) {
-        AssertionsForClassTypes
-                .assertThat(actualCategory)
-                .isEqualToIgnoringGivenFields(expectedCategory, "posts");
+        assertThat(actualCategory).isEqualToIgnoringGivenFields(expectedCategory, "posts");
     }
 
 }

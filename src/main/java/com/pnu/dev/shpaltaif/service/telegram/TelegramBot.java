@@ -2,7 +2,7 @@ package com.pnu.dev.shpaltaif.service.telegram;
 
 import com.pnu.dev.shpaltaif.domain.Category;
 import com.pnu.dev.shpaltaif.domain.TelegramBotUser;
-import com.pnu.dev.shpaltaif.dto.TelegramUserCategorySubscription;
+import com.pnu.dev.shpaltaif.dto.telegram.TelegramUserCategorySubscription;
 import com.pnu.dev.shpaltaif.exception.ServiceException;
 import com.pnu.dev.shpaltaif.util.FreemarkerTemplateResolver;
 import com.vdurmont.emoji.EmojiParser;

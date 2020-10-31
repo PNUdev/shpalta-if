@@ -8,6 +8,7 @@
 <nav class="navbar navbar-dark bg-info">
     <div>
         <@security.authorize access="hasRole('ROLE_ADMIN')">
+            <a class="navbar-brand" href="/admin">Інфо панель</a>
             <a class="navbar-brand" href="/admin/categories">Категорії</a>
             <a class="navbar-brand" href="/admin/users">Користувачі</a>
         </@security.authorize >

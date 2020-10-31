@@ -12,6 +12,8 @@ public interface TelegramBotUserRepository extends JpaRepository<TelegramBotUser
 
     Optional<TelegramBotUser> findByChatId(Long chatId);
 
+    long countAllBySubscribedCategoriesContains(Category category);
+
     boolean existsByChatId(Long chatId);
 
     Page<TelegramBotUser> findAllSubscribedBySubscribedCategoriesContains(Category category, Pageable pageable);

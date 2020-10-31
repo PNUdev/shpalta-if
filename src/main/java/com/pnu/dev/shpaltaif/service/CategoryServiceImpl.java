@@ -54,6 +54,9 @@ public class CategoryServiceImpl implements CategoryService {
                 .build();
 
         categoryRepository.save(category);
+
+        // ToDo notify telegram users about new category
+        // ToDo add subscription to new category for all users
     }
 
     @Override
