@@ -3,6 +3,7 @@ package com.pnu.dev.shpaltaif.domain;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
@@ -30,6 +31,7 @@ public class TelegramBotUser {
     @JoinTable(name = "telegram_user_category_subscriptions",
             joinColumns = @JoinColumn(name = "chat_id"),
             inverseJoinColumns = @JoinColumn(name = "category_id"))
+    @EqualsAndHashCode.Exclude
     private List<Category> subscribedCategories;
 
 }

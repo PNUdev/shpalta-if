@@ -20,6 +20,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.only;
@@ -66,7 +67,7 @@ public class CategoryServiceIntegrationTest extends BaseIntegrationTest {
         categoryService.deleteById(category.getId());
 
         List<Category> allCategoriesAfterDelete = categoryService.findAll();
-        assertEquals(0, allCategoriesAfterDelete.size());
+        assertThat(allCategoriesAfterDelete).hasSize(0);
 
     }
 
@@ -107,7 +108,7 @@ public class CategoryServiceIntegrationTest extends BaseIntegrationTest {
         assertEquals("Неможливо видалити категорію, яка має пости", thrown.getMessage());
 
         List<Category> allCategoriesAfterDelete = categoryService.findAll();
-        assertEquals(1, allCategoriesAfterDelete.size());
+        assertThat(allCategoriesAfterDelete).hasSize(1);
 
     }
 
@@ -125,7 +126,7 @@ public class CategoryServiceIntegrationTest extends BaseIntegrationTest {
         categoryService.update(createdCategory.getId(), updatedCategoryDto);
 
         List<Category> allCategoriesAfterUpdate = categoryService.findAll();
-        assertEquals(1, allCategoriesAfterUpdate.size());
+        assertThat(allCategoriesAfterUpdate).hasSize(1);
 
         Category updatedCategoryFromDb = categoryService.findById(createdCategory.getId());
 
@@ -136,7 +137,7 @@ public class CategoryServiceIntegrationTest extends BaseIntegrationTest {
     @Test
     public void findByIdNotFound() {
 
-        assertEquals(0, categoryService.findAll().size());
+        assertThat(categoryService.findAll()).hasSize(0);
 
         ServiceException thrown = assertThrows(ServiceException.class,
                 () -> categoryService.findById(Long.MAX_VALUE));
@@ -167,12 +168,12 @@ public class CategoryServiceIntegrationTest extends BaseIntegrationTest {
                 .build();
 
         List<Category> allCategoriesBeforeCreate = categoryService.findAll();
-        assertEquals(0, allCategoriesBeforeCreate.size());
+        assertThat(allCategoriesBeforeCreate).hasSize(0);
 
         categoryService.create(categoryDto);
 
         List<Category> allCategoriesAfterCreate = categoryService.findAll();
-        assertEquals(1, allCategoriesAfterCreate.size());
+        assertThat(allCategoriesAfterCreate).hasSize(1);
 
         Category category = allCategoriesAfterCreate.get(0);
 
