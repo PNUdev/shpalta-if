@@ -31,7 +31,6 @@ import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
@@ -100,21 +99,7 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
         String message = update.getMessage().getText();
 
         try {
-            SendMessage sendMessage = handleMessage(chatId, message);
-
-            if (Objects.isNull(sendMessage.getReplyMarkup())) {
-                List<List<InlineKeyboardButton>> inlineButtons = Collections.singletonList(
-                        Collections.singletonList(
-                                new InlineKeyboardButton("Налаштувати сповіщення")
-                                        .setCallbackData(
-                                                String.join(":",
-                                                        CATEGORIES_SETTINGS_CALLBACK_ACTION, SHOW_CATEGORIES_SETTINGS)
-                                        )
-                        ));
-                sendMessage.setReplyMarkup(new InlineKeyboardMarkup(inlineButtons));
-            }
-
-            return sendMessage;
+            return handleMessage(chatId, message);
         } catch (ServiceException e) {
             log.error("Error while handling telegram message", e);
             return new SendMessage(chatId, "Помилка: " + e.getMessage());
@@ -189,7 +174,7 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
         }
 
         try {
-            execute(handleMessage(chatId, SETTINGS_COMMAND));
+            handleMessage(chatId, SETTINGS_COMMAND);
             return buildAnswerCallbackQuery(callbackQuery);
         } catch (Exception e) {
             log.error("Error while handling telegram message", e);
@@ -236,6 +221,7 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
             SendMessage sendMessage = buildSendMessageHtmlFromTemplate(chatId,
                     "/telegram/settings.ftl", Collections.emptyMap());
 
+            // override default reply markup
             sendMessage.setReplyMarkup(buildCategoriesCheckboxListMarkup(chatId));
 
             TelegramBotUser telegramBotUser = telegramBotUserService.findByChatId(chatId);
@@ -300,6 +286,17 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
         SendMessage sendMessage = new SendMessage(chatId, content);
         sendMessage.enableHtml(true);
         sendMessage.enableWebPagePreview();
+
+        List<List<InlineKeyboardButton>> inlineButtons = Collections.singletonList(
+                Collections.singletonList(
+                        new InlineKeyboardButton("Налаштувати сповіщення")
+                                .setCallbackData(
+                                        String.join(":",
+                                                CATEGORIES_SETTINGS_CALLBACK_ACTION, SHOW_CATEGORIES_SETTINGS)
+                                )
+                ));
+        sendMessage.setReplyMarkup(new InlineKeyboardMarkup(inlineButtons));
+
         return sendMessage;
     }
 
