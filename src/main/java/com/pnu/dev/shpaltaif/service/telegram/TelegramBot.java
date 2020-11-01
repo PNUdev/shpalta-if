@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
+import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
@@ -30,13 +31,14 @@ import java.time.ZoneId;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Slf4j
-@Service
+@Service // ToDo requires refactoring
 public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTelegramBot, TelegramMessageSender {
 
     private static final String SELECTED_CATEGORY = EmojiParser.parseToUnicode(":white_check_mark:");
@@ -44,6 +46,12 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
     private static final String UNSELECTED_CATEGORY = EmojiParser.parseToUnicode(":white_medium_square:");
 
     private static final String CATEGORY_CHECKBOX_CALLBACK_ACTION = "category-checkbox";
+
+    private static final String CATEGORIES_SETTINGS_CALLBACK_ACTION = "categories-settings";
+
+    private static final String SHOW_CATEGORIES_SETTINGS = "show";
+
+    private static final String HIDE_CATEGORIES_SETTINGS = "hide";
 
     private static final String START_COMMAND = "/start";
 
@@ -92,7 +100,21 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
         String message = update.getMessage().getText();
 
         try {
-            return handleMessage(chatId, message);
+            SendMessage sendMessage = handleMessage(chatId, message);
+
+            if (Objects.isNull(sendMessage.getReplyMarkup())) {
+                List<List<InlineKeyboardButton>> inlineButtons = Collections.singletonList(
+                        Collections.singletonList(
+                                new InlineKeyboardButton("Налаштувати сповіщення")
+                                        .setCallbackData(
+                                                String.join(":",
+                                                        CATEGORIES_SETTINGS_CALLBACK_ACTION, SHOW_CATEGORIES_SETTINGS)
+                                        )
+                        ));
+                sendMessage.setReplyMarkup(new InlineKeyboardMarkup(inlineButtons));
+            }
+
+            return sendMessage;
         } catch (ServiceException e) {
             log.error("Error while handling telegram message", e);
             return new SendMessage(chatId, "Помилка: " + e.getMessage());
@@ -114,11 +136,14 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
         String data = callbackQueryDataParts[1];
 
         if (StringUtils.equals(action, CATEGORY_CHECKBOX_CALLBACK_ACTION)) {
-
             return handleCategoryCheckboxAction(callbackQuery, chatId, data);
         }
 
-        return new SendMessage();
+        if (StringUtils.equals(action, CATEGORIES_SETTINGS_CALLBACK_ACTION)) {
+            return handleCategoriesSettingsAction(callbackQuery, chatId, data);
+        }
+
+        return new AnswerCallbackQuery();
     }
 
     @Override
@@ -164,10 +189,36 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
         }
 
         try {
-            return handleMessage(chatId, SETTINGS_COMMAND);
+            execute(handleMessage(chatId, SETTINGS_COMMAND));
+            return buildAnswerCallbackQuery(callbackQuery);
         } catch (Exception e) {
             log.error("Error while handling telegram message", e);
-            return new SendMessage(chatId, "Внутрішня помилка сервера");
+            return buildAnswerCallbackQuery(callbackQuery).setText("Внутрішня помилка сервера");
+        }
+    }
+
+    private AnswerCallbackQuery buildAnswerCallbackQuery(CallbackQuery callbackQuery) {
+        return new AnswerCallbackQuery().setCallbackQueryId(callbackQuery.getId());
+    }
+
+    private BotApiMethod handleCategoriesSettingsAction(CallbackQuery callbackQuery, Long chatId, String data) {
+        try {
+
+            if (StringUtils.equals(data, SHOW_CATEGORIES_SETTINGS)) {
+                handleMessage(chatId, SETTINGS_COMMAND);
+                return buildAnswerCallbackQuery(callbackQuery);
+            }
+
+            if (StringUtils.equals(data, HIDE_CATEGORIES_SETTINGS)) {
+                tryDeleteMessage(chatId, callbackQuery.getMessage().getMessageId());
+                return buildAnswerCallbackQuery(callbackQuery);
+            }
+
+            return buildAnswerCallbackQuery(callbackQuery);
+
+        } catch (Exception e) {
+            log.error("Error while handling telegram message", e);
+            return buildAnswerCallbackQuery(callbackQuery).setText("Внутрішня помилка сервера");
         }
     }
 
@@ -180,7 +231,7 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
                     Collections.singletonMap("appBasePath", appBasePath));
         }
 
-        if (StringUtils.equals(message, SETTINGS_COMMAND)) {
+        if (StringUtils.equalsAny(message, SETTINGS_COMMAND)) {
 
             SendMessage sendMessage = buildSendMessageHtmlFromTemplate(chatId,
                     "/telegram/settings.ftl", Collections.emptyMap());
@@ -191,11 +242,7 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
             Integer previousSettingsMessageId = telegramBotUser.getPreviousSettingsMessageId();
 
             if (nonNull(previousSettingsMessageId)) {
-                try {
-                    execute(new DeleteMessage(chatId, previousSettingsMessageId));
-                } catch (TelegramApiRequestException e) {
-                    // message cannot be deleted, because more than 48 hours passed since it was sent
-                }
+                tryDeleteMessage(chatId, previousSettingsMessageId);
             }
 
             Integer currentMessageId = execute(sendMessage).getMessageId();
@@ -232,6 +279,14 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
                 })
                 .collect(Collectors.toList());
 
+        keyboardButtons.add(Collections.singletonList(
+                new InlineKeyboardButton("Приховати налаштування")
+                        .setCallbackData(
+                                String.join(":", CATEGORIES_SETTINGS_CALLBACK_ACTION,
+                                        HIDE_CATEGORIES_SETTINGS
+                                )
+                        )));
+
         keyboardMarkup.setKeyboard(keyboardButtons);
         return keyboardMarkup;
     }
@@ -253,5 +308,13 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
                 .ofInstant(Instant.ofEpochSecond(message.getDate()), ZoneId.of("Europe/Kiev"));
 
         return sentTime.plusHours(48).isAfter(LocalDateTime.now());
+    }
+
+    private void tryDeleteMessage(Long chatId, Integer messageId) throws TelegramApiException {
+        try {
+            execute(new DeleteMessage(chatId, messageId));
+        } catch (TelegramApiRequestException e) {
+            // message cannot be deleted, because more than 48 hours passed since it was sent
+        }
     }
 }
