@@ -326,6 +326,7 @@ public class PostServiceIntegrationTest extends BaseIntegrationTest {
                 .pictureUrl("pictureUrl")
                 .categoryId(category.getId())
                 .content("content")
+                .sendTelegramNotifications(true)
                 .build();
 
         PostsAdminFilter postsAdminFilter = PostsAdminFilter.builder()

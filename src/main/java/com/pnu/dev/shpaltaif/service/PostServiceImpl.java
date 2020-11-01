@@ -94,7 +94,9 @@ public class PostServiceImpl implements PostService {
 
         Post savedPost = postRepository.save(post);
 
-        telegramNotificationService.sendNotificationsOfNewPost(savedPost);
+        if (postDto.isSendTelegramNotifications()) {
+            telegramNotificationService.sendNotificationsOfNewPost(savedPost);
+        }
     }
 
     @Override

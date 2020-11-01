@@ -97,10 +97,13 @@
         </div>
         <div>
             <#if post?? && !post.active>
-                <div class="row d-flex justify-content-center align-items-center">
-                    <input type="checkbox" class="" name="active" id="active-checkbox">Активувати перед збереженням
+                <div class="row d-flex justify-content-center align-items-center my-4">
+                    <input type="checkbox" name="active"> Активувати перед збереженням
                 </div>
             </#if>
+            <div class="row d-flex justify-content-center align-items-center my-4">
+                <input type="checkbox" name="sendTelegramNotifications"> <b>Відправити сповіщення у Телеграм</b>
+            </div>
             <button class="btn btn-primary btn-block" id="btn-submit" disabled>Зберегти</button>
         </div>
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
