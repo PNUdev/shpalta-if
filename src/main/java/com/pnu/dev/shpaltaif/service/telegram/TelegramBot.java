@@ -37,12 +37,12 @@ import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
 @Slf4j
-@Service // ToDo requires refactoring
+@Service
 public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTelegramBot, TelegramMessageSender {
 
-    private static final String SELECTED_CATEGORY = EmojiParser.parseToUnicode(":white_check_mark:");
+    private static final String SELECTED_CATEGORY_MARKER = EmojiParser.parseToUnicode(":white_check_mark:");
 
-    private static final String UNSELECTED_CATEGORY = EmojiParser.parseToUnicode(":white_medium_square:");
+    private static final String UNSELECTED_CATEGORY_MARKER = EmojiParser.parseToUnicode(":white_medium_square:");
 
     private static final String CATEGORY_CHECKBOX_CALLBACK_ACTION = "category-checkbox";
 
@@ -174,7 +174,7 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
         }
 
         try {
-            handleMessage(chatId, SETTINGS_COMMAND);
+            handleSettingsCommand(chatId);
             return buildAnswerCallbackQuery(callbackQuery);
         } catch (Exception e) {
             log.error("Error while handling telegram message", e);
@@ -182,15 +182,11 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
         }
     }
 
-    private AnswerCallbackQuery buildAnswerCallbackQuery(CallbackQuery callbackQuery) {
-        return new AnswerCallbackQuery().setCallbackQueryId(callbackQuery.getId());
-    }
-
     private BotApiMethod handleCategoriesSettingsAction(CallbackQuery callbackQuery, Long chatId, String data) {
         try {
 
             if (StringUtils.equals(data, SHOW_CATEGORIES_SETTINGS)) {
-                handleMessage(chatId, SETTINGS_COMMAND);
+                handleSettingsCommand(chatId);
                 return buildAnswerCallbackQuery(callbackQuery);
             }
 
@@ -207,37 +203,48 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
         }
     }
 
+    private AnswerCallbackQuery buildAnswerCallbackQuery(CallbackQuery callbackQuery) {
+        return new AnswerCallbackQuery().setCallbackQueryId(callbackQuery.getId());
+    }
+
     private SendMessage handleMessage(Long chatId, String message) throws TelegramApiException {
 
         if (StringUtils.equals(message, START_COMMAND)) {
-            telegramBotUserService.create(chatId);
-            return buildSendMessageHtmlFromTemplate(chatId,
-                    "/telegram/start.ftl",
-                    Collections.singletonMap("appBasePath", appBasePath));
+            return handleStartCommand(chatId);
         }
 
         if (StringUtils.equalsAny(message, SETTINGS_COMMAND)) {
-
-            SendMessage sendMessage = buildSendMessageHtmlFromTemplate(chatId,
-                    "/telegram/settings.ftl", Collections.emptyMap());
-
-            // override default reply markup
-            sendMessage.setReplyMarkup(buildCategoriesCheckboxListMarkup(chatId));
-
-            TelegramBotUser telegramBotUser = telegramBotUserService.findByChatId(chatId);
-            Integer previousSettingsMessageId = telegramBotUser.getPreviousSettingsMessageId();
-
-            if (nonNull(previousSettingsMessageId)) {
-                tryDeleteMessage(chatId, previousSettingsMessageId);
-            }
-
-            Integer currentMessageId = execute(sendMessage).getMessageId();
-            telegramBotUserService.updatePreviousSettingsMessageId(chatId, currentMessageId);
-
-            return new SendMessage();
+            return handleSettingsCommand(chatId);
         }
 
         return buildSendMessageHtmlFromTemplate(chatId, "/telegram/help.ftl", Collections.emptyMap());
+    }
+
+    private SendMessage handleStartCommand(Long chatId) {
+        telegramBotUserService.create(chatId);
+        return buildSendMessageHtmlFromTemplate(chatId,
+                "/telegram/start.ftl",
+                Collections.singletonMap("appBasePath", appBasePath));
+    }
+
+    private SendMessage handleSettingsCommand(Long chatId) throws TelegramApiException {
+        SendMessage sendMessage = buildSendMessageHtmlFromTemplate(chatId,
+                "/telegram/settings.ftl", Collections.emptyMap());
+
+        // override default reply markup
+        sendMessage.setReplyMarkup(buildCategoriesCheckboxListMarkup(chatId));
+
+        TelegramBotUser telegramBotUser = telegramBotUserService.findByChatId(chatId);
+        Integer previousSettingsMessageId = telegramBotUser.getPreviousSettingsMessageId();
+
+        if (nonNull(previousSettingsMessageId)) {
+            tryDeleteMessage(chatId, previousSettingsMessageId);
+        }
+
+        Integer currentMessageId = execute(sendMessage).getMessageId();
+        telegramBotUserService.updatePreviousSettingsMessageId(chatId, currentMessageId);
+
+        return new SendMessage();
     }
 
     private InlineKeyboardMarkup buildCategoriesCheckboxListMarkup(Long chatId) {
@@ -254,7 +261,7 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
                     InlineKeyboardButton keyboardButton = new InlineKeyboardButton();
                     keyboardButton.setText(
                             String.join(StringUtils.SPACE,
-                                    subscription.isSubscribed() ? SELECTED_CATEGORY : UNSELECTED_CATEGORY,
+                                    subscription.isSubscribed() ? SELECTED_CATEGORY_MARKER : UNSELECTED_CATEGORY_MARKER,
                                     category.getTitle()
                             )
                     );
