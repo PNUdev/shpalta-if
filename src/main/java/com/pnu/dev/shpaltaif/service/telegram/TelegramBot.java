@@ -213,7 +213,7 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
             return handleStartCommand(chatId);
         }
 
-        if (StringUtils.equalsAny(message, SETTINGS_COMMAND)) {
+        if (StringUtils.equals(message, SETTINGS_COMMAND)) {
             return handleSettingsCommand(chatId);
         }
 

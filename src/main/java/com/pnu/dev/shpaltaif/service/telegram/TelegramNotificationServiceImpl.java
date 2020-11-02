@@ -36,8 +36,8 @@ public class TelegramNotificationServiceImpl implements TelegramNotificationServ
         this.appBasePath = appBasePath;
     }
 
-    @Override
     @Async
+    @Override
     public void sendNotificationsOfNewPost(Post post) {
 
         Map<String, Object> templateParams = new HashMap<>();
@@ -62,8 +62,8 @@ public class TelegramNotificationServiceImpl implements TelegramNotificationServ
 
     }
 
-    @Override
     @Async
+    @Override
     public void sendNotificationsOfNewCategory(Category category) {
 
         Map<String, Object> templateParams = new HashMap<>();
