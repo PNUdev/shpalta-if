@@ -6,7 +6,7 @@ import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-@Profile({"development", "default"})
+@Profile({"default", "test"})
 @Service
 public class TelegramBotStub extends TelegramWebhookBot implements SelfRegisteringTelegramBot, TelegramMessageSender {
 
