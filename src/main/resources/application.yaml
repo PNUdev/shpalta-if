@@ -29,10 +29,10 @@ admin:
     password: ${ADMIN_DEFAULT_PASSWORD:admin}
 
 telegrambot:
-  username: ${TELEGRAM_BOT_USERNAME}
-  token: ${TELEGRAM_BOT_TOKEN}
-  url.secret: ${TELEGRAM_BOT_URL_SECRET}
+  username: ${TELEGRAM_BOT_USERNAME:""}
+  token: ${TELEGRAM_BOT_TOKEN:""}
+  url.secret: ${TELEGRAM_BOT_URL_SECRET:""}
 
 app:
-  base_path: ${APP_BASE_PATH}
+  base_path: ${APP_BASE_PATH:http://localhost:8080}
 
