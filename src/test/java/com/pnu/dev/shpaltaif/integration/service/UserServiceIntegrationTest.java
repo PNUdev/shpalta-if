@@ -1,4 +1,4 @@
-package com.pnu.dev.shpaltaif;
+package com.pnu.dev.shpaltaif.integration.service;
 
 import com.pnu.dev.shpaltaif.domain.Category;
 import com.pnu.dev.shpaltaif.domain.Post;
@@ -7,6 +7,7 @@ import com.pnu.dev.shpaltaif.domain.User;
 import com.pnu.dev.shpaltaif.domain.UserRole;
 import com.pnu.dev.shpaltaif.dto.CreateUserDto;
 import com.pnu.dev.shpaltaif.exception.ServiceException;
+import com.pnu.dev.shpaltaif.integration.BaseIntegrationTest;
 import com.pnu.dev.shpaltaif.listener.ApplicationReadyEventListener;
 import com.pnu.dev.shpaltaif.repository.CategoryRepository;
 import com.pnu.dev.shpaltaif.repository.PostRepository;
@@ -14,11 +15,8 @@ import com.pnu.dev.shpaltaif.repository.PublicAccountRepository;
 import com.pnu.dev.shpaltaif.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,9 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class UserServiceIntegrationTest {
+public class UserServiceIntegrationTest extends BaseIntegrationTest {
 
     private static final String USERNAME = "username";
 
@@ -68,7 +64,6 @@ public class UserServiceIntegrationTest {
     private ApplicationReadyEventListener applicationReadyEventListener;
 
     @Test
-    @Transactional
     public void createThenDeactivateThenActivate() {
 
         // Create
@@ -89,7 +84,6 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    @Transactional
     public void createThenDeactivateThenDelete() {
 
         // Create
@@ -112,7 +106,6 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    @Transactional
     public void createThenTryToDeleteActive() {
 
         // Create
@@ -125,7 +118,6 @@ public class UserServiceIntegrationTest {
     }
 
     @Test
-    @Transactional
     public void createThenDeactivateThenTryToDeleteUserWithPosts() {
         // Create
         User actualUser = createAndSaveUser();

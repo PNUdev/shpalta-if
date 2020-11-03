@@ -27,4 +27,7 @@ public class PostDto {
     private String content;
 
     private boolean active = true;
+
+    private boolean sendTelegramNotifications;
+
 }

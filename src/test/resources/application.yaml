@@ -14,4 +14,9 @@ admin:
     username: admin
     password: admin
 
+app:
+  base_path: "http://app-base-path"
+
+telegrambot:
+  url.secret: "secret"
 

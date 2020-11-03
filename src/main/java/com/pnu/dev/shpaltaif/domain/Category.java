@@ -3,6 +3,7 @@ package com.pnu.dev.shpaltaif.domain;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -40,6 +41,7 @@ public class Category {
     private String publicUrl;
 
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
+    @EqualsAndHashCode.Exclude
     private List<Post> posts;
 
 }

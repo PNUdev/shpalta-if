@@ -1,4 +1,6 @@
 spring:
+  flyway:
+    out-of-order: true
   freemarker:
     template-loader-path: "classpath:/templates"
     suffix: ".ftl"
@@ -25,3 +27,12 @@ admin:
   default:
     username: ${ADMIN_DEFAULT_USERNAME:admin}
     password: ${ADMIN_DEFAULT_PASSWORD:admin}
+
+telegrambot:
+  username: ${TELEGRAM_BOT_USERNAME}
+  token: ${TELEGRAM_BOT_TOKEN}
+  url.secret: ${TELEGRAM_BOT_URL_SECRET}
+
+app:
+  base_path: ${APP_BASE_PATH}
+

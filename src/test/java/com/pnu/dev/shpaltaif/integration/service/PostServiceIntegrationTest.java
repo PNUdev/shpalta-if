@@ -1,4 +1,4 @@
-package com.pnu.dev.shpaltaif;
+package com.pnu.dev.shpaltaif.integration.service;
 
 import com.pnu.dev.shpaltaif.domain.Category;
 import com.pnu.dev.shpaltaif.domain.Post;
@@ -9,20 +9,20 @@ import com.pnu.dev.shpaltaif.dto.PostDto;
 import com.pnu.dev.shpaltaif.dto.filter.PostsAdminFilter;
 import com.pnu.dev.shpaltaif.dto.filter.PostsPublicFilter;
 import com.pnu.dev.shpaltaif.exception.ServiceException;
+import com.pnu.dev.shpaltaif.integration.BaseIntegrationTest;
 import com.pnu.dev.shpaltaif.listener.ApplicationReadyEventListener;
 import com.pnu.dev.shpaltaif.repository.CategoryRepository;
 import com.pnu.dev.shpaltaif.repository.PostRepository;
 import com.pnu.dev.shpaltaif.repository.UserRepository;
 import com.pnu.dev.shpaltaif.service.PostService;
 import com.pnu.dev.shpaltaif.service.UserService;
+import com.pnu.dev.shpaltaif.service.telegram.TelegramNotificationService;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,9 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class PostServiceIntegrationTest {
+public class PostServiceIntegrationTest extends BaseIntegrationTest {
 
     private static final String FIRST_CATEGORY_URL = "FIRST_CATEGORY_URL";
 
@@ -62,8 +60,10 @@ public class PostServiceIntegrationTest {
     @MockBean // present here to disable default admin user creation
     private ApplicationReadyEventListener applicationReadyEventListener;
 
+    @MockBean
+    private TelegramNotificationService telegramNotificationService;
+
     @Test
-    @Transactional
     public void findAllAdminFilterTest() {
 
         Category category1 = createAndSaveCategory("category1", FIRST_CATEGORY_URL);
@@ -118,7 +118,6 @@ public class PostServiceIntegrationTest {
     }
 
     @Test
-    @Transactional
     public void findAllPublicFilterTest() {
 
         Category category1 = createAndSaveCategory("category1", FIRST_CATEGORY_URL);
@@ -157,7 +156,6 @@ public class PostServiceIntegrationTest {
     }
 
     @Test
-    @Transactional
     public void findPostByIdAdmin() {
 
         User writer = createUserWriter("writer");
@@ -170,7 +168,6 @@ public class PostServiceIntegrationTest {
     }
 
     @Test
-    @Transactional
     public void findPostByIdWriterSuccessFlow() {
 
         User writer = createUserWriter("writer");
@@ -182,7 +179,6 @@ public class PostServiceIntegrationTest {
     }
 
     @Test
-    @Transactional
     public void findPostByIdWriterExceptionFlow() {
 
         User writerAuthor = createUserWriter("writerAuthor");
@@ -198,7 +194,6 @@ public class PostServiceIntegrationTest {
     }
 
     @Test
-    @Transactional
     public void updatePostTest() {
         User writer = createUserWriter("writer");
         Category category = createAndSaveCategory("title", FIRST_CATEGORY_URL);
@@ -228,7 +223,6 @@ public class PostServiceIntegrationTest {
     }
 
     @Test
-    @Transactional
     public void deactivatePostTest() {
 
         User writer = createUserWriter("writer");
@@ -240,7 +234,6 @@ public class PostServiceIntegrationTest {
     }
 
     @Test
-    @Transactional
     public void deleteActivePostTest() {
 
         User writer = createUserWriter("writer");
@@ -253,7 +246,6 @@ public class PostServiceIntegrationTest {
     }
 
     @Test
-    @Transactional
     public void deleteDeactivatedPostTest() {
 
         User writer = createUserWriter("writer");
@@ -334,6 +326,7 @@ public class PostServiceIntegrationTest {
                 .pictureUrl("pictureUrl")
                 .categoryId(category.getId())
                 .content("content")
+                .sendTelegramNotifications(true)
                 .build();
 
         PostsAdminFilter postsAdminFilter = PostsAdminFilter.builder()
@@ -366,6 +359,9 @@ public class PostServiceIntegrationTest {
                 .build();
 
         assertThat(post).isEqualToIgnoringGivenFields(expectedPost, "id", "createdAt");
+
+        Mockito.verify(telegramNotificationService, Mockito.only()).sendNotificationsOfNewPost(post);
+
         return post;
     }
 

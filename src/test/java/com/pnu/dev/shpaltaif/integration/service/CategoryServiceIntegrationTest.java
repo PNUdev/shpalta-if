@@ -1,4 +1,4 @@
-package com.pnu.dev.shpaltaif;
+package com.pnu.dev.shpaltaif.integration.service;
 
 import com.pnu.dev.shpaltaif.domain.Category;
 import com.pnu.dev.shpaltaif.domain.Post;
@@ -7,23 +7,26 @@ import com.pnu.dev.shpaltaif.domain.User;
 import com.pnu.dev.shpaltaif.domain.UserRole;
 import com.pnu.dev.shpaltaif.dto.CategoryDto;
 import com.pnu.dev.shpaltaif.exception.ServiceException;
+import com.pnu.dev.shpaltaif.integration.BaseIntegrationTest;
 import com.pnu.dev.shpaltaif.repository.PostRepository;
 import com.pnu.dev.shpaltaif.repository.PublicAccountRepository;
 import com.pnu.dev.shpaltaif.repository.UserRepository;
 import com.pnu.dev.shpaltaif.service.CategoryService;
+import com.pnu.dev.shpaltaif.service.telegram.TelegramBotUserService;
+import com.pnu.dev.shpaltaif.service.telegram.TelegramNotificationService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.only;
+import static org.mockito.Mockito.verify;
 
-@SpringBootTest
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-public class CategoryServiceIntegrationTest {
+public class CategoryServiceIntegrationTest extends BaseIntegrationTest {
 
     private static final String TITLE = "Title";
 
@@ -49,6 +52,13 @@ public class CategoryServiceIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
+    @MockBean
+    private TelegramBotUserService telegramBotUserService;
+
+    @MockBean
+    private TelegramNotificationService telegramNotificationService;
+
+
     @Test
     void createAndThenDeleteByIdCategoryWithoutPosts() {
 
@@ -57,7 +67,7 @@ public class CategoryServiceIntegrationTest {
         categoryService.deleteById(category.getId());
 
         List<Category> allCategoriesAfterDelete = categoryService.findAll();
-        assertEquals(0, allCategoriesAfterDelete.size());
+        assertThat(allCategoriesAfterDelete).hasSize(0);
 
     }
 
@@ -98,7 +108,7 @@ public class CategoryServiceIntegrationTest {
         assertEquals("Неможливо видалити категорію, яка має пости", thrown.getMessage());
 
         List<Category> allCategoriesAfterDelete = categoryService.findAll();
-        assertEquals(1, allCategoriesAfterDelete.size());
+        assertThat(allCategoriesAfterDelete).hasSize(1);
 
     }
 
@@ -116,7 +126,7 @@ public class CategoryServiceIntegrationTest {
         categoryService.update(createdCategory.getId(), updatedCategoryDto);
 
         List<Category> allCategoriesAfterUpdate = categoryService.findAll();
-        assertEquals(1, allCategoriesAfterUpdate.size());
+        assertThat(allCategoriesAfterUpdate).hasSize(1);
 
         Category updatedCategoryFromDb = categoryService.findById(createdCategory.getId());
 
@@ -127,7 +137,7 @@ public class CategoryServiceIntegrationTest {
     @Test
     public void findByIdNotFound() {
 
-        assertEquals(0, categoryService.findAll().size());
+        assertThat(categoryService.findAll()).hasSize(0);
 
         ServiceException thrown = assertThrows(ServiceException.class,
                 () -> categoryService.findById(Long.MAX_VALUE));
@@ -158,16 +168,19 @@ public class CategoryServiceIntegrationTest {
                 .build();
 
         List<Category> allCategoriesBeforeCreate = categoryService.findAll();
-        assertEquals(0, allCategoriesBeforeCreate.size());
+        assertThat(allCategoriesBeforeCreate).hasSize(0);
 
         categoryService.create(categoryDto);
 
         List<Category> allCategoriesAfterCreate = categoryService.findAll();
-        assertEquals(1, allCategoriesAfterCreate.size());
+        assertThat(allCategoriesAfterCreate).hasSize(1);
 
         Category category = allCategoriesAfterCreate.get(0);
 
         assertValidCategoryBasedOnCategoryDto(categoryDto, category);
+
+        verify(telegramBotUserService, only()).addCategorySubscriptionForAllUsers(category);
+        verify(telegramNotificationService, only()).sendNotificationsOfNewCategory(category);
 
         return category;
     }

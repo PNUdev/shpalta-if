@@ -11,6 +11,7 @@ import com.pnu.dev.shpaltaif.exception.ServiceException;
 import com.pnu.dev.shpaltaif.repository.CategoryRepository;
 import com.pnu.dev.shpaltaif.repository.PostRepository;
 import com.pnu.dev.shpaltaif.repository.specification.PostSpecificationBuilder;
+import com.pnu.dev.shpaltaif.service.telegram.TelegramNotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,12 +30,18 @@ public class PostServiceImpl implements PostService {
 
     private final PostSpecificationBuilder postSpecificationBuilder;
 
+    private final TelegramNotificationService telegramNotificationService;
 
     @Autowired
-    public PostServiceImpl(PostRepository postRepository, CategoryRepository categoryRepository, PostSpecificationBuilder postSpecificationBuilder) {
+    public PostServiceImpl(PostRepository postRepository,
+                           CategoryRepository categoryRepository,
+                           PostSpecificationBuilder postSpecificationBuilder,
+                           TelegramNotificationService telegramNotificationService) {
+
         this.postRepository = postRepository;
         this.categoryRepository = categoryRepository;
         this.postSpecificationBuilder = postSpecificationBuilder;
+        this.telegramNotificationService = telegramNotificationService;
     }
 
     @Override
@@ -48,6 +55,7 @@ public class PostServiceImpl implements PostService {
     public Page<Post> findAll(PostsPublicFilter postsPublicFilter, Pageable pageable) {
 
         Specification<Post> specification = postSpecificationBuilder.buildPostSpecification(postsPublicFilter);
+
         return postRepository.findAll(specification, pageable);
     }
 
@@ -83,7 +91,12 @@ public class PostServiceImpl implements PostService {
                 .pictureUrl(postDto.getPictureUrl())
                 .createdAt(LocalDateTime.now())
                 .build();
-        postRepository.save(post);
+
+        Post savedPost = postRepository.save(post);
+
+        if (postDto.isSendTelegramNotifications()) {
+            telegramNotificationService.sendNotificationsOfNewPost(savedPost);
+        }
     }
 
     @Override

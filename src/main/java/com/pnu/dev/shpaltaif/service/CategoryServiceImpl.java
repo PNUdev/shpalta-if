@@ -5,6 +5,8 @@ import com.pnu.dev.shpaltaif.dto.CategoryDto;
 import com.pnu.dev.shpaltaif.exception.ServiceException;
 import com.pnu.dev.shpaltaif.repository.CategoryRepository;
 import com.pnu.dev.shpaltaif.repository.PostRepository;
+import com.pnu.dev.shpaltaif.service.telegram.TelegramBotUserService;
+import com.pnu.dev.shpaltaif.service.telegram.TelegramNotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +19,20 @@ public class CategoryServiceImpl implements CategoryService {
 
     private PostRepository postRepository;
 
+    private TelegramBotUserService telegramBotUserService;
+
+    private TelegramNotificationService telegramNotificationService;
+
     @Autowired
-    public CategoryServiceImpl(CategoryRepository categoryRepository, PostRepository postRepository) {
+    public CategoryServiceImpl(CategoryRepository categoryRepository,
+                               PostRepository postRepository,
+                               TelegramNotificationService telegramNotificationService,
+                               TelegramBotUserService telegramBotUserService) {
+
         this.categoryRepository = categoryRepository;
         this.postRepository = postRepository;
+        this.telegramNotificationService = telegramNotificationService;
+        this.telegramBotUserService = telegramBotUserService;
     }
 
     @Override
@@ -54,6 +66,9 @@ public class CategoryServiceImpl implements CategoryService {
                 .build();
 
         categoryRepository.save(category);
+
+        telegramBotUserService.addCategorySubscriptionForAllUsers(category);
+        telegramNotificationService.sendNotificationsOfNewCategory(category);
     }
 
     @Override
