@@ -70,6 +70,9 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
     @Value("${app.base_path}")
     private String appBasePath;
 
+    @Value("${telegrambot.webhook.url}")
+    private String telegramWebhookUrl;
+
     private RestTemplate restTemplate;
 
     private TelegramBotUserService telegramBotUserService;
@@ -145,7 +148,7 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
 
     @Override
     public String getBotPath() {
-        return appBasePath + "/telegram-bot-webhook-" + urlSecret;
+        return telegramWebhookUrl + "/telegram-bot-webhook-" + urlSecret;
     }
 
     @Override

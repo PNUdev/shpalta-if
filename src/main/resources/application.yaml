@@ -32,6 +32,7 @@ telegrambot:
   username: ${TELEGRAM_BOT_USERNAME:""}
   token: ${TELEGRAM_BOT_TOKEN:""}
   url.secret: ${TELEGRAM_BOT_URL_SECRET:""}
+  webhook.url: ${TELEGRAM_BOT_WEBHOOK_URL:""}
 
 app:
   base_path: ${APP_BASE_PATH:http://localhost:8080}
