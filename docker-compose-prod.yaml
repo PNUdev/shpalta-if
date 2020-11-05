@@ -13,4 +13,5 @@ services:
       TELEGRAM_BOT_USERNAME: <telegram-bot-username>
       TELEGRAM_BOT_TOKEN: <telegram-bot-token>
       TELEGRAM_BOT_URL_SECRET: "secret"
+      TELEGRAM_BOT_WEBHOOK_URL: <telegram-bot-webhook-url>
       APP_BASE_PATH: <app-base-path>
