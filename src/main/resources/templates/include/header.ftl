@@ -18,25 +18,28 @@
 
     <title>IF Shpalta</title>
   </head>
-  <body>
-    <header class="d-flex justify-content-between align-items-center mb-5">
-      <div class="menu sans-serif">
-        <ul class="d-flex justify-content-between align-items-center">
-          <li><a href="#">Home</a></li>
-          <li><a href="#">Home</a></li>
-          <li><a href="#">Home</a></li>
-          <li><a href="#">Home</a></li>
-        </ul>
-      </div>
+  <body class="d-flex flex-column justify-content-between">
+    <div class="wrapper">
+      <header class="d-flex justify-content-between align-items-center mb-5">
+        <div class="menu sans-serif">
+          <ul class="d-flex justify-content-between align-items-center">
+            <li class="mr-2"><a href="#">Твоє здоров'я</a></li>
+            <li class="mr-2"><a href="#">Івано-Франківськ</a></li>
+            <li class="mr-2"><a href="#">Політика</a></li>
+            <li><a href="#">Технології</a></li>
+          </ul>
+        </div>
 
-      <a href="/" class="logo-link">
-        <img src="images/logo.png" alt="">
-      </a>
+        <a href="/" class="logo-link">
+          <img src="images/logo.png" alt="">
+        </a>
 
-      <div class="search-box">
-        <input type="text" placeholder="Введіть щось для пошуку..">
-        <div class="search-icon d-flex justify-content-center align-items-center"><i class="fas fa-search"></i></div>
-        <div class="cancel-icon"><i class="fas fa-times"></i></div>
-        <div class="search-data"></div>
-      </div>
-    </header>
+        <div class="search-box">
+          <input type="text" placeholder="Введіть щось для пошуку..">
+          <div class="search-icon d-flex justify-content-center align-items-center"><i class="fas fa-search"></i></div>
+          <div class="cancel-icon"><i class="fas fa-times"></i></div>
+          <div class="search-data"></div>
+        </div>
+      </header>
+
+      <h1>Проект ще на етапі розробки</h1>

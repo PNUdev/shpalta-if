@@ -1,3 +1,4 @@
+    </div>
     <footer class="mt-5">
       <div class="triangle"></div>
 
@@ -24,10 +25,10 @@
         <div class="copyright d-flex justify-content-between align-items-center">
           <div class="text">© Copyright 2020 IF Shpalta</div>
           <div class="menu">
-            <a href="#">Home</a>
-            <a href="#">Home</a>
-            <a href="#">Home</a>
-            <a href="#">Home</a>
+            <a href="#" class="mr-2">Твоє здоров'я</a>
+            <a href="#" class="mr-2">Івано-Франківськ</a>
+            <a href="#" class="mr-2">Політика</a>
+            <a href="#">Технології</a>
           </div>
         </div>
       </div>
