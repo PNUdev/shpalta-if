@@ -37,12 +37,20 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
 
     private static final String SURNAME = "surname";
 
-    private static final CreateUserDto CREATE_USER_DTO = CreateUserDto.builder()
+    private static final CreateUserDto CREATE_USER_WRITER_DTO = CreateUserDto.builder()
             .username(USERNAME)
             .password(PASSWORD)
             .repeatedPassword(PASSWORD)
+            .role(UserRole.ROLE_WRITER)
             .name(NAME)
             .surname(SURNAME)
+            .build();
+
+    private static final CreateUserDto CREATE_USER_EDITOR_DTO = CreateUserDto.builder()
+            .username(USERNAME)
+            .password(PASSWORD)
+            .repeatedPassword(PASSWORD)
+            .role(UserRole.ROLE_EDITOR)
             .build();
 
     @Autowired
@@ -67,7 +75,7 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
     public void createThenDeactivateThenActivate() {
 
         // Create
-        User actualUser = createAndSaveUser();
+        User actualUser = createAndSaveUserWriter();
         Long actualUserId = actualUser.getId();
 
         // Deactivate
@@ -87,7 +95,7 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
     public void createThenDeactivateThenDelete() {
 
         // Create
-        User actualUser = createAndSaveUser();
+        User actualUser = createAndSaveUserWriter();
         Long actualUserId = actualUser.getId();
 
         // Deactivate
@@ -109,7 +117,7 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
     public void createThenTryToDeleteActive() {
 
         // Create
-        User actualUser = createAndSaveUser();
+        User actualUser = createAndSaveUserWriter();
 
         // Try to delete
         ServiceException thrown = assertThrows(ServiceException.class,
@@ -120,7 +128,7 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
     @Test
     public void createThenDeactivateThenTryToDeleteUserWithPosts() {
         // Create
-        User actualUser = createAndSaveUser();
+        User actualUser = createAndSaveUserWriter();
 
         // Add posts to user
         Category category = Category.builder()
@@ -143,11 +151,39 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
         assertEquals("Користувач повинен бути неактивним, щоб його можна було видалити", thrown.getMessage());
     }
 
-    private User createAndSaveUser() {
+    @Test
+    public void createAndSaveUserEditorTest() {
+        List<User> usersBeforeCreate = userService.findAll();
+        List<PublicAccount> publicAccountsBeforeCreate = publicAccountRepository.findAll();
+        assertEquals(0, usersBeforeCreate.size());
+        assertEquals(0, publicAccountsBeforeCreate.size());
+
+        userService.create(CREATE_USER_EDITOR_DTO);
+
+        List<User> usersAfterCreate = userService.findAll();
+        List<PublicAccount> publicAccountsAfterCreate = publicAccountRepository.findAll();
+
+        assertEquals(1, usersAfterCreate.size());
+        assertEquals(0, publicAccountsAfterCreate.size());
+
+        User expectedUser = User.builder()
+                .username(USERNAME)
+                .password(PASSWORD)
+                .role(UserRole.ROLE_EDITOR)
+                .active(true)
+                .build();
+
+        User actualUser = usersAfterCreate.get(0);
+
+        assertThat(actualUser)
+                .isEqualToIgnoringGivenFields(expectedUser, "id", "publicAccount", "password");
+    }
+
+    private User createAndSaveUserWriter() {
         List<User> usersBeforeCreate = userService.findAll();
         assertEquals(0, usersBeforeCreate.size());
 
-        userService.create(CREATE_USER_DTO);
+        userService.create(CREATE_USER_WRITER_DTO);
 
         List<User> usersAfterCreate = userService.findAll();
         assertEquals(1, usersAfterCreate.size());
