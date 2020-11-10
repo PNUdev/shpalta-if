@@ -14,6 +14,17 @@ header {
     img { height: 90px; }
   }
 
+  .type-result {
+    background: white;
+    color: black;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    -webkit-box-shadow: -1px 8px 21px 1px rgba(0,0,0,0.75);
+    -moz-box-shadow: -1px 8px 21px 1px rgba(0,0,0,0.75);
+    box-shadow: -1px 8px 21px 1px rgba(0,0,0,0.75);
+    padding: 20px 10px;
+  }
+
   .menu ul {
     margin: 0;
     padding: 0;
@@ -31,3 +42,13 @@ header {
     }
   }
 }
+
+@media screen and (max-width: 576px) {
+  header {
+    .search-box {
+      right: -10px;
+      bottom: -20px;
+    }
+  }
+}
+
