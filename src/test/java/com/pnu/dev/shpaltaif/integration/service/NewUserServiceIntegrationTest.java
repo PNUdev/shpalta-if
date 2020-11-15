@@ -1,10 +1,7 @@
 package com.pnu.dev.shpaltaif.integration.service;
 
 import com.google.common.collect.Iterables;
-import com.pnu.dev.shpaltaif.domain.Category;
-import com.pnu.dev.shpaltaif.domain.Post;
-import com.pnu.dev.shpaltaif.domain.User;
-import com.pnu.dev.shpaltaif.domain.UserRole;
+import com.pnu.dev.shpaltaif.domain.*;
 import com.pnu.dev.shpaltaif.dto.CreateUserDto;
 import com.pnu.dev.shpaltaif.exception.ServiceException;
 import com.pnu.dev.shpaltaif.integration.BaseIntegrationTest;
@@ -21,10 +18,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class NewUserServiceIntegrationTest extends BaseIntegrationTest {
@@ -84,6 +78,11 @@ public class NewUserServiceIntegrationTest extends BaseIntegrationTest {
                 .active(true)
                 .build();
 
+        PublicAccount expectedPublicAccount = PublicAccount.builder()
+                .name(createUserWriterValidDto.getName())
+                .surname(createUserWriterValidDto.getSurname())
+                .build();
+
         userService.create(createUserWriterValidDto);
         expectedUsersNumber++;
         expectedPublicAccountsNumber++;
@@ -92,9 +91,9 @@ public class NewUserServiceIntegrationTest extends BaseIntegrationTest {
         User createdWriter = getLastCreatedUser();
         assertThat(createdWriter)
                 .isEqualToIgnoringGivenFields(expectedWriter, "id", "publicAccount", "password");
-        assertEquals(createdWriter.getPublicAccount().getName(), createUserWriterValidDto.getName());
-        assertEquals(createdWriter.getPublicAccount().getSurname(), createUserWriterValidDto.getSurname());
-
+        assertTrue(bCryptPasswordEncoder.matches(createUserWriterValidDto.getPassword(), createdWriter.getPassword()));
+        assertThat(createdWriter.getPublicAccount())
+                .isEqualToIgnoringGivenFields(expectedPublicAccount, "id", "createdAt", "updatedAt", "user");
         CreateUserDto createUserEditorValidDto = CreateUserDto.builder()
                 .username("editor")
                 .password("editor")
@@ -114,6 +113,8 @@ public class NewUserServiceIntegrationTest extends BaseIntegrationTest {
         assertEquals(expectedPublicAccountsNumber, publicAccountRepository.findAll().size());
         User createdEditor = getLastCreatedUser();
         assertThat(createdEditor).isEqualToIgnoringGivenFields(expectedEditor, "id", "password");
+        assertTrue(bCryptPasswordEncoder.matches(createUserEditorValidDto.getPassword(), createdEditor.getPassword()));
+
     }
 
     @Test
