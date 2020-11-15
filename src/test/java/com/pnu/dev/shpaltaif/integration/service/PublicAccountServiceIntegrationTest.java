@@ -8,35 +8,17 @@ import com.pnu.dev.shpaltaif.exception.ServiceException;
 import com.pnu.dev.shpaltaif.integration.BaseIntegrationTest;
 import com.pnu.dev.shpaltaif.repository.UserRepository;
 import com.pnu.dev.shpaltaif.service.PublicAccountService;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 
-import java.util.List;
-
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+
 public class PublicAccountServiceIntegrationTest extends BaseIntegrationTest {
-
-    private static final String NAME = "name";
-
-    private static final String SURNAME = "surname";
-
-    private static final String PROFILE_IMAGE_URL = "profileImageUrl";
-
-    private static final String DESCRIPTION = "description";
-
-    private static final String UPDATED_NAME = "updatedName";
-
-    private static final String UPDATED_SURNAME = "updatedSurname";
-
-    private static final String UPDATED_PROFILE_IMAGE_URL = "updatedProfileImageUrl";
-
-    private static final String UPDATED_DESCRIPTION = "updatedDescription";
 
     @Autowired
     private PublicAccountService publicAccountService;
@@ -44,11 +26,22 @@ public class PublicAccountServiceIntegrationTest extends BaseIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
+    private User userWriter;
+
+    @BeforeEach
+    @Rollback(false)
+    public void setup() {
+        User mainUser = User.builder()
+                .username("writer")
+                .password("password")
+                .active(true)
+                .role(UserRole.ROLE_WRITER)
+                .build();
+        this.userWriter = userRepository.save(mainUser);
+    }
+
     @Test
     public void findByIdNotFound() {
-
-        assertEquals(0, publicAccountService.findAll().size());
-
         ServiceException thrown = assertThrows(ServiceException.class,
                 () -> publicAccountService.findById(Long.MAX_VALUE));
         assertEquals("Акаунт не знайдено", thrown.getMessage());
@@ -56,138 +49,123 @@ public class PublicAccountServiceIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void createAndThenReadAndThenUpdateAndThenDeleteSuccessFlow() {
-        List<PublicAccount> publicAccountsBeforeCreate = publicAccountService.findAll();
-        assertEquals(0, publicAccountsBeforeCreate.size());
+        //Verify whether there isn't any PublicAccount saved in database
+        int expectedPublicAccountsNumber = 0;
+        assertEquals(expectedPublicAccountsNumber, publicAccountService.findAll().size());
 
-        // Create
+        //Create PublicAccount
         PublicAccountDto publicAccountDto = PublicAccountDto.builder()
-                .name(NAME)
-                .surname(SURNAME)
-                .profileImageUrl(PROFILE_IMAGE_URL)
-                .description(DESCRIPTION)
+                .name("name")
+                .surname("surname")
+                .profileImageUrl("profile_image_url")
+                .description("description")
                 .build();
 
-        User user = User.builder()
-                .username("username")
-                .password("password")
-                .role(UserRole.ROLE_WRITER)
-                .build();
+        PublicAccount createdPublicAccount = publicAccountService.create(publicAccountDto, this.userWriter);
+        expectedPublicAccountsNumber++;
 
-        userRepository.save(user);
-
-        publicAccountService.create(publicAccountDto, user);
-
-        List<PublicAccount> publicAccountsAfterCreate = publicAccountService.findAll();
-        assertEquals(1, publicAccountsAfterCreate.size());
+        //Verify whether PublicAccount has been saved in database
+        assertEquals(expectedPublicAccountsNumber, publicAccountService.findAll().size());
 
         PublicAccount expectedPublicAccount = PublicAccount.builder()
-                .name(NAME)
-                .surname(SURNAME)
-                .profileImageUrl(PROFILE_IMAGE_URL)
-                .description(DESCRIPTION)
-                .user(user)
+                .name(publicAccountDto.getName())
+                .surname(publicAccountDto.getSurname())
+                .profileImageUrl(publicAccountDto.getProfileImageUrl())
+                .description(publicAccountDto.getDescription())
+                .user(this.userWriter)
                 .build();
 
-        PublicAccount actualPublicAccount = publicAccountsAfterCreate.get(0);
-        assertThat(actualPublicAccount)
+        assertThat(createdPublicAccount)
                 .isEqualToIgnoringGivenFields(expectedPublicAccount, "id", "createdAt", "updatedAt");
 
         // Read
-        PublicAccount foundByIdPublicAccount = publicAccountService.findById(publicAccountsAfterCreate.get(0).getId());
-        assertEquals(actualPublicAccount, foundByIdPublicAccount);
+        PublicAccount foundByIdPublicAccount = publicAccountService.findById(createdPublicAccount.getId());
+        assertEquals(createdPublicAccount, foundByIdPublicAccount);
 
         // Update
         PublicAccountDto updatePublicAccountDto = PublicAccountDto.builder()
-                .name(UPDATED_NAME)
-                .surname(UPDATED_SURNAME)
-                .profileImageUrl(UPDATED_PROFILE_IMAGE_URL)
-                .description(UPDATED_DESCRIPTION)
+                .name("updated_name")
+                .surname("updated_surname")
+                .profileImageUrl("updated_profile_image_url")
+                .description("updated_description")
                 .build();
 
-        publicAccountService.update(updatePublicAccountDto, actualPublicAccount.getId());
+        publicAccountService.update(updatePublicAccountDto, createdPublicAccount.getId());
 
-        List<PublicAccount> publicAccountsAfterUpdate = publicAccountService.findAll();
-        assertEquals(1, publicAccountsAfterUpdate.size());
+        //Verify whether the number of PublicAccounts in database hasn't changed after update
+        assertEquals(expectedPublicAccountsNumber, publicAccountService.findAll().size());
 
         PublicAccount expectedUpdatedPublicAccount = PublicAccount.builder()
-                .name(UPDATED_NAME)
-                .surname(UPDATED_SURNAME)
-                .profileImageUrl(UPDATED_PROFILE_IMAGE_URL)
-                .description(UPDATED_DESCRIPTION)
-                .user(user)
+                .name(updatePublicAccountDto.getName())
+                .surname(updatePublicAccountDto.getSurname())
+                .profileImageUrl(updatePublicAccountDto.getProfileImageUrl())
+                .description(updatePublicAccountDto.getDescription())
+                .user(this.userWriter)
                 .build();
 
-        assertThat(publicAccountsAfterUpdate.get(0))
+        assertThat(publicAccountService.findById(createdPublicAccount.getId()))
                 .isEqualToIgnoringGivenFields(expectedUpdatedPublicAccount, "id", "createdAt", "updatedAt");
 
         // Delete
-        publicAccountService.delete(actualPublicAccount.getId());
-        List<PublicAccount> publicAccountsAfterDelete = publicAccountService.findAll();
-        assertEquals(0, publicAccountsAfterDelete.size());
+        publicAccountService.delete(createdPublicAccount.getId());
+        expectedPublicAccountsNumber--;
+        //Verify whether PublicAccount has been removed from database
+        assertEquals(expectedPublicAccountsNumber, publicAccountService.findAll().size());
     }
 
     @Test
     public void updateSignatureTest() {
-
+        int expectedPublicAccountNumber = publicAccountService.findAll().size();
         //Create PublicAccount
-        User user = User.builder()
-                .username("username")
-                .password("password")
-                .role(UserRole.ROLE_WRITER)
-                .build();
-        User userFromDb = userRepository.save(user);
         PublicAccountDto publicAccountDto = PublicAccountDto.builder()
                 .name("name")
                 .surname("surname")
                 .build();
-        PublicAccount publicAccount = publicAccountService.create(publicAccountDto, userFromDb);
+        PublicAccount createdPublicAccount = publicAccountService.create(publicAccountDto, this.userWriter);
+        expectedPublicAccountNumber++;
 
         //Test default signature
         String expectedSignature = "name surname";
-        assertEquals(expectedSignature, publicAccountService.findById(publicAccount.getId()).getSignature());
+        assertEquals(expectedSignature, createdPublicAccount.getSignature());
 
         //Set pseudonym
-        String pseudonym = "pseudonym";
         PublicAccountDto publicAccountDtoWithUnusedPseudonym = PublicAccountDto.builder()
-                .name(publicAccount.getName())
-                .surname(publicAccount.getSurname())
+                .name(createdPublicAccount.getName())
+                .surname(createdPublicAccount.getSurname())
                 .pseudonymUsed(false)
-                .pseudonym(pseudonym)
+                .pseudonym("pseudonym")
                 .build();
-        publicAccountService.update(publicAccountDtoWithUnusedPseudonym, publicAccount.getId());
+        publicAccountService.update(publicAccountDtoWithUnusedPseudonym, createdPublicAccount.getId());
 
         //Test signature when pseudonym has been set, but pseudonym is disabled
-        assertEquals(expectedSignature, publicAccountService.findById(publicAccount.getId()).getSignature());
+        PublicAccount updatedPublicAccount = publicAccountService.findById(createdPublicAccount.getId());
+        assertEquals(expectedSignature, updatedPublicAccount.getSignature());
 
         //Activate pseudonym usage
         PublicAccountDto publicAccountDtoWithUsedPseudonym = PublicAccountDto.builder()
-                .name(publicAccount.getName())
-                .surname(publicAccount.getSurname())
+                .name(createdPublicAccount.getName())
+                .surname(createdPublicAccount.getSurname())
                 .pseudonymUsed(true)
-                .pseudonym(pseudonym)
+                .pseudonym(updatedPublicAccount.getPseudonym())
                 .build();
-        publicAccountService.update(publicAccountDtoWithUsedPseudonym, publicAccount.getId());
+        publicAccountService.update(publicAccountDtoWithUsedPseudonym, createdPublicAccount.getId());
 
         //Test signature when pseudonym has been set and pseudonym is active
+        PublicAccount updatedPublicAccountWithUsedPseudonym = publicAccountService.findById(createdPublicAccount.getId());
         assertEquals(publicAccountDtoWithUsedPseudonym.getPseudonym(),
-                publicAccountService.findById(publicAccount.getId()).getSignature());
+                updatedPublicAccountWithUsedPseudonym.getSignature());
+        assertEquals(expectedPublicAccountNumber, publicAccountService.findAll().size());
     }
 
     @Test
     public void updateSignatureTestExceptionFlow() {
 
         //Create PublicAccount
-        User user = User.builder()
-                .username("username")
-                .password("password")
-                .role(UserRole.ROLE_WRITER)
-                .build();
-        User userFromDb = userRepository.save(user);
         PublicAccountDto publicAccountDto = PublicAccountDto.builder()
                 .name("name")
                 .surname("surname")
                 .build();
-        PublicAccount publicAccount = publicAccountService.create(publicAccountDto, userFromDb);
+        PublicAccount publicAccount = publicAccountService.create(publicAccountDto, this.userWriter);
 
         //Set blank pseudonym
         String blankPseudonym = " ";
@@ -237,5 +215,4 @@ public class PublicAccountServiceIntegrationTest extends BaseIntegrationTest {
                 () -> publicAccountService.update(publicAccountDtoWithBookedPseudonym, anotherPublicAccount.getId()));
         assertEquals("Псевдонім зайнятий", pseudonymAlreadyBookedException.getMessage());
     }
-
 }
