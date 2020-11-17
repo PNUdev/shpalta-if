@@ -4,6 +4,7 @@ import com.pnu.dev.shpaltaif.util.HttpUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.validation.BindException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -17,6 +18,14 @@ import static com.pnu.dev.shpaltaif.util.FlashMessageConstants.FLASH_MESSAGE_ERR
 @ControllerAdvice
 @Slf4j
 public class ExceptionsInterceptor {
+
+    @ExceptionHandler(InternalAuthenticationServiceException.class)
+    public String authenticationFailureException(InternalAuthenticationServiceException e, RedirectAttributes redirectAttributes,
+                                                 HttpServletRequest request) {
+        redirectAttributes.addFlashAttribute(FLASH_MESSAGE_ERROR, e.getMessage());
+
+        return getRedirectUrl(request);
+    }
 
     @ExceptionHandler(ServiceException.class)
     public String serviceAdminException(ServiceException serviceException, RedirectAttributes redirectAttributes,
