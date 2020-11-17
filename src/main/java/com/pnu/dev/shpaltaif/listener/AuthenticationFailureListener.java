@@ -1,4 +1,4 @@
-package com.pnu.dev.shpaltaif.config;
+package com.pnu.dev.shpaltaif.listener;
 
 import com.pnu.dev.shpaltaif.service.LoginAttemptService;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -58,8 +58,7 @@ public class UserServiceImpl implements UserService, AdminUserInitializer, UserD
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         String ip = getClientIP();
         if (loginAttemptService.isBlocked(ip)) {
-//            throw new ServiceException("blocked");
-            throw new InternalAuthenticationServiceException("blocked");
+            throw new ServiceException("blocked");
         }
         return userRepository.findUserByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(username));
