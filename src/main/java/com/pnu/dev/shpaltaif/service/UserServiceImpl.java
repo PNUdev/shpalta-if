@@ -11,7 +11,6 @@ import com.pnu.dev.shpaltaif.repository.UserRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
-import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,7 +34,7 @@ public class UserServiceImpl implements UserService, AdminUserInitializer, UserD
 
     private PublicAccountService publicAccountService;
 
-    private LoginAttemptService loginAttemptService;
+    private LoginAttemptServiceImpl loginAttemptService;
 
     private Environment environment;
 
@@ -44,7 +43,7 @@ public class UserServiceImpl implements UserService, AdminUserInitializer, UserD
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
                            PublicAccountService publicAccountService,
-                           LoginAttemptService loginAttemptService, Environment environment,
+                           LoginAttemptServiceImpl loginAttemptService, Environment environment,
                            BCryptPasswordEncoder bCryptPasswordEncoder) {
 
         this.userRepository = userRepository;

@@ -1,6 +1,6 @@
 package com.pnu.dev.shpaltaif.listener;
 
-import com.pnu.dev.shpaltaif.service.LoginAttemptService;
+import com.pnu.dev.shpaltaif.service.LoginAttemptServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
 import org.springframework.security.authentication.event.AuthenticationFailureBadCredentialsEvent;
@@ -14,9 +14,12 @@ import java.util.Objects;
 @Component
 public class AuthenticationFailureListener implements ApplicationListener<AuthenticationFailureBadCredentialsEvent> {
 
+    private final LoginAttemptServiceImpl loginAttemptService;
 
     @Autowired
-    private LoginAttemptService loginAttemptService;
+    public AuthenticationFailureListener(LoginAttemptServiceImpl loginAttemptService) {
+        this.loginAttemptService = loginAttemptService;
+    }
 
     @Override
     public void onApplicationEvent(AuthenticationFailureBadCredentialsEvent authenticationFailureBadCredentialsEvent) {
