@@ -11,6 +11,7 @@ import com.pnu.dev.shpaltaif.repository.UserRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,15 +31,15 @@ import java.util.Objects;
 @Service
 public class UserServiceImpl implements UserService, AdminUserInitializer, UserDetailsService, AuthSessionSynchronizer {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    private PublicAccountService publicAccountService;
+    private final PublicAccountService publicAccountService;
 
-    private LoginAttemptServiceImpl loginAttemptService;
+    private final LoginAttemptServiceImpl loginAttemptService;
 
-    private Environment environment;
+    private final Environment environment;
 
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
@@ -57,7 +58,7 @@ public class UserServiceImpl implements UserService, AdminUserInitializer, UserD
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         String ip = getClientIP();
         if (loginAttemptService.isBlocked(ip)) {
-            throw new ServiceException("blocked");
+            throw new InternalAuthenticationServiceException("blocked");
         }
         return userRepository.findUserByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(username));
@@ -209,7 +210,7 @@ public class UserServiceImpl implements UserService, AdminUserInitializer, UserD
         HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes()))
                 .getRequest();
         String xfHeader = request.getHeader("X-Forwarded-For");
-        if (xfHeader == null){
+        if (xfHeader == null) {
             return request.getRemoteAddr();
         }
         return xfHeader.split(",")[0];

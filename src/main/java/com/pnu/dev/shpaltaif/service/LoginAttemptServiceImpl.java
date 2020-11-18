@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,7 +24,7 @@ public class LoginAttemptServiceImpl implements LoginAttemptService {
 
     private final LoginAttemptRepository loginAttemptRepository;
 
-    private final int MAX_ATTEMPT = 2;
+    private final int MAX_ATTEMPT = 10;
 
     private final LoadingCache<String, Integer> attemptsCache;
 
@@ -98,5 +99,12 @@ public class LoginAttemptServiceImpl implements LoginAttemptService {
         } catch (ExecutionException e) {
             return false;
         }
+    }
+
+    @Override
+    @Transactional
+    public void deleteOldRecords() {
+        LocalDateTime fiveDaysAgo = LocalDateTime.now().minusDays(5);
+        loginAttemptRepository.deleteAllByDateTimeBefore(fiveDaysAgo);
     }
 }

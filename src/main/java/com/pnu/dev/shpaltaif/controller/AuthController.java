@@ -17,9 +17,9 @@ public class AuthController {
         if (nonNull(error)) {
             String errorMessage = "Помилка авторизації";
             if (error.equalsIgnoreCase("Bad credentials")) {
-                errorMessage = "Невірні логін або пароль користувача.";
+                errorMessage = "Неправильні ім'я користувача або пароль!";
             } else if (error.equalsIgnoreCase("blocked")) {
-                errorMessage = "Забагато невдалих спроб входу, ваша IP-адреса заблокована на 24 години.";
+                errorMessage = "Забагато невдалих спроб входу, ваша IP-адреса заблокована на 24 години!";
             }
             model.addAttribute(FLASH_MESSAGE_ERROR, errorMessage);
         }
