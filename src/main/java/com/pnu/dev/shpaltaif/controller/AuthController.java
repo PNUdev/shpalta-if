@@ -14,8 +14,15 @@ public class AuthController {
     @GetMapping("/login")
     public String login(Model model, String error, String logout) {
 
-        if (nonNull(error))
-            model.addAttribute(FLASH_MESSAGE_ERROR, "Неправильні ім'я користувача або пароль!");
+        if (nonNull(error)) {
+            String errorMessage = "Помилка авторизації";
+            if (error.equalsIgnoreCase("Bad credentials")) {
+                errorMessage = "Невірні логін або пароль користувача.";
+            } else if (error.equalsIgnoreCase("blocked")) {
+                errorMessage = "Забагато невдалих спроб входу, ваша IP-адреса заблокована на 24 години.";
+            }
+            model.addAttribute(FLASH_MESSAGE_ERROR, errorMessage);
+        }
 
         if (nonNull(logout))
             model.addAttribute(FLASH_MESSAGE_SUCCESS, "Ви успішно вийшли!");
