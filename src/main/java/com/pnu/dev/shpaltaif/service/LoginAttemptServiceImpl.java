@@ -4,15 +4,19 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.pnu.dev.shpaltaif.domain.LoginAttempt;
+import com.pnu.dev.shpaltaif.dto.FailedLoginAttemptsInfo;
 import com.pnu.dev.shpaltaif.repository.LoginAttemptRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Service
 public class LoginAttemptServiceImpl implements LoginAttemptService {
@@ -36,8 +40,24 @@ public class LoginAttemptServiceImpl implements LoginAttemptService {
     }
 
     @Override
-    public Page<LoginAttempt> findAll(Pageable pageable) {
+    public Page<LoginAttempt> findAll(Pageable pageable, boolean blockedOnly) {
+        if (blockedOnly) {
+            return loginAttemptRepository.findAllByIpBlockedTrue(pageable);
+        }
         return loginAttemptRepository.findAll(pageable);
+    }
+
+    @Override
+    public FailedLoginAttemptsInfo getFailedLoginAttemptsInfo() {
+        List<LoginAttempt> failedLoginAttempts = loginAttemptRepository.findAllByIpBlockedTrue();
+        LocalDateTime startOfDay = LocalDate.now().atStartOfDay();
+        List<LoginAttempt> failedLoginAttemptsToday = failedLoginAttempts.stream()
+                .filter(loginAttempt -> loginAttempt.getDateTime().isAfter(startOfDay)).collect(Collectors.toList());
+
+        return FailedLoginAttemptsInfo.builder()
+                .ipBlockedNumber(failedLoginAttempts.size())
+                .ipBlockedNumberToday(failedLoginAttemptsToday.size())
+                .build();
     }
 
     @Override

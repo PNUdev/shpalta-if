@@ -20,7 +20,8 @@
             <td></td>
         </tr>
         <tr>
-            <th scope="row">Підписаних хоча б на одну категорію</td>
+            <th scope="row">Підписаних хоча б на одну категорію
+            </td>
             <td>${telegramDashboard.subscribedToAtLeastOneCategory.subscribedUsersCount}</td>
             <td>${telegramDashboard.subscribedToAtLeastOneCategory.percentOfTotalUsersCount?string("#.##")}%</td>
         </tr>
@@ -31,6 +32,26 @@
                 <td>${subscriptionsInfo.userSubscriptionsInfo.percentOfTotalUsersCount?string("#.##")}%</td>
             </tr>
         </#list>
+        </tbody>
+    </table>
+    <table class="table mt-5">
+        <thead>
+        <tr>
+            <th scope="col" colspan="3" class="table-primary text-center">
+                <span> Статистика заблокованих IP-адрес</span>
+                <a href="/admin/login-attempts" class="ml-4 text-info">Детальніше</a>
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <th scope="col">Заблоковано сьогодні</th>
+            <th scope="col">${failedLoginAttemptsInfo.ipBlockedNumberToday}</th>
+        </tr>
+        <tr>
+            <th scope="col">Заблоковано за весь час</th>
+            <th scope="col">${failedLoginAttemptsInfo.ipBlockedNumber}</th>
+        </tr>
         </tbody>
     </table>
 </@security.authorize >
