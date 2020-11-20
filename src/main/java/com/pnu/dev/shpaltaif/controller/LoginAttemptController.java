@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-@RequestMapping("/admin/login-attempts")
+@RequestMapping("/admin/security-info")
 public class LoginAttemptController {
 
     private final LoginAttemptService loginAttemptService;
@@ -28,6 +28,7 @@ public class LoginAttemptController {
                           @RequestParam(required = false, name = "blockedOnly", defaultValue = "false")
                                   boolean blockedOnly,
                           Model model) {
+        model.addAttribute("failedLoginAttemptsInfo", loginAttemptService.getFailedLoginAttemptsInfo());
         model.addAttribute("loginAttempts", loginAttemptService.findAll(pageable, blockedOnly));
         model.addAttribute("blockedOnly", blockedOnly);
         return "admin/loginAttempts/index";

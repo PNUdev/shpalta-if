@@ -2,9 +2,7 @@ package com.pnu.dev.shpaltaif.controller;
 
 import com.pnu.dev.shpaltaif.domain.User;
 import com.pnu.dev.shpaltaif.domain.UserRole;
-import com.pnu.dev.shpaltaif.dto.FailedLoginAttemptsInfo;
 import com.pnu.dev.shpaltaif.dto.telegram.TelegramSubscriptionsDashboardInfo;
-import com.pnu.dev.shpaltaif.service.LoginAttemptService;
 import com.pnu.dev.shpaltaif.service.telegram.TelegramBotUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,25 +15,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/admin")
 public class IndexAdminController {
 
-    private final TelegramBotUserService telegramBotUserService;
-
-    private final LoginAttemptService loginAttemptService;
+    private TelegramBotUserService telegramBotUserService;
 
     @Autowired
-    public IndexAdminController(TelegramBotUserService telegramBotUserService, LoginAttemptService loginAttemptService) {
+    public IndexAdminController(TelegramBotUserService telegramBotUserService) {
         this.telegramBotUserService = telegramBotUserService;
-        this.loginAttemptService = loginAttemptService;
     }
 
     @GetMapping
     public String index(@AuthenticationPrincipal User user, Model model) {
 
         if (user.getRole() == UserRole.ROLE_ADMIN) {
-            TelegramSubscriptionsDashboardInfo telegramDashboardInfo = telegramBotUserService.getSubscriptionsDashboardInfo();
-            FailedLoginAttemptsInfo failedLoginAttemptsInfo = loginAttemptService.getFailedLoginAttemptsInfo();
-            model.addAttribute("telegramDashboard", telegramDashboardInfo);
-            model.addAttribute("failedLoginAttemptsInfo", failedLoginAttemptsInfo);
-
+            TelegramSubscriptionsDashboardInfo dashboardInfo = telegramBotUserService.getSubscriptionsDashboardInfo();
+            model.addAttribute("telegramDashboard", dashboardInfo);
         }
 
         return "admin/index";

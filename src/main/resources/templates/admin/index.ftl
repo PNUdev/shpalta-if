@@ -34,26 +34,6 @@
         </#list>
         </tbody>
     </table>
-    <table class="table mt-5">
-        <thead>
-        <tr>
-            <th scope="col" colspan="3" class="table-primary text-center">
-                <span> Статистика заблокованих IP-адрес</span>
-                <a href="/admin/login-attempts" class="ml-4 text-info">Детальніше</a>
-            </th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr>
-            <th scope="col">Заблоковано сьогодні</th>
-            <th scope="col">${failedLoginAttemptsInfo.ipBlockedNumberToday}</th>
-        </tr>
-        <tr>
-            <th scope="col">Заблоковано за весь час</th>
-            <th scope="col">${failedLoginAttemptsInfo.ipBlockedNumber}</th>
-        </tr>
-        </tbody>
-    </table>
 </@security.authorize >
 
 <#include "./include/footer.ftl">

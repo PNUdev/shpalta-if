@@ -8,6 +8,7 @@ import com.pnu.dev.shpaltaif.dto.PublicAccountDto;
 import com.pnu.dev.shpaltaif.dto.UpdatePasswordDto;
 import com.pnu.dev.shpaltaif.exception.ServiceException;
 import com.pnu.dev.shpaltaif.repository.UserRepository;
+import com.pnu.dev.shpaltaif.util.HttpUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -21,10 +22,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Objects;
 
@@ -44,7 +42,8 @@ public class UserServiceImpl implements UserService, AdminUserInitializer, UserD
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
                            PublicAccountService publicAccountService,
-                           LoginAttemptServiceImpl loginAttemptService, Environment environment,
+                           LoginAttemptServiceImpl loginAttemptService,
+                           Environment environment,
                            BCryptPasswordEncoder bCryptPasswordEncoder) {
 
         this.userRepository = userRepository;
@@ -56,7 +55,7 @@ public class UserServiceImpl implements UserService, AdminUserInitializer, UserD
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        String ip = getClientIP();
+        String ip = HttpUtils.getClientIP();
         if (loginAttemptService.isBlocked(ip)) {
             throw new InternalAuthenticationServiceException("blocked");
         }
@@ -204,15 +203,5 @@ public class UserServiceImpl implements UserService, AdminUserInitializer, UserD
                 .build();
 
         userRepository.save(updatedUser);
-    }
-
-    private String getClientIP() {
-        HttpServletRequest request = ((ServletRequestAttributes) Objects.requireNonNull(RequestContextHolder.getRequestAttributes()))
-                .getRequest();
-        String xfHeader = request.getHeader("X-Forwarded-For");
-        if (xfHeader == null) {
-            return request.getRemoteAddr();
-        }
-        return xfHeader.split(",")[0];
     }
 }
