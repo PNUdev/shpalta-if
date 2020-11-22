@@ -15,13 +15,7 @@ public class AuthController {
     public String login(Model model, String error, String logout) {
 
         if (nonNull(error)) {
-            String errorMessage = "Помилка авторизації";
-            if (error.equalsIgnoreCase("Bad credentials")) {
-                errorMessage = "Неправильні ім'я користувача або пароль!";
-            } else if (error.equalsIgnoreCase("blocked")) {
-                errorMessage = "Забагато невдалих спроб входу, ваша IP-адреса заблокована на 24 години!";
-            }
-            model.addAttribute(FLASH_MESSAGE_ERROR, errorMessage);
+            model.addAttribute(FLASH_MESSAGE_ERROR, resolveErrorMessage(error));
         }
 
         if (nonNull(logout))
@@ -30,4 +24,13 @@ public class AuthController {
         return "/admin/login";
     }
 
+    private String resolveErrorMessage(String error) {
+        String errorMessage = "Помилка авторизації";
+        if (error.equalsIgnoreCase("Bad credentials")) {
+            errorMessage = "Неправильні ім'я користувача або пароль!";
+        } else if (error.equalsIgnoreCase("blocked")) {
+            errorMessage = "Забагато невдалих спроб входу, ваша IP-адреса заблокована на 24 години!";
+        }
+        return errorMessage;
+    }
 }

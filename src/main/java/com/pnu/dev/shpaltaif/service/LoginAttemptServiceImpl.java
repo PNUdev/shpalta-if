@@ -13,13 +13,14 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class LoginAttemptServiceImpl implements LoginAttemptService {
 
     private final LoginAttemptRepository loginAttemptRepository;
 
-    private final int MAX_ATTEMPTS_NUMBER = 10;
+    private final int MAX_ATTEMPTS_NUMBER = 3;
 
     @Autowired
     public LoginAttemptServiceImpl(LoginAttemptRepository loginAttemptRepository) {
@@ -37,13 +38,11 @@ public class LoginAttemptServiceImpl implements LoginAttemptService {
 
     @Override
     public FailedLoginAttemptsInfo getFailedLoginAttemptsInfo() {
-        List<LoginAttempt> failedLoginAttempts = loginAttemptRepository.findAllByIpBlockedTrue();
-        List<LoginAttempt> failedLoginAttemptsToday =
-                loginAttemptRepository.findAllByIpBlockedTrueAndDateTimeAfter(LocalDate.now().atStartOfDay());
-
         return FailedLoginAttemptsInfo.builder()
-                .ipBlockedNumber(failedLoginAttempts.size())
-                .ipBlockedNumberToday(failedLoginAttemptsToday.size())
+                .ipBlockedNumber(loginAttemptRepository.countByIpBlockedTrue())
+                .ipBlockedNumberToday(
+                        loginAttemptRepository.countByIpBlockedTrueAndDateTimeAfter(LocalDate.now().atStartOfDay())
+                )
                 .build();
     }
 
@@ -60,16 +59,7 @@ public class LoginAttemptServiceImpl implements LoginAttemptService {
 
     @Override
     public void loginFailed(String ipAddress) {
-        List<LoginAttempt> attemptsForLast24Hours = getLoginAttemptsForLast24Hours(ipAddress);
-        int failedAttemptsNumber = 1;
-        for (LoginAttempt loginAttempt : attemptsForLast24Hours) {
-            if (loginAttempt.isSuccess()) {
-                break;
-            } else {
-                failedAttemptsNumber++;
-            }
-        }
-        boolean ipBlocked = failedAttemptsNumber >= MAX_ATTEMPTS_NUMBER;
+        boolean ipBlocked = getFailedAttemptsSinceLastSuccessAttempt(ipAddress).size() + 1 >= MAX_ATTEMPTS_NUMBER;
         LoginAttempt failedLoginAttempt = LoginAttempt.builder()
                 .ipAddress(ipAddress)
                 .success(false)
@@ -77,6 +67,16 @@ public class LoginAttemptServiceImpl implements LoginAttemptService {
                 .dateTime(LocalDateTime.now())
                 .build();
         loginAttemptRepository.save(failedLoginAttempt);
+    }
+
+    private List<LoginAttempt> getFailedAttemptsSinceLastSuccessAttempt(String ipAddress) {
+        List<LoginAttempt> attemptsForLast24Hours = getLoginAttemptsForLast24Hours(ipAddress);
+        Optional<LoginAttempt> lastSuccessAttempt = attemptsForLast24Hours.stream()
+                .filter(LoginAttempt::isSuccess)
+                .findFirst();
+        return lastSuccessAttempt
+                .map(loginAttempt -> attemptsForLast24Hours.subList(0, attemptsForLast24Hours.indexOf(loginAttempt)))
+                .orElse(attemptsForLast24Hours);
     }
 
 

@@ -11,9 +11,9 @@ import java.util.List;
 
 public interface LoginAttemptRepository extends JpaRepository<LoginAttempt, Long> {
 
-    List<LoginAttempt> findAllByIpBlockedTrue();
+    long countByIpBlockedTrue();
 
-    List<LoginAttempt> findAllByIpBlockedTrueAndDateTimeAfter(LocalDateTime dateTime);
+    long countByIpBlockedTrueAndDateTimeAfter(LocalDateTime dateTime);
 
     List<LoginAttempt> findAllByIpAddressEqualsAndDateTimeAfter(String ip, LocalDateTime dateTime, Sort sort);
 
