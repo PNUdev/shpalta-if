@@ -8,6 +8,7 @@ import com.pnu.dev.shpaltaif.dto.PublicAccountDto;
 import com.pnu.dev.shpaltaif.dto.UpdatePasswordDto;
 import com.pnu.dev.shpaltaif.exception.ServiceException;
 import com.pnu.dev.shpaltaif.repository.UserRepository;
+import com.pnu.dev.shpaltaif.exception.AuthExceptionMessage;
 import com.pnu.dev.shpaltaif.util.HttpUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +58,7 @@ public class UserServiceImpl implements UserService, AdminUserInitializer, UserD
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         String ip = HttpUtils.getClientIP();
         if (loginAttemptService.isBlocked(ip)) {
-            throw new InternalAuthenticationServiceException("blocked");
+            throw new InternalAuthenticationServiceException(AuthExceptionMessage.IP_BLOCKED.getValue());
         }
         return userRepository.findUserByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(username));

@@ -20,7 +20,7 @@ public class LoginAttemptServiceImpl implements LoginAttemptService {
 
     private final LoginAttemptRepository loginAttemptRepository;
 
-    private final int MAX_ATTEMPTS_NUMBER = 3;
+    private final int MAX_ATTEMPTS_NUMBER = 10;
 
     @Autowired
     public LoginAttemptServiceImpl(LoginAttemptRepository loginAttemptRepository) {
