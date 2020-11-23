@@ -1,3 +1,12 @@
+## Requirements
+
+#### Application
+- Java 8
+- Maven
+
+#### Database
+- MySQL (8.0+) 
+
 ## Start locally
 ```
 mvn clean install
