@@ -10,7 +10,6 @@
         <tr>
             <th scope="col">Категорія</th>
             <th scope="col">Користувачів підписано</th>
-            <th scope="col">% користувачів підписано</th>
         </tr>
         </thead>
         <tbody>
@@ -20,7 +19,7 @@
             <td></td>
         </tr>
         <tr>
-            <th scope="row">Підписаних хоча б на одну категорію</td>
+            <th scope="row">Підписаних хоча б на одну категорію</th>
             <td>${telegramDashboard.subscribedToAtLeastOneCategory.subscribedUsersCount}</td>
             <td>${telegramDashboard.subscribedToAtLeastOneCategory.percentOfTotalUsersCount?string("#.##")}%</td>
         </tr>

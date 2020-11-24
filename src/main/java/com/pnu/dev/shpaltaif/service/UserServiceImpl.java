@@ -8,9 +8,12 @@ import com.pnu.dev.shpaltaif.dto.PublicAccountDto;
 import com.pnu.dev.shpaltaif.dto.UpdatePasswordDto;
 import com.pnu.dev.shpaltaif.exception.ServiceException;
 import com.pnu.dev.shpaltaif.repository.UserRepository;
+import com.pnu.dev.shpaltaif.exception.AuthExceptionMessage;
+import com.pnu.dev.shpaltaif.util.HttpUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
+import org.springframework.security.authentication.InternalAuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,28 +30,36 @@ import java.util.Objects;
 @Service
 public class UserServiceImpl implements UserService, AdminUserInitializer, UserDetailsService, AuthSessionSynchronizer {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    private PublicAccountService publicAccountService;
+    private final PublicAccountService publicAccountService;
 
-    private Environment environment;
+    private final LoginAttemptServiceImpl loginAttemptService;
 
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private final Environment environment;
+
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository,
                            PublicAccountService publicAccountService,
+                           LoginAttemptServiceImpl loginAttemptService,
                            Environment environment,
                            BCryptPasswordEncoder bCryptPasswordEncoder) {
 
         this.userRepository = userRepository;
         this.publicAccountService = publicAccountService;
+        this.loginAttemptService = loginAttemptService;
         this.environment = environment;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        String ip = HttpUtils.getClientIP();
+        if (loginAttemptService.isBlocked(ip)) {
+            throw new InternalAuthenticationServiceException(AuthExceptionMessage.IP_BLOCKED.getValue());
+        }
         return userRepository.findUserByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException(username));
     }
