@@ -1,7 +1,11 @@
 package com.pnu.dev.shpaltaif.integration.service;
 
 import com.google.common.collect.Iterables;
-import com.pnu.dev.shpaltaif.domain.*;
+import com.pnu.dev.shpaltaif.domain.Category;
+import com.pnu.dev.shpaltaif.domain.Post;
+import com.pnu.dev.shpaltaif.domain.PublicAccount;
+import com.pnu.dev.shpaltaif.domain.User;
+import com.pnu.dev.shpaltaif.domain.UserRole;
 import com.pnu.dev.shpaltaif.dto.CreateUserDto;
 import com.pnu.dev.shpaltaif.exception.ServiceException;
 import com.pnu.dev.shpaltaif.integration.BaseIntegrationTest;
@@ -10,18 +14,27 @@ import com.pnu.dev.shpaltaif.repository.CategoryRepository;
 import com.pnu.dev.shpaltaif.repository.PostRepository;
 import com.pnu.dev.shpaltaif.repository.PublicAccountRepository;
 import com.pnu.dev.shpaltaif.service.UserService;
-import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class UserServiceIntegrationTest extends BaseIntegrationTest {
+
+    private static final String USERNAME = "username";
+
+    private static final String PASSWORD = "password";
+
+    private static final String NAME = "name";
+
+    private static final String SURNAME = "surname";
+
 
     @Autowired
     private UserService userService;
@@ -52,9 +65,9 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
 
         //Attempt to create User_Writer without Name or Surname - Exception flow
         CreateUserDto createUserWriterInvalidDto = CreateUserDto.builder()
-                .username("writer")
-                .password("writer")
-                .repeatedPassword("writer")
+                .username(USERNAME)
+                .password(PASSWORD)
+                .repeatedPassword(PASSWORD)
                 .role(UserRole.ROLE_WRITER)
                 .build();
         ServiceException thrown = assertThrows(ServiceException.class,
@@ -65,12 +78,12 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
 
         //Create User_Writer
         CreateUserDto createUserWriterValidDto = CreateUserDto.builder()
-                .username("writer")
-                .password("writer")
-                .repeatedPassword("writer")
+                .username(USERNAME)
+                .password(PASSWORD)
+                .repeatedPassword(PASSWORD)
                 .role(UserRole.ROLE_WRITER)
-                .name("name")
-                .surname("surname")
+                .name(NAME)
+                .surname(SURNAME)
                 .build();
 
         User expectedWriter = User.builder()
@@ -99,8 +112,8 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
         //Create User_Editor
         CreateUserDto createUserEditorValidDto = CreateUserDto.builder()
                 .username("editor")
-                .password("editor")
-                .repeatedPassword("editor")
+                .password(PASSWORD)
+                .repeatedPassword(PASSWORD)
                 .role(UserRole.ROLE_EDITOR)
                 .build();
 
@@ -200,12 +213,12 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
 
     private User createAndSaveUserWriter() {
         CreateUserDto createUserWriterDto = CreateUserDto.builder()
-                .username("writer")
-                .password("writer")
-                .repeatedPassword("writer")
+                .username(USERNAME)
+                .password(PASSWORD)
+                .repeatedPassword(PASSWORD)
                 .role(UserRole.ROLE_WRITER)
-                .name("name")
-                .surname("surname")
+                .name(NAME)
+                .surname(SURNAME)
                 .build();
 
         userService.create(createUserWriterDto);
