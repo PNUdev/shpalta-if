@@ -68,10 +68,10 @@ public class PublicAccountServiceIntegrationTest extends BaseIntegrationTest {
         assertEquals(1, publicAccountService.findAll().size());
 
         PublicAccount expectedPublicAccount = PublicAccount.builder()
-                .name(publicAccountDto.getName())
-                .surname(publicAccountDto.getSurname())
-                .profileImageUrl(publicAccountDto.getProfileImageUrl())
-                .description(publicAccountDto.getDescription())
+                .name(NAME)
+                .surname(SURNAME)
+                .profileImageUrl(PROFILE_IMAGE_URL)
+                .description(DESCRIPTION)
                 .user(userWriter)
                 .build();
 
@@ -95,10 +95,10 @@ public class PublicAccountServiceIntegrationTest extends BaseIntegrationTest {
         assertEquals(1, publicAccountService.findAll().size());
 
         PublicAccount expectedUpdatedPublicAccount = PublicAccount.builder()
-                .name(updatePublicAccountDto.getName())
-                .surname(updatePublicAccountDto.getSurname())
-                .profileImageUrl(updatePublicAccountDto.getProfileImageUrl())
-                .description(updatePublicAccountDto.getDescription())
+                .name(UPDATED_NAME)
+                .surname(UPDATED_SURNAME)
+                .profileImageUrl(UPDATED_PROFILE_IMAGE_URL)
+                .description(UPDATED_DESCRIPTION)
                 .user(userWriter)
                 .build();
 
@@ -127,8 +127,8 @@ public class PublicAccountServiceIntegrationTest extends BaseIntegrationTest {
 
         //Set pseudonym
         PublicAccountDto publicAccountDtoWithUnusedPseudonym = PublicAccountDto.builder()
-                .name(createdPublicAccount.getName())
-                .surname(createdPublicAccount.getSurname())
+                .name(NAME)
+                .surname(SURNAME)
                 .pseudonymUsed(false)
                 .pseudonym(PSEUDONYM)
                 .build();
@@ -140,10 +140,10 @@ public class PublicAccountServiceIntegrationTest extends BaseIntegrationTest {
 
         //Activate pseudonym usage
         PublicAccountDto publicAccountDtoWithUsedPseudonym = PublicAccountDto.builder()
-                .name(createdPublicAccount.getName())
-                .surname(createdPublicAccount.getSurname())
+                .name(NAME)
+                .surname(SURNAME)
                 .pseudonymUsed(true)
-                .pseudonym(updatedPublicAccount.getPseudonym())
+                .pseudonym(PSEUDONYM)
                 .build();
         publicAccountService.update(publicAccountDtoWithUsedPseudonym, createdPublicAccount.getId());
 
@@ -167,8 +167,8 @@ public class PublicAccountServiceIntegrationTest extends BaseIntegrationTest {
         //Set blank pseudonym
         String blankPseudonym = " ";
         PublicAccountDto publicAccountDtoWithBlankSignature = PublicAccountDto.builder()
-                .name(publicAccount.getName())
-                .surname(publicAccount.getSurname())
+                .name(NAME)
+                .surname(SURNAME)
                 .pseudonymUsed(true)
                 .pseudonym(blankPseudonym)
                 .build();
@@ -179,8 +179,8 @@ public class PublicAccountServiceIntegrationTest extends BaseIntegrationTest {
 
         //Set correct pseudonym to publicAccount
         PublicAccountDto publicAccountDtoWithPseudonym = PublicAccountDto.builder()
-                .name(publicAccount.getName())
-                .surname(publicAccount.getSurname())
+                .name(NAME)
+                .surname(SURNAME)
                 .pseudonymUsed(true)
                 .pseudonym(PSEUDONYM)
                 .build();
@@ -198,8 +198,8 @@ public class PublicAccountServiceIntegrationTest extends BaseIntegrationTest {
         PublicAccount publicAccountFromDbWithPseudonym = publicAccountService.findById(publicAccount.getId());
         String bookedPseudonym = publicAccountFromDbWithPseudonym.getPseudonym();
         PublicAccountDto publicAccountDtoWithBookedPseudonym = PublicAccountDto.builder()
-                .name(anotherPublicAccount.getName())
-                .surname(anotherPublicAccount.getSurname())
+                .name(NAME)
+                .surname(SURNAME)
                 .pseudonymUsed(true)
                 .pseudonym(bookedPseudonym)
                 .build();

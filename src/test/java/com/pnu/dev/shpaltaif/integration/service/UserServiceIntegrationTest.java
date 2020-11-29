@@ -29,6 +29,8 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
 
     private static final String USERNAME = "username";
 
+    private static final String EDITOR_USERNAME = "editor";
+
     private static final String PASSWORD = "password";
 
     private static final String NAME = "name";
@@ -57,11 +59,8 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
     @Test
     public void createWriterAndEditorUsersTest() {
 
-        int expectedUsersNumber = userService.findAll().size();
-        int expectedPublicAccountsNumber = publicAccountRepository.findAll().size();
-
-        assertEquals(0, expectedUsersNumber);
-        assertEquals(0, expectedPublicAccountsNumber);
+        assertEquals(0, 0);
+        assertEquals(0, 0);
 
         //Attempt to create User_Writer without Name or Surname - Exception flow
         CreateUserDto createUserWriterInvalidDto = CreateUserDto.builder()
@@ -87,20 +86,18 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
                 .build();
 
         User expectedWriter = User.builder()
-                .username(createUserWriterValidDto.getUsername())
+                .username(USERNAME)
                 .role(UserRole.ROLE_WRITER)
                 .active(true)
                 .build();
 
         PublicAccount expectedPublicAccount = PublicAccount.builder()
-                .name(createUserWriterValidDto.getName())
-                .surname(createUserWriterValidDto.getSurname())
+                .name(NAME)
+                .surname(SURNAME)
                 .build();
 
         userService.create(createUserWriterValidDto);
-        expectedUsersNumber++;
-        expectedPublicAccountsNumber++;
-        assertEquals(expectedUsersNumber, userService.findAll().size());
+        assertEquals(1, userService.findAll().size());
         assertEquals(1, publicAccountRepository.findAll().size());
         User createdWriter = getLastCreatedUser();
         assertThat(createdWriter)
@@ -111,22 +108,21 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
 
         //Create User_Editor
         CreateUserDto createUserEditorValidDto = CreateUserDto.builder()
-                .username("editor")
+                .username(EDITOR_USERNAME)
                 .password(PASSWORD)
                 .repeatedPassword(PASSWORD)
                 .role(UserRole.ROLE_EDITOR)
                 .build();
 
         User expectedEditor = User.builder()
-                .username(createUserEditorValidDto.getUsername())
+                .username(EDITOR_USERNAME)
                 .role(UserRole.ROLE_EDITOR)
                 .active(true)
                 .build();
 
         userService.create(createUserEditorValidDto);
-        expectedUsersNumber++;
-        assertEquals(expectedUsersNumber, userService.findAll().size());
-        assertEquals(expectedPublicAccountsNumber, publicAccountRepository.findAll().size());
+        assertEquals(2, userService.findAll().size());
+        assertEquals(1, publicAccountRepository.findAll().size());
         User createdEditor = getLastCreatedUser();
         assertThat(createdEditor).isEqualToIgnoringGivenFields(expectedEditor, "id", "password");
         assertTrue(bCryptPasswordEncoder.matches(createUserEditorValidDto.getPassword(), createdEditor.getPassword()));
