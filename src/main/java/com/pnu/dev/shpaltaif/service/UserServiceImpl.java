@@ -88,7 +88,7 @@ public class UserServiceImpl implements UserService, AdminUserInitializer, UserD
         if (userRepository.existsByUsername(createUserDto.getUsername())) {
             throw new ServiceException("Логін уже використовується!");
         }
-        if (createUserDto.getRole().equals(UserRole.ROLE_WRITER)) {
+        if (createUserDto.getRole() == (UserRole.ROLE_WRITER)) {
             validatePublicAccountInfo(createUserDto);
         }
 
@@ -101,7 +101,7 @@ public class UserServiceImpl implements UserService, AdminUserInitializer, UserD
 
         User savedUser = userRepository.save(user);
 
-        if (savedUser.getRole().equals(UserRole.ROLE_WRITER)) {
+        if (savedUser.getRole() == (UserRole.ROLE_WRITER)) {
             PublicAccountDto publicAccountDto = PublicAccountDto.builder()
                     .name(createUserDto.getName())
                     .surname(createUserDto.getSurname())
