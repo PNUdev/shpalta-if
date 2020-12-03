@@ -19,6 +19,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.List;
+import java.util.Optional;
+
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -59,8 +62,8 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
     @Test
     public void createWriterAndEditorUsersTest() {
 
-        assertEquals(0, 0);
-        assertEquals(0, 0);
+        assertEquals(0, userService.findAll().size());
+        assertEquals(0, publicAccountRepository.findAll().size());
 
         //Attempt to create User_Writer without Name or Surname - Exception flow
         CreateUserDto createUserWriterInvalidDto = CreateUserDto.builder()
@@ -76,35 +79,7 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
         assertEquals(0, publicAccountRepository.findAll().size());
 
         //Create User_Writer
-        CreateUserDto createUserWriterValidDto = CreateUserDto.builder()
-                .username(USERNAME)
-                .password(PASSWORD)
-                .repeatedPassword(PASSWORD)
-                .role(UserRole.ROLE_WRITER)
-                .name(NAME)
-                .surname(SURNAME)
-                .build();
-
-        User expectedWriter = User.builder()
-                .username(USERNAME)
-                .role(UserRole.ROLE_WRITER)
-                .active(true)
-                .build();
-
-        PublicAccount expectedPublicAccount = PublicAccount.builder()
-                .name(NAME)
-                .surname(SURNAME)
-                .build();
-
-        userService.create(createUserWriterValidDto);
-        assertEquals(1, userService.findAll().size());
-        assertEquals(1, publicAccountRepository.findAll().size());
-        User createdWriter = getLastCreatedUser();
-        assertThat(createdWriter)
-                .isEqualToIgnoringGivenFields(expectedWriter, "id", "publicAccount", "password");
-        assertTrue(bCryptPasswordEncoder.matches(createUserWriterValidDto.getPassword(), createdWriter.getPassword()));
-        assertThat(createdWriter.getPublicAccount())
-                .isEqualToIgnoringGivenFields(expectedPublicAccount, "id", "createdAt", "updatedAt", "user");
+        createAndSaveUserWriter();
 
         //Create User_Editor
         CreateUserDto createUserEditorValidDto = CreateUserDto.builder()
@@ -208,6 +183,9 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
     }
 
     private User createAndSaveUserWriter() {
+        List<User> usersBeforeCreate = userService.findAll();
+        assertEquals(0, usersBeforeCreate.size());
+
         CreateUserDto createUserWriterDto = CreateUserDto.builder()
                 .username(USERNAME)
                 .password(PASSWORD)
@@ -216,8 +194,35 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
                 .name(NAME)
                 .surname(SURNAME)
                 .build();
-
         userService.create(createUserWriterDto);
+
+        List<User> usersAfterCreate = userService.findAll();
+        assertEquals(1, usersAfterCreate.size());
+
+        User expectedUser = User.builder()
+                .username(USERNAME)
+                .password(PASSWORD)
+                .role(UserRole.ROLE_WRITER)
+                .active(true)
+                .build();
+        PublicAccount expectedPublicAccount = PublicAccount.builder()
+                .name(NAME)
+                .surname(SURNAME)
+                .user(expectedUser)
+                .build();
+        expectedUser.setPublicAccount(expectedPublicAccount);
+        User actualUser = getLastCreatedUser();
+
+        assertThat(actualUser)
+                .isEqualToIgnoringGivenFields(expectedUser, "id", "publicAccount", "password");
+
+        assertTrue(bCryptPasswordEncoder.matches(PASSWORD, actualUser.getPassword()));
+
+        assertThat(actualUser.getPublicAccount())
+                .isEqualToIgnoringGivenFields(expectedPublicAccount, "id", "createdAt", "updatedAt", "user");
+
+        Optional<PublicAccount> actualPublicAccount = publicAccountRepository.findByUserId(actualUser.getId());
+        assertEquals(actualUser.getPublicAccount(), actualPublicAccount.get());
         return getLastCreatedUser();
     }
 
