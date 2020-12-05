@@ -1,6 +1,7 @@
 package com.pnu.dev.shpaltaif.controller;
 
 import com.pnu.dev.shpaltaif.domain.User;
+import com.pnu.dev.shpaltaif.domain.UserRole;
 import com.pnu.dev.shpaltaif.dto.CreateUserDto;
 import com.pnu.dev.shpaltaif.dto.UpdatePasswordDto;
 import com.pnu.dev.shpaltaif.service.UserService;
@@ -38,7 +39,9 @@ public class UserController {
     }
 
     @GetMapping("/new")
-    public String createForm() {
+    public String createForm(Model model) {
+        model.addAttribute("roleEditor", UserRole.ROLE_EDITOR);
+        model.addAttribute("roleWriter", UserRole.ROLE_WRITER);
         return "admin/user/form";
     }
 

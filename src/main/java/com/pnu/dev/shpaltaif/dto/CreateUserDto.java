@@ -1,5 +1,6 @@
 package com.pnu.dev.shpaltaif.dto;
 
+import com.pnu.dev.shpaltaif.domain.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,10 +23,11 @@ public class CreateUserDto {
     @NotNull(message = "Повторення паролю повинно бути вказаним")
     private String repeatedPassword;
 
-    @NotNull(message = "Ім'я повинно бути вказаним")
     private String name;
 
-    @NotNull(message = "Прізвище повинно бути вказаним")
     private String surname;
+
+    @NotNull(message = "Виберіть роль")
+    private UserRole role;
 
 }

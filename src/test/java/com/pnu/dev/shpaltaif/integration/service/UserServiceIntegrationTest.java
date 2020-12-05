@@ -1,5 +1,6 @@
 package com.pnu.dev.shpaltaif.integration.service;
 
+import com.google.common.collect.Iterables;
 import com.pnu.dev.shpaltaif.domain.Category;
 import com.pnu.dev.shpaltaif.domain.Post;
 import com.pnu.dev.shpaltaif.domain.PublicAccount;
@@ -31,19 +32,14 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
 
     private static final String USERNAME = "username";
 
+    private static final String EDITOR_USERNAME = "editor";
+
     private static final String PASSWORD = "password";
 
     private static final String NAME = "name";
 
     private static final String SURNAME = "surname";
 
-    private static final CreateUserDto CREATE_USER_DTO = CreateUserDto.builder()
-            .username(USERNAME)
-            .password(PASSWORD)
-            .repeatedPassword(PASSWORD)
-            .name(NAME)
-            .surname(SURNAME)
-            .build();
 
     @Autowired
     private UserService userService;
@@ -64,10 +60,56 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
     private ApplicationReadyEventListener applicationReadyEventListener;
 
     @Test
+    public void createWriterAndEditorUsersTest() {
+
+        assertEquals(0, userService.findAll().size());
+        assertEquals(0, publicAccountRepository.findAll().size());
+
+        //Attempt to create User_Writer without Name or Surname - Exception flow
+        CreateUserDto createUserWriterInvalidDto = CreateUserDto.builder()
+                .username(USERNAME)
+                .password(PASSWORD)
+                .repeatedPassword(PASSWORD)
+                .role(UserRole.ROLE_WRITER)
+                .build();
+        ServiceException thrown = assertThrows(ServiceException.class,
+                () -> userService.create(createUserWriterInvalidDto));
+        assertEquals("Ім'я повинно бути вказаним", thrown.getMessage());
+        assertEquals(0, userService.findAll().size());
+        assertEquals(0, publicAccountRepository.findAll().size());
+
+        //Create User_Writer
+        createAndSaveUserWriter();
+
+        //Create User_Editor
+        CreateUserDto createUserEditorValidDto = CreateUserDto.builder()
+                .username(EDITOR_USERNAME)
+                .password(PASSWORD)
+                .repeatedPassword(PASSWORD)
+                .role(UserRole.ROLE_EDITOR)
+                .build();
+
+        User expectedEditor = User.builder()
+                .username(EDITOR_USERNAME)
+                .role(UserRole.ROLE_EDITOR)
+                .active(true)
+                .build();
+
+        userService.create(createUserEditorValidDto);
+
+        List<User> usersAfterCreateEditor = userService.findAll();
+        assertEquals(2, usersAfterCreateEditor.size());
+        assertEquals(1, publicAccountRepository.findAll().size());
+        User createdEditor = getLastCreatedUser();
+        assertThat(createdEditor).isEqualToIgnoringGivenFields(expectedEditor, "id", "password");
+        assertTrue(bCryptPasswordEncoder.matches(createUserEditorValidDto.getPassword(), createdEditor.getPassword()));
+    }
+
+    @Test
     public void createThenDeactivateThenActivate() {
 
         // Create
-        User actualUser = createAndSaveUser();
+        User actualUser = createAndSaveUserWriter();
         Long actualUserId = actualUser.getId();
 
         // Deactivate
@@ -80,14 +122,13 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
         userService.activate(actualUserId);
         User activatedUser = userService.findById(actualUserId);
         assertTrue(activatedUser.isActive());
-
     }
 
     @Test
     public void createThenDeactivateThenDelete() {
 
         // Create
-        User actualUser = createAndSaveUser();
+        User actualUser = createAndSaveUserWriter();
         Long actualUserId = actualUser.getId();
 
         // Deactivate
@@ -109,7 +150,7 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
     public void createThenTryToDeleteActive() {
 
         // Create
-        User actualUser = createAndSaveUser();
+        User actualUser = createAndSaveUserWriter();
 
         // Try to delete
         ServiceException thrown = assertThrows(ServiceException.class,
@@ -120,7 +161,7 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
     @Test
     public void createThenDeactivateThenTryToDeleteUserWithPosts() {
         // Create
-        User actualUser = createAndSaveUser();
+        User actualUser = createAndSaveUserWriter();
 
         // Add posts to user
         Category category = Category.builder()
@@ -143,11 +184,19 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
         assertEquals("Користувач повинен бути неактивним, щоб його можна було видалити", thrown.getMessage());
     }
 
-    private User createAndSaveUser() {
+    private User createAndSaveUserWriter() {
         List<User> usersBeforeCreate = userService.findAll();
         assertEquals(0, usersBeforeCreate.size());
 
-        userService.create(CREATE_USER_DTO);
+        CreateUserDto createUserWriterDto = CreateUserDto.builder()
+                .username(USERNAME)
+                .password(PASSWORD)
+                .repeatedPassword(PASSWORD)
+                .role(UserRole.ROLE_WRITER)
+                .name(NAME)
+                .surname(SURNAME)
+                .build();
+        userService.create(createUserWriterDto);
 
         List<User> usersAfterCreate = userService.findAll();
         assertEquals(1, usersAfterCreate.size());
@@ -158,15 +207,12 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
                 .role(UserRole.ROLE_WRITER)
                 .active(true)
                 .build();
-
         PublicAccount expectedPublicAccount = PublicAccount.builder()
                 .name(NAME)
                 .surname(SURNAME)
                 .user(expectedUser)
                 .build();
-
         expectedUser.setPublicAccount(expectedPublicAccount);
-
         User actualUser = usersAfterCreate.get(0);
 
         assertThat(actualUser)
@@ -179,8 +225,11 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
 
         Optional<PublicAccount> actualPublicAccount = publicAccountRepository.findByUserId(actualUser.getId());
         assertEquals(actualUser.getPublicAccount(), actualPublicAccount.get());
-
         return actualUser;
+    }
+
+    private User getLastCreatedUser() {
+        return Iterables.getLast(userService.findAll());
     }
 
 }

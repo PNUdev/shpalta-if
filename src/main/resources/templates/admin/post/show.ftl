@@ -3,15 +3,25 @@
 <div class="container">
 
     <div class="row mt-4 d-flex align-items-center  justify-content-end">
-        <@security.authorize access="hasRole('ROLE_WRITER')">
+        <@security.authorize access="hasAnyRole('ROLE_WRITER', 'ROLE_EDITOR')">
             <a href="/admin/posts/edit/${post.id}" role="button"
                class="btn btn-warning btn-sm m-1 w-40">Редагувати</a>
         </@security.authorize>
-        <a href="/admin/posts/<#if post.isActive()>deactivate<#else>delete</#if>/${post.id}"
-           role="button"
-           class="btn btn-danger btn-sm m-1 w-40">
-            <#if post.isActive()>Перемістити в архів<#else>Видалити назавжди</#if>
-        </a>
+        <#if post.isActive()>
+            <a href="/admin/posts/deactivate/${post.id}"
+               role="button"
+               class="btn btn-danger btn-sm m-1 w-40">
+                Перемістити в архів
+            </a>
+        <#else >
+            <@security.authorize access="hasAnyRole('ROLE_ADMIN', 'ROLE_WRITER')">
+                <a href="/admin/posts/delete/${post.id}"
+                   role="button"
+                   class="btn btn-danger btn-sm m-1 w-40">
+                    Видалити назавжди
+                </a>
+            </@security.authorize>
+        </#if>
     </div>
 
     <div class="row  border bg-light">

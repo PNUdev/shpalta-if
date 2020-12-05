@@ -27,6 +27,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Objects;
 
+import static org.apache.commons.lang3.StringUtils.isBlank;
+
 @Service
 public class UserServiceImpl implements UserService, AdminUserInitializer, UserDetailsService, AuthSessionSynchronizer {
 
@@ -86,29 +88,33 @@ public class UserServiceImpl implements UserService, AdminUserInitializer, UserD
         if (userRepository.existsByUsername(createUserDto.getUsername())) {
             throw new ServiceException("Логін уже використовується!");
         }
+        if (createUserDto.getRole() == (UserRole.ROLE_WRITER)) {
+            validatePublicAccountInfo(createUserDto);
+        }
 
         User user = User.builder()
                 .username(createUserDto.getUsername())
                 .password(bCryptPasswordEncoder.encode(createUserDto.getPassword()))
-                .role(UserRole.ROLE_WRITER)
+                .role(createUserDto.getRole())
                 .active(Boolean.TRUE)
                 .build();
 
         User savedUser = userRepository.save(user);
 
-        PublicAccountDto publicAccountDto = PublicAccountDto.builder()
-                .name(createUserDto.getName())
-                .surname(createUserDto.getSurname())
-                .build();
+        if (savedUser.getRole() == (UserRole.ROLE_WRITER)) {
+            PublicAccountDto publicAccountDto = PublicAccountDto.builder()
+                    .name(createUserDto.getName())
+                    .surname(createUserDto.getSurname())
+                    .build();
 
-        PublicAccount publicAccount = publicAccountService.create(publicAccountDto, user);
+            PublicAccount publicAccount = publicAccountService.create(publicAccountDto, user);
 
-        User userWithPublicAccount = savedUser.toBuilder()
-                .publicAccount(publicAccount)
-                .build();
+            User userWithPublicAccount = savedUser.toBuilder()
+                    .publicAccount(publicAccount)
+                    .build();
 
-        userRepository.save(userWithPublicAccount);
-
+            userRepository.save(userWithPublicAccount);
+        }
     }
 
     @Override
@@ -195,6 +201,15 @@ public class UserServiceImpl implements UserService, AdminUserInitializer, UserD
 
         userRepository.save(newAdminUser);
 
+    }
+
+    private void validatePublicAccountInfo(CreateUserDto createUserDto) {
+        if (isBlank(createUserDto.getName())) {
+            throw new ServiceException("Ім'я повинно бути вказаним");
+        }
+        if (isBlank(createUserDto.getSurname())) {
+            throw new ServiceException("Прізвище повинно бути вказаним");
+        }
     }
 
     private void setActive(User user, boolean active) {
