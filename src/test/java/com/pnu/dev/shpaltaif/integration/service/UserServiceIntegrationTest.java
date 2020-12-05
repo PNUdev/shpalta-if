@@ -96,7 +96,9 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
                 .build();
 
         userService.create(createUserEditorValidDto);
-        assertEquals(2, userService.findAll().size());
+
+        List<User> usersAfterCreateEditor = userService.findAll();
+        assertEquals(2, usersAfterCreateEditor.size());
         assertEquals(1, publicAccountRepository.findAll().size());
         User createdEditor = getLastCreatedUser();
         assertThat(createdEditor).isEqualToIgnoringGivenFields(expectedEditor, "id", "password");
@@ -211,7 +213,7 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
                 .user(expectedUser)
                 .build();
         expectedUser.setPublicAccount(expectedPublicAccount);
-        User actualUser = getLastCreatedUser();
+        User actualUser = usersAfterCreate.get(0);
 
         assertThat(actualUser)
                 .isEqualToIgnoringGivenFields(expectedUser, "id", "publicAccount", "password");
@@ -223,7 +225,7 @@ public class UserServiceIntegrationTest extends BaseIntegrationTest {
 
         Optional<PublicAccount> actualPublicAccount = publicAccountRepository.findByUserId(actualUser.getId());
         assertEquals(actualUser.getPublicAccount(), actualPublicAccount.get());
-        return getLastCreatedUser();
+        return actualUser;
     }
 
     private User getLastCreatedUser() {

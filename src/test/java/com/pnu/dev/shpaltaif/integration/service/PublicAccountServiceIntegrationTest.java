@@ -45,6 +45,7 @@ public class PublicAccountServiceIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void findByIdNotFound() {
+        assertEquals(0, publicAccountService.findAll().size());
         ServiceException thrown = assertThrows(ServiceException.class,
                 () -> publicAccountService.findById(Long.MAX_VALUE));
         assertEquals("Акаунт не знайдено", thrown.getMessage());
