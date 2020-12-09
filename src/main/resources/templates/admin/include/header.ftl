@@ -14,6 +14,8 @@
         </@security.authorize >
         <a class="navbar-brand" href="/admin/posts">Пости</a>
         <@security.authorize access="hasRole('ROLE_ADMIN')">
+            <a class="navbar-brand"
+               href="/admin/feedbacks">Відгуки <#if  0 < unreviewedFeedbacksCount >(+${unreviewedFeedbacksCount}) </#if></a>
             <a class="navbar-brand" href="/admin/security-info">Безпека</a>
         </@security.authorize >
     </div>

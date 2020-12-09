@@ -68,7 +68,6 @@ class TelegramNotificationServiceImplTest {
 
         List<TelegramBotUser> telegramBotUsersForPageOne = buildTelegramBotUsersPageOne();
 
-
         Pageable pageOnePageable = PageRequest.of(0, PAGE_SIZE);
 
         Page<TelegramBotUser> telegramBotUsersPageOne =
@@ -118,7 +117,6 @@ class TelegramNotificationServiceImplTest {
         Post post = buildPost();
 
         List<TelegramBotUser> telegramBotUsersForPageOne = buildTelegramBotUsersPageOne();
-
 
         Pageable pageOnePageable = PageRequest.of(0, PAGE_SIZE);
 
