@@ -3,6 +3,7 @@ package com.pnu.dev.shpaltaif.service;
 import com.pnu.dev.shpaltaif.domain.Feedback;
 import com.pnu.dev.shpaltaif.exception.ServiceException;
 import com.pnu.dev.shpaltaif.repository.FeedbackRepository;
+import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,11 +40,12 @@ public class FeedbackServiceImpl implements FeedbackService {
 
     @Override
     public void create(Feedback feedback) {
+
         Feedback feedbackToCreate = Feedback.builder()
-                .content(feedback.getContent())
+                .content(StringEscapeUtils.escapeHtml4(feedback.getContent()))
                 .reviewed(false)
                 .active(true)
-                .userInfo(feedback.getUserInfo())
+                .userInfo(StringEscapeUtils.escapeHtml4(feedback.getUserInfo()))
                 .createdAt(LocalDateTime.now())
                 .build();
 
