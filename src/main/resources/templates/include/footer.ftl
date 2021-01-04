@@ -1,4 +1,4 @@
 <h1>Footer</h1>
-<a href="/feedbacks">Залишити відгук</a>
+<a href="/feedbacks">Зворотній зв'язок</a>
 </body>
 </html>

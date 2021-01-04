@@ -55,26 +55,17 @@ public class FeedbackServiceImpl implements FeedbackService {
     @Override
     public void deactivate(Long id) {
 
-        Feedback feedbackFromDb = findById(id);
-        Feedback reviewedFeedback = Feedback.builder()
-                .id(feedbackFromDb.getId())
-                .content(feedbackFromDb.getContent())
-                .userInfo(feedbackFromDb.getUserInfo())
-                .createdAt(feedbackFromDb.getCreatedAt())
-                .reviewed(feedbackFromDb.isReviewed())
+        Feedback feedbackFromDb = feedbackRepository.findById(id)
+                .orElseThrow(() -> new ServiceException("Відгук не знайдено!"));
+        Feedback deactivatedFeedback = feedbackFromDb.toBuilder()
                 .active(false)
                 .build();
 
-        feedbackRepository.save(reviewedFeedback);
+        feedbackRepository.save(deactivatedFeedback);
     }
 
     private void markAllAsReviewed(List<Feedback> feedbacks) {
-        List<Feedback> reviewedFeedbacks = feedbacks.stream().map(feedback -> Feedback.builder()
-                .id(feedback.getId())
-                .content(feedback.getContent())
-                .userInfo(feedback.getUserInfo())
-                .createdAt(feedback.getCreatedAt())
-                .active(feedback.isActive())
+        List<Feedback> reviewedFeedbacks = feedbacks.stream().map(feedback -> feedback.toBuilder()
                 .reviewed(true)
                 .build()
         ).collect(Collectors.toList());
@@ -82,9 +73,4 @@ public class FeedbackServiceImpl implements FeedbackService {
         feedbackRepository.saveAll(reviewedFeedbacks);
     }
 
-
-    private Feedback findById(Long id) {
-        return feedbackRepository.findById(id)
-                .orElseThrow(() -> new ServiceException("Відгук не знайдено!"));
-    }
 }

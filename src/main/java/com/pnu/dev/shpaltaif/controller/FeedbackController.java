@@ -25,10 +25,15 @@ public class FeedbackController {
         return "feedback/form";
     }
 
-    @PostMapping("/create")
-    public String create(Feedback feedback, Model model) {
-        feedbackService.create(feedback);
-        model.addAttribute("feedback", feedback);
+    @GetMapping("/after-submit")
+    public String showAfterSubmitPage() {
+
         return "feedback/success";
+    }
+
+    @PostMapping("/create")
+    public String create(Feedback feedback) {
+        feedbackService.create(feedback);
+        return "redirect:/feedbacks/after-submit";
     }
 }

@@ -6,7 +6,7 @@
 <#else>
     <table class="table table-striped mx-3">
         <tbody>
-        <#list feedbacks.getContent() as feedback >
+        <#list feedbacks.content as feedback >
             <tr class="container <#if !(feedback.reviewed)>table-success</#if>">
                 <th scope="row">
                     <div class="row">
