@@ -12,5 +12,6 @@ import lombok.NoArgsConstructor;
 public class FailedLoginAttemptsInfo {
 
     private long ipBlockedNumberToday;
+
     private long ipBlockedNumber;
 }

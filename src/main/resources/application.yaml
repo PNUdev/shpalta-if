@@ -20,6 +20,7 @@ spring:
           cache:
             missing_cache_strategy: create
     hibernate.ddl-auto: validate
+    open-in-view: false
   data:
     web.pageable.one-indexed-parameters: true
 

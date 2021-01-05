@@ -35,9 +35,15 @@ import java.util.Random;
 
 import static java.util.Objects.nonNull;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PostServiceIntegrationTest extends BaseIntegrationTest {
+
+    private static final Pageable PAGEABLE = PageRequest.of(0, Integer.MAX_VALUE);
 
     @Autowired
     private PostService postService;
@@ -60,10 +66,12 @@ public class PostServiceIntegrationTest extends BaseIntegrationTest {
     @MockBean
     private TelegramNotificationService telegramNotificationService;
 
-    private static final Pageable PAGEABLE = PageRequest.of(0, Integer.MAX_VALUE);
     private User admin;
+
     private User editor;
+
     private List<User> writers;
+
     private List<Category> categories;
 
     @BeforeEach
