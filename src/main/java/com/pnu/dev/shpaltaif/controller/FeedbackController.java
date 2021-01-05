@@ -8,10 +8,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/feedbacks")
 public class FeedbackController {
+
+    private static final String SHOW_AFTER_SUBMITTED_ATTRIBUTE = "show-after-submitted";
 
     private final FeedbackService feedbackService;
 
@@ -26,14 +29,17 @@ public class FeedbackController {
     }
 
     @GetMapping("/after-submit")
-    public String showAfterSubmitPage() {
-
-        return "feedback/success";
+    public String showAfterSubmitPage(Model model) {
+        if (model.containsAttribute(SHOW_AFTER_SUBMITTED_ATTRIBUTE)) {
+            return "feedback/after-submit";
+        }
+        return "redirect:/";
     }
 
     @PostMapping("/create")
-    public String create(Feedback feedback) {
+    public String create(Feedback feedback, RedirectAttributes redirectAttributes) {
         feedbackService.create(feedback);
+        redirectAttributes.addFlashAttribute(SHOW_AFTER_SUBMITTED_ATTRIBUTE, true);
         return "redirect:/feedbacks/after-submit";
     }
 }
