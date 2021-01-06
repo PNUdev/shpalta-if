@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 import org.telegram.telegrambots.bots.TelegramWebhookBot;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
@@ -89,6 +90,7 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
         this.freemarkerTemplateResolver = freemarkerTemplateResolver;
     }
 
+    @Transactional
     @Override
     public BotApiMethod onWebhookUpdateReceived(Update update) {
 
