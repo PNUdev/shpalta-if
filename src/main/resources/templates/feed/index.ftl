@@ -22,6 +22,7 @@
     let categoryParam = '${(category)!}';
     let sortParam = '${(sort)!}';
     let title = '${(title)!}';
+    let authorPublicAccountId = '${(authorPublicAccountId)!}';
 
     $(window).on('load scroll', function () {
             if ($(window).scrollTop() + $(window).height() === $(document).height()) {
@@ -38,6 +39,10 @@
 
                 if (title) {
                     requestUrl += '&title=' + title;
+                }
+
+                if (authorPublicAccountId) {
+                    requestUrl += '&authorPublicAccountId=' + authorPublicAccountId;
                 }
 
                 $.get(requestUrl, response => {

@@ -15,4 +15,6 @@ public class PostsPublicFilter {
 
     private String categoryUrl;
 
+    private Long authorPublicAccountId;
+
 }
