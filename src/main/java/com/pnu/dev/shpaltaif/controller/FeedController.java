@@ -13,11 +13,13 @@ public class FeedController {
     public String showFeed(@PathVariable(value = "category", required = false) String category,
                            @RequestParam(value = "sort", required = false) String sort,
                            @RequestParam(value = "title", required = false) String title,
+                           @RequestParam(value = "author", required = false) String authorPublicAccountId,
                            Model model) {
 
         model.addAttribute("category", category);
         model.addAttribute("sort", sort);
         model.addAttribute("title", title);
+        model.addAttribute("authorPublicAccountId", authorPublicAccountId);
 
         return "feed/index";
     }

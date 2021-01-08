@@ -19,9 +19,10 @@
     // ToDo feel free to rewrite this piece of code in scope of UI implementation
     //  (it's just a demo of desired behaviour) as long as you keep the same approach
 
-    let categoryParam = '${(category)!}';
-    let sortParam = '${(sort)!}';
-    let title = '${(title)!}';
+    const categoryParam = '${(category)!}';
+    const sortParam = '${(sort)!}';
+    const title = '${(title)!}';
+    const authorPublicAccountId = '${(authorPublicAccountId)!}';
 
     $(window).on('load scroll', function () {
             if ($(window).scrollTop() + $(window).height() === $(document).height()) {
@@ -38,6 +39,10 @@
 
                 if (title) {
                     requestUrl += '&title=' + title;
+                }
+
+                if (authorPublicAccountId) {
+                    requestUrl += '&authorPublicAccountId=' + authorPublicAccountId;
                 }
 
                 $.get(requestUrl, response => {

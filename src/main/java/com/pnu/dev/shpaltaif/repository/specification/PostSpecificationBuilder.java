@@ -21,13 +21,13 @@ import static java.util.Objects.nonNull;
 @Component
 public class PostSpecificationBuilder {
 
-    private final PublicAccountService publicAccountRepository;
+    private final PublicAccountService publicAccountService;
 
     private final CategoryService categoryService;
 
     @Autowired
     public PostSpecificationBuilder(PublicAccountService publicAccountService, CategoryService categoryService) {
-        this.publicAccountRepository = publicAccountService;
+        this.publicAccountService = publicAccountService;
         this.categoryService = categoryService;
     }
 
@@ -49,7 +49,7 @@ public class PostSpecificationBuilder {
         if (user.getRole().equals(UserRole.ROLE_WRITER)) {
             searchCriteriaList.add(new SearchCriteria("authorPublicAccount", user.getPublicAccount(), SearchOperation.EQUAL));
         } else if (nonNull(postsAdminFilter.getAuthorPublicAccountId())) {
-            PublicAccount publicAccount = publicAccountRepository.findById(postsAdminFilter.getAuthorPublicAccountId());
+            PublicAccount publicAccount = publicAccountService.findById(postsAdminFilter.getAuthorPublicAccountId());
             searchCriteriaList.add(new SearchCriteria("authorPublicAccount", publicAccount, SearchOperation.EQUAL));
         }
 
@@ -70,6 +70,11 @@ public class PostSpecificationBuilder {
         if (nonNull(postsPublicFilter.getCategoryUrl())) {
             Category category = categoryService.findByPublicUrl(postsPublicFilter.getCategoryUrl());
             searchCriteriaList.add(new SearchCriteria("category", category, SearchOperation.EQUAL));
+        }
+
+        if (nonNull(postsPublicFilter.getAuthorPublicAccountId())) {
+            PublicAccount publicAccount = publicAccountService.findById(postsPublicFilter.getAuthorPublicAccountId());
+            searchCriteriaList.add(new SearchCriteria("authorPublicAccount", publicAccount, SearchOperation.EQUAL));
         }
 
         return new PostSpecification(searchCriteriaList);
