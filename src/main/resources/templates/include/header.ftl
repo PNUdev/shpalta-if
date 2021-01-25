@@ -15,7 +15,7 @@
 <script>
     $(function () {
         $('#search-bar').on('input', function () {
-            title = $('#search-bar').val().trim();
+            const title = $('#search-bar').val().trim();
             if (!title) {
                 $('#search-result').html("");
                 return;
