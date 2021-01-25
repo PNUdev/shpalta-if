@@ -13,7 +13,7 @@
     <li>${(post.content)!}</li>
     <li>
         <div class="fb-like"
-             data-href="http://localhost:8080/posts/${post.id}"
+             data-href="${appBasePath}/posts/${post.id}"
              data-width=""
              data-layout="standard"
              data-action="like"
@@ -23,7 +23,7 @@
    <li>
        <div class="fb-comments"
              data-colorscheme="dark"
-             data-href="http://localhost:8080/posts/${post.id}"
+             data-href="${appBasePath}/posts/${post.id}"
              data-width=""
              data-numposts="3"
        ></div>
