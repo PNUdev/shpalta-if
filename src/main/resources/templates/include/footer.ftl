@@ -65,5 +65,17 @@
         searchInput.value = "";
       }
     </script>
+    <script>
+      var topLimit = $('#sidebar').offset().top;
+
+      $(window).scroll(function() {
+        //console.log(topLimit <= $(window).scrollTop())
+        if (topLimit <= $(window).scrollTop()) {
+          $('#sidebar').addClass('sticky')
+        } else {
+          $('#sidebar').removeClass('sticky')
+        }
+      })
+    </script>
   </body>
 </html>
