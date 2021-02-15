@@ -46,6 +46,16 @@
     </script>
 
     <script>
+      $(".show-categories").on("click", function() {
+        $(".categories-mobile").addClass("active");
+        $("body").addClass('no-scroll');
+      });
+
+      $(".close-categories").on("click", function() {
+        $(".categories-mobile").removeClass("active");
+        $("body").removeClass('no-scroll');
+      });
+
       $(".search-icon").on("click", function() {
         if($(this).hasClass("active")) {
           $("form#search-form").submit();
@@ -83,13 +93,14 @@
     </script>
 
     <script>
-      let topLimit = $('#sidebar').offset().top;
+      let topLimit = $('.categories-container .sidebar').offset().top;
 
       $(window).scroll(function() {
         if (topLimit <= $(window).scrollTop()) {
-          $('#sidebar').addClass('sticky');
+          $('.categories-container').addClass('sticky');
+          console.log(topLimit, $(window).scrollTop() )
         } else {
-          $('#sidebar').removeClass('sticky');
+          $('.categories-container').removeClass('sticky');
         }
       });
     </script>

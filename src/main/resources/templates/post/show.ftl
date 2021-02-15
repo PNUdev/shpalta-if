@@ -2,7 +2,9 @@
 <#include "../include/header.ftl" >
 <#include "../include/facebookSocialPlugin.ftl">
 
-<@c.categories categories />
+<div class="col-3 d-none d-md-block">
+    <@c.categories categories />
+</div>
 
 <ul>
     <li>Title: ${post.title!}</li>

@@ -78,14 +78,11 @@ footer {
       }
     }
 
-    .copyright {
-      .text { color: white; }
-      .menu a { color: white; }
-    }
+    .copyright .text { color: white; }
   }
 }
 
-@media screen and (max-width: 576px) {
+@media screen and (max-width: 768px) {
   footer {
     .triangle {
       height: 50px;

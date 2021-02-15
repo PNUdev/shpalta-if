@@ -10,6 +10,10 @@ h3.posts-header {
 
 #feed-main {
   .posts .post {
+    .post__picture {
+      width: 300px;
+    }
+
     .caption {
       .caption-title h3 a {
         font-size: 18px;
@@ -31,12 +35,18 @@ h3.posts-header {
   }
 }
 
-@media screen and (max-width: 576px) {
+@media screen and (max-width: 768px) {
+  #feed-main {
+    .posts .post .post__picture {
+      width: 100%;
+    }
+  }
   .backdrop.active {
+    display: block !important;
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 100;
+    z-index: 200;
     height: 100vh;
     width: 100vw;
     background: rgba(0, 0, 0, .3);

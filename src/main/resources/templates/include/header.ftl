@@ -1,3 +1,5 @@
+<#import '../include/categories.ftl' as c >
+
 <html>
   <head>
     <meta charset="utf-8">
@@ -9,6 +11,7 @@
     <link rel="stylesheet" href="/css/search.css">
     <link rel="stylesheet" href="/css/sidebar.css">
     <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/scroller.css">
     <link rel="stylesheet" href="/css/footer.css">
 
     <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,400;1,700;1,900&family=Roboto+Slab:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -23,8 +26,17 @@
 
   <body class="d-flex flex-column justify-content-between">
     <div class="wrapper">
-      <div class="backdrop"></div>
-      <header class="d-flex justify-content-end align-items-center mb-5">
+      <div class="categories-mobile d-block d-md-none justify-content-between p-3 p-md-0">
+        <@c.categories categories />
+      </div>
+
+      <header class="d-flex justify-content-between justify-content-md-end align-items-start align-itmes-md-center mb-5">
+        <div class="backdrop d-none"></div>
+
+        <div class="show-categories d-block d-md-none">
+          <i class="fas fa-bars"></i>
+        </div>
+
         <a href="/" class="logo-link">
           <img src="/images/logo.png" alt="">
         </a>

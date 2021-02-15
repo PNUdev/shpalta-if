@@ -5,7 +5,7 @@ header {
   }
 
   .search-box {
-    z-index: 200;
+    z-index: 300;
     position: relative;
     height: 60px;
     width: 60px;
@@ -109,3 +109,9 @@ header {
   }
 }
 
+@media screen and (max-width: 576px) {
+  header .search-box {
+    top: 30px;
+    box-shadow: none;
+  }
+}
