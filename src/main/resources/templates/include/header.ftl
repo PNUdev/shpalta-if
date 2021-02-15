@@ -4,12 +4,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-    <link rel="stylesheet" href="css/general.css">
-    <link rel="stylesheet" href="css/header.css">
-    <link rel="stylesheet" href="css/search.css">
-    <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/sidebar.css">
-    <link rel="stylesheet" href="css/footer.css">
+    <link rel="stylesheet" href="/css/general.css">
+    <link rel="stylesheet" href="/css/header.css">
+    <link rel="stylesheet" href="/css/search.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/footer.css">
 
     <link href="https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;0,900;1,400;1,700;1,900&family=Roboto+Slab:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;0,900;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
@@ -20,27 +20,27 @@
 
     <title>IF Shpalta</title>
   </head>
+
   <body class="d-flex flex-column justify-content-between">
-    <header class="d-flex justify-content-between align-items-center mb-5">
-      <div class="menu sans-serif">
-        <ul class="d-flex justify-content-between align-items-center">
-          <li class="mr-2"><a href="#">Твоє здоров'я</a></li>
-          <li class="mr-2"><a href="#">Івано-Франківськ</a></li>
-          <li class="mr-2"><a href="#">Політика</a></li>
-          <li><a href="#">Технології</a></li>
-        </ul>
-      </div>
+    <div class="wrapper">
+      <div class="backdrop"></div>
+      <header class="d-flex justify-content-end align-items-center mb-5">
+        <a href="/" class="logo-link">
+          <img src="/images/logo.png" alt="">
+        </a>
 
-      <a href="/" class="logo-link">
-        <img src="images/logo.png" alt="">
-      </a>
+        <div class="search-box">
+          <form id="search-form" method="get" action="/feed">
+            <input type="text" placeholder="Введіть щось для пошуку.." class="search-input" autocomplete="off" name="title">
 
-      <div class="search-box">
-        <input type="text" placeholder="Введіть щось для пошуку..">
-        <div class="search-icon d-flex justify-content-center align-items-center"><i class="fas fa-search"></i></div>
-        <div class="cancel-icon"><i class="fas fa-times"></i></div>
-        <div class="search-data"></div>
-      </div>
-    </header>
+            <div class="search-icon d-flex justify-content-center align-items-center">
+              <i class="fas fa-search"></i>
+            </div>
 
-    <div class="container">
+            <div class="cancel-icon"><i class="fas fa-times"></i></div>
+            <div id='search-result' class="search-data d-none"></div>
+          </form>
+        </div>
+      </header>
+
+      <div class="container">

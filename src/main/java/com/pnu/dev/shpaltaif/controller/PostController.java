@@ -5,6 +5,7 @@ import com.pnu.dev.shpaltaif.dto.filter.PostsPublicFilter;
 import com.pnu.dev.shpaltaif.exception.ServiceException;
 import com.pnu.dev.shpaltaif.service.PostService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -20,6 +21,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/posts")
 public class PostController {
 
+    @Value("${app.base_path}")
+    private String appBasePath;
+
     private final PostService postService;
 
     @Autowired
@@ -30,6 +34,7 @@ public class PostController {
     @GetMapping("/{id}")
     public String findById(@PathVariable Long id, Model model) {
         Post post = postService.findActiveById(id);
+        model.addAttribute("appBasePath", appBasePath);
         model.addAttribute("post", post);
         return "post/show";
     }

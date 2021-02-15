@@ -1,4 +1,6 @@
+      </div>
     </div>
+
     <footer class="mt-5">
       <div class="triangle"></div>
 
@@ -22,60 +24,74 @@
           <div class="clearfix"></div>
         </div>
 
-        <div class="copyright d-flex justify-content-between align-items-center">
+        <div class="copyright d-flex justify-content-center align-items-center">
           <div class="text">© Copyright 2020 IF Shpalta</div>
-          <div class="menu">
-            <a href="#" class="mr-2">Твоє здоров'я</a>
-            <a href="#" class="mr-2">Івано-Франківськ</a>
-            <a href="#" class="mr-2">Політика</a>
-            <a href="#">Технології</a>
-          </div>
         </div>
       </div>
     </footer>
 
     <script>
-      const searchBox = document.querySelector(".search-box");
-      const searchBtn = document.querySelector(".search-icon");
-      const cancelBtn = document.querySelector(".cancel-icon");
-      const searchInput = document.querySelector("input");
-      const searchData = document.querySelector(".search-data");
+      const submitForm = () => {
+        if (searchInput.value != "") {
+          let value = searchInput.value;
 
-      searchBtn.onclick =()=>{
-        searchBox.classList.add("active");
-        searchBtn.classList.add("active");
-        searchInput.classList.add("active");
-        cancelBtn.classList.add("active");
-        searchInput.focus();
-
-        if(searchInput.value != ""){
-          var values = searchInput.value;
-          searchData.classList.remove("active");
-          searchData.innerHTML = "You just typed " + "<span style='font-weight: 500;'>" + values + "</span>";
-        }else{
+          searchData.classList.remove("d-none");
+          searchData.innerHTML = "<div class='type-result'>Ви написали " + "<span class='keyword'>" + value + "</span></div>";
+        } else {
           searchData.textContent = "";
         }
-      }
-      cancelBtn.onclick =()=>{
-        searchBox.classList.remove("active");
-        searchBtn.classList.remove("active");
-        searchInput.classList.remove("active");
-        cancelBtn.classList.remove("active");
-        searchData.classList.toggle("active");
-        searchInput.value = "";
+
+        documnet.querySelector("form#search-form").submit();
       }
     </script>
-    <script>
-      var topLimit = $('#sidebar').offset().top;
 
-      $(window).scroll(function() {
-        //console.log(topLimit <= $(window).scrollTop())
-        if (topLimit <= $(window).scrollTop()) {
-          $('#sidebar').addClass('sticky')
+    <script>
+      $(".search-icon").on("click", function() {
+        if($(this).hasClass("active")) {
+          $("form#search-form").submit();
+        }
+
+        $(".backdrop, .search-box, .search-icon").addClass("active");
+        $("input.search-input").focus();
+      })
+
+      $("input.search-input").on("input", function() {
+        const title = $(this).val().trim();
+
+        if (!title) {
+          $('#search-result').html("");
+          $("#search-result").addClass("d-none");
+
+          return;
         } else {
-          $('#sidebar').removeClass('sticky')
+          $.get('/posts/search-result-partial', {'title': title}, function(response) {
+            let link = $(response);
+            let truncatedTitle = link.text().substring(0, 35).trim(this);
+            link.text(truncatedTitle + (link.text().length > 35 ? '...' : ''));
+
+            $('#search-result').html(link);
+            $("#search-result").removeClass("d-none");
+          });
         }
       })
+
+      $(".cancel-icon, .backdrop").on("click", function() {
+        $(".backdrop, .search-box, .search-icon").removeClass("active");
+        $(".search-data").addClass("d-none");
+        $("input.search-input").val("");
+      });
+    </script>
+
+    <script>
+      let topLimit = $('#sidebar').offset().top;
+
+      $(window).scroll(function() {
+        if (topLimit <= $(window).scrollTop()) {
+          $('#sidebar').addClass('sticky');
+        } else {
+          $('#sidebar').removeClass('sticky');
+        }
+      });
     </script>
   </body>
 </html>
