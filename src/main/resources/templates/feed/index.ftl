@@ -1,6 +1,7 @@
 <#import '../include/categories.ftl' as c >
 <#include "../include/header.ftl" >
 
+<main id="wrapper">
 <@c.categories categories />
 
 <!-- ToDo we should have dropdown with possible sort variations;
@@ -52,5 +53,5 @@
         }
     );
 </script>
-
 <#include "../include/footer.ftl" >
+</main>
