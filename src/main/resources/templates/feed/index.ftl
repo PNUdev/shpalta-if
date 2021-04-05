@@ -13,7 +13,6 @@
     </p>
 </#if>
 <div id="feed-main">
-
 </div>
 
 <script>
@@ -53,5 +52,5 @@
         }
     );
 </script>
-<#include "../include/footer.ftl" >
 </main>
+<#include "../include/footer.ftl" >
