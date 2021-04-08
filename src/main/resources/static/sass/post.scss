@@ -1,0 +1,162 @@
+#feed-main{
+  width: 75%;
+  margin-left: 22%;
+  margin-right: 25%;
+
+  .post{
+    display: flex;
+    height: 130px;
+    margin-bottom: 1em;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 1px 1px 10px -4px #b1b1b1;
+
+    &-img{
+      width: 30%;
+      cursor: pointer;
+      transition: .3s linear;
+
+      &:hover{
+        opacity: .2;
+      }
+
+      &:hover + .post-credentials{
+        display: flex;
+      }
+    }
+
+    &-credentials{
+      width: 30%;
+      padding: 2% 3%;
+      position: absolute;
+      left: 0;
+      display: flex;
+      flex-direction: column;
+      font-size: 13px;
+      line-height: 2;
+      z-index: -1;
+
+      & i{
+        padding-right: 5px;
+      }
+    }
+
+    &-info{
+      width: 70%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      padding: 1% 2% 1% 2%;
+      background: #fff;
+      z-index: 1;
+
+      &_bottom{
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+        font-size: 12px;
+
+        &>div{
+          display: flex;
+        }
+
+        .post__created-at{
+          padding-right: .6em;
+
+          &:after{
+            content: "|";
+            color: #a7a7a7;
+            margin-left: .6em;
+          }
+        }
+        
+        .post__author:hover{
+            text-decoration: underline;
+        }
+      }
+
+      &:before{
+        content: "";
+        width: 15px;
+        height: 105%;
+        background-color: #fff;
+        position: absolute;
+        top: -1%;
+        left: -8px;
+        z-index: -1;
+        transform: rotate(5deg);
+      }
+    }
+
+    &-title{
+      position: relative;
+      font-size: 17px;
+
+      &:after{
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: -15%;
+        width: 20%;
+        height: 2px;
+        border :1px solid #ffffff;
+        border-radius: 1em;
+        background-color: #5ad67d;
+      }
+    }
+    &-btn{
+      text-decoration: underline;
+      color: #5ad67d;
+      font-size: 14px;
+    }
+
+  }
+
+  .post-headliner{
+    height: 400px;
+    flex-direction: column;
+    position: relative;
+    overflow: visible;
+
+    &:after{
+      content: "\f02e";
+      font-family: "Font Awesome 5 Free", sans-serif;
+      font-size: 33px;
+      font-weight: bold;
+      color: #d99f44;
+      position: absolute;
+      top: -4px;
+      right: 5px;
+    }
+
+    & > img{
+      width: 100%;
+      height: 75%;
+    }
+
+    .post-credentials{
+      font-size: 15px;
+    }
+
+    .post-info{
+      width: 100%;
+      height: 25%;
+
+      .post-title{
+        font-size: 18px;
+
+        &:after{
+          bottom: -20%;
+        }
+      }
+
+      &_bottom{
+        font-size: 14px;
+      }
+    }
+
+  }
+
+
+}

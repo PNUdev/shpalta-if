@@ -11,12 +11,14 @@
     <link rel="stylesheet" href="/css/header.css">
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/footer.css">
+    <link rel="stylesheet" href="/css/post.css">
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"
             integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
     <script src="https://kit.fontawesome.com/3fe1b74acd.js" crossorigin="anonymous"></script>
 
-    <title>SHPALTA_IF</title>
+    <link rel="shortcut icon" href="/images/favicon.ico" type="image/ico">
+    <title>Шпальта ІФ</title>
 </head>
 <body>
 
@@ -25,7 +27,7 @@
 
     <div class="header__search">
         <form method="get" action="/feed" class="search-form">
-            <input autofocus id="search-bar" name="title" placeholder="Знайти найкактуальніші події ..." type="text" autocomplete="off">
+            <input id="search-bar" name="title" placeholder="Знайти найкактуальніші події ..." type="text" autocomplete="off">
         </form>
 
         <i class="fas fa-search" id="search-btn"></i>
