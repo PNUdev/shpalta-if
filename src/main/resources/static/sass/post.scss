@@ -1,9 +1,8 @@
-#feed-main{
+#feed-main {
   width: 75%;
-  margin-left: 22%;
-  margin-right: 25%;
+  margin: 0 25% 0 22%;
 
-  .post{
+  .post {
     display: flex;
     height: 130px;
     margin-bottom: 1em;
@@ -11,37 +10,23 @@
     overflow: hidden;
     box-shadow: 1px 1px 10px -4px #b1b1b1;
 
-    &-img{
+    &-img {
       width: 30%;
       cursor: pointer;
-      transition: .3s linear;
+      overflow: hidden;
 
-      &:hover{
-        opacity: .2;
-      }
+      & > img {
+        width: 100%;
+        height: 100%;
+        transition: .3s ease-in-out;
 
-      &:hover + .post-credentials{
-        display: flex;
-      }
-    }
-
-    &-credentials{
-      width: 30%;
-      padding: 2% 3%;
-      position: absolute;
-      left: 0;
-      display: flex;
-      flex-direction: column;
-      font-size: 13px;
-      line-height: 2;
-      z-index: -1;
-
-      & i{
-        padding-right: 5px;
+        &:hover {
+          transform: scale(1.1);
+        }
       }
     }
 
-    &-info{
+    &-info {
       width: 70%;
       display: flex;
       flex-direction: column;
@@ -51,32 +36,32 @@
       background: #fff;
       z-index: 1;
 
-      &_bottom{
+      &_bottom {
         display: flex;
         justify-content: space-between;
         align-items: flex-end;
         font-size: 12px;
 
-        &>div{
+        & > div {
           display: flex;
         }
 
-        .post__created-at{
+        .post__created-at {
           padding-right: .6em;
 
-          &:after{
+          &:after {
             content: "|";
             color: #a7a7a7;
             margin-left: .6em;
           }
         }
-        
-        .post__author:hover{
-            text-decoration: underline;
+
+        .post__author:hover {
+          text-decoration: underline;
         }
       }
 
-      &:before{
+      &:before {
         content: "";
         width: 15px;
         height: 105%;
@@ -89,23 +74,24 @@
       }
     }
 
-    &-title{
+    &-title {
       position: relative;
       font-size: 17px;
 
-      &:after{
+      &:after {
         content: "";
         position: absolute;
         left: 0;
         bottom: -15%;
         width: 20%;
         height: 2px;
-        border :1px solid #ffffff;
+        border: 1px solid #ffffff;
         border-radius: 1em;
         background-color: #5ad67d;
       }
     }
-    &-btn{
+
+    &-btn {
       text-decoration: underline;
       color: #5ad67d;
       font-size: 14px;
@@ -113,13 +99,13 @@
 
   }
 
-  .post-headliner{
+  .post-headliner {
     height: 400px;
     flex-direction: column;
     position: relative;
     overflow: visible;
 
-    &:after{
+    &:after {
       content: "\f02e";
       font-family: "Font Awesome 5 Free", sans-serif;
       font-size: 33px;
@@ -130,33 +116,89 @@
       right: 5px;
     }
 
-    & > img{
+    .post-img {
       width: 100%;
       height: 75%;
     }
 
-    .post-credentials{
+    .post-credentials {
       font-size: 15px;
     }
 
-    .post-info{
+    .post-info {
       width: 100%;
       height: 25%;
 
-      .post-title{
+      .post-title {
         font-size: 18px;
 
-        &:after{
+        &:after {
           bottom: -20%;
         }
       }
 
-      &_bottom{
+      &_bottom {
         font-size: 14px;
       }
     }
-
   }
 
+}
 
+.post-show-wrapper {
+  width: 75%;
+  margin: 0 25% 0 22%;
+
+  .post {
+    &-title {
+      font-size: 32px;
+      font-weight: bold;
+      color: #292929;
+    }
+
+    &-stats {
+      display: flex;
+      align-items: flex-end;
+      margin-top: 5%;
+      border-bottom: 1px solid #b1b1b1;
+      font-size: 14px;
+
+      .post-author:hover {
+        text-decoration: underline;
+      }
+
+      .post-category {
+        margin-left: 1%;
+
+        &:before {
+          content: " | ";
+        }
+      }
+
+      .post-created-at {
+        margin-left: auto;
+      }
+    }
+
+    &-content {
+      width: 100%;
+      margin-top: 2%;
+
+      & img {
+        margin: 0 1%;
+      }
+    }
+
+    &-fb_like {
+      border-top: 1px solid #b1b1b1;
+      padding-top: 2%;
+      margin-top: 4%;
+    }
+
+    &-fb_comments {
+      text-align: center;
+      margin-top: 2%;
+    }
+
+  }
 }
