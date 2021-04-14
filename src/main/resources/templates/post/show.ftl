@@ -2,20 +2,24 @@
 <#include "../include/header.ftl" >
 <#include "../include/facebookSocialPlugin.ftl">
 
-<@c.categories categories />
+<main class="wrapper">
+    <@c.categories categories />
 
-<main id="wrapper">
     <ul class="post-show-wrapper">
         <li class="post-title">${post.title!}</li>
 
-        <ul class="post-stats">
-            <a href="/accounts/${post.authorPublicAccount.id}" title="Переглянути профіль автора">
-                <i class="fas fa-user-circle"></i>
-                <span class="post-author">${post.authorPublicAccount.getSignature()!}</span>
-            </a>
-            <li class="post-category">${(post.category.title)!}</li>
-            <li class="post-created-at">${(post.createdAt)!}</li>
-        </ul>
+        <li>
+            <ul class="post-stats">
+                <li>
+                    <a href="/accounts/${post.authorPublicAccount.id}" title="Переглянути профіль автора">
+                        <i class="fas fa-user-circle"></i>
+                        <span class="post-author">${post.authorPublicAccount.getSignature()!}</span>
+                    </a>
+                </li>
+                <li class="post-category">${(post.category.title)!}</li>
+                <li class="post-created-at">${(post.createdAt)!}</li>
+            </ul>
+        </li>
 
         <li class="post-content">${(post.content)!}</li>
 

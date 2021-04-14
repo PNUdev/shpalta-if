@@ -1,13 +1,37 @@
 <#import '../include/categories.ftl' as c >
 <#include "../include/header.ftl" >
 
-<@c.categories categories />
+<main class="wrapper">
+    <@c.categories categories />
 
-<ul>
-    <li>${account.getSignature()}</li>
-    <li>${(account.profileImageUrl)!}</li>
-    <li>${(account.description)!}</li>
-</ul>
+    <ul class="account">
+        <ul class="account-info">
+            <li class="account-name">${account.getSignature()}</li>
+            <li><span>Ім'я:</span> ${account.name}</li>
+            <li><span>Прізвище: </span>${account.surname}</li>
+            <li><span>Дата створення: </span><p class="account-created-at">${account.createdAt}</p></li>
+            <li>
+                <span>Опис: </span>
+                <p class="account-desc">${(account.description)!}</p>
+            </li>
+
+            <a class="account-posts-btn" href="/feed?author=${account.id}">Переглянути всі пости автора</a>
+        </ul>
+
+        <li class="accounts-item__img account-img">
+            <img src="${(account.profileImageUrl)!}" alt="NOT FOUND!"
+                 onerror="this.src='/images/public_account_default.png'">
+        </li>
+
+    </ul>
+
+</main>
+
+<script>
+    $(".account-created-at").each((idx, el) => {
+        el.innerText = el.innerText.replace("T", " ");
+    })
+</script>
 
 <#include "../admin/include/toastr.ftl" > <!-- Included here to show toast after account update -->
 <#include "../include/footer.ftl" >
