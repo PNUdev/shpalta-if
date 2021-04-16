@@ -100,7 +100,7 @@
       font-size: 14px;
     }
 
-    &-not-found{
+    &-not-found {
       text-align: center;
       margin-top: 1em;
     }
@@ -176,8 +176,8 @@
     &-stats {
       display: flex;
       align-items: flex-end;
-      margin-top: 5%;
-      border-bottom: 1px solid #b1b1b1;
+      margin-top: 4%;
+      border-bottom: 2px solid #b1b1b1;
       font-size: 14px;
 
       .post-author:hover {
@@ -195,6 +195,17 @@
       .post-created-at {
         margin-left: auto;
       }
+    }
+
+    &-img {
+      height: 280px;
+      width: 100%;
+
+      background-attachment: fixed;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: 100% 100%;
+      z-index: -1;
     }
 
     &-content {

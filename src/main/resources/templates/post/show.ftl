@@ -21,6 +21,8 @@
             </ul>
         </li>
 
+        <li class="post-img" data-pictureUrl="${(post.pictureUrl)!}"></li>
+
         <li class="post-content">${(post.content)!}</li>
 
         <li class="post-fb_like">
@@ -49,5 +51,9 @@
 <script>
     $(".post-created-at").each((idx, el) => {
         el.innerText = el.innerText.replace("T", " | ");
+    })
+
+    $(".post-img").each(function () {
+        $(this).css("background-image", "url(" + $(this).data("pictureurl") + ")")
     })
 </script>

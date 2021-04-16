@@ -16,8 +16,8 @@ li {
 
 body {
   background: #f8f8f8;
-  margin-top: 8em;
-  min-height: calc(100vh - 8em);
+  margin-top: 6em;
+  min-height: calc(100vh - 6em);
   font-family: "Open Sans", sans-serif;
   color: #292929;
   position: relative;
@@ -27,6 +27,7 @@ body {
 
 .wrapper {
   width: 90%;
+  max-width: 1400px;
   margin: 0 auto;
   position: relative;
   transition: .3s linear;
@@ -38,7 +39,7 @@ body {
 .search_opacity:after {
   content: "";
   position: absolute;
-  top: -8em;
+  top: -6em;
   width: 100vw;
   height: 100vh;
   animation: hide-body .5s linear;
@@ -49,8 +50,8 @@ body {
 .feed-main-management {
   margin-bottom: .3em;
 
-  .filter{
-    select, &-submit{
+  .filter {
+    select, &-submit {
       height: 2em;
       padding: 0 5px;
       border: 0;
@@ -59,7 +60,7 @@ body {
       cursor: pointer;
     }
 
-    &-submit{
+    &-submit {
       padding: 0 10px;
       background-color: #b5eeaa;
     }
@@ -70,7 +71,7 @@ body {
 .categories {
   position: fixed;
   left: 5%;
-  top: 8em;
+  top: 6em;
   width: 17%;
   z-index: 1;
 
