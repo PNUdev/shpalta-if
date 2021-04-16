@@ -1,6 +1,10 @@
 <#if error?? >
     <div>${error}</div>
 <#else>
+    <#if posts.content?size==0>
+        <p class="post-not-found">За вашим запитом нічого не знайдено ...</p>
+    </#if>
+
     <#list posts.content as post >
         <div class="post">
             <div class="post-img">
@@ -15,6 +19,11 @@
                         <p>
                             <i class="far fa-calendar-alt"></i>
                             <span class="post__created-at" data-date="${post.createdAt}"></span>
+                        </p>
+
+                        <p>
+                            <i class="fas fa-tag"></i>
+                            <span>${(post.category.title)!}</span>
                         </p>
 
                         <a href="/accounts/${post.authorPublicAccount.id}">
@@ -33,9 +42,9 @@
 </#if>
 
 <script>
-    if (categoryParam === "") {
-        let post = $('.post:first-child');
-        post.addClass("post-headliner");
+    if (categoryParam === "" && sortParam === "" && authorPublicAccountId === "") {
+        let post = $('.post')[0];
+        post.classList.add("post-headliner");
     }
 
     $(".post__created-at").each((idx, el) => {
