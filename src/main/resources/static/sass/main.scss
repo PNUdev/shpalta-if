@@ -114,6 +114,71 @@ body {
   }
 }
 
+.feedback {
+  display: flex;
+  flex-direction: column;
+  max-width: 500px;
+  width: 100%;
+  margin: 0 auto;
+
+  h2 {
+    font-size: 23px;
+    color: #393A3F;
+    margin-bottom: .5em;
+  }
+
+  .name, textarea {
+    border: 0;
+    outline: none;
+    border-radius: .6em;
+    margin-bottom: .5em;
+    padding-left: 10px;
+    font-size: 14px;
+    font-family: sans-serif;
+    box-shadow: 1px 1px 4px -1px #e3e3e3;
+  }
+
+  .name {
+    height: 2.5em;
+  }
+
+  textarea {
+    height: 10em;
+    padding-top: .5em;
+  }
+
+  button {
+    height: 2em;
+    border: 0;
+    outline: none;
+    border-radius: .6em;
+    background: linear-gradient(15deg, #9a99d2 0%, #b5aee2 100%);
+    color: #FAFAFA;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  &-after-submit {
+    width: max-content;
+    margin: 0 auto;
+
+    h3 {
+      font-size: 23px;
+      color: #2e812e;
+    }
+
+    a {
+      font-size: 16px;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+
+}
+
 @keyframes hide-body {
   0% {
     opacity: 0;

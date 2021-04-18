@@ -1,6 +1,8 @@
 <#include "../include/header.ftl" >
-<p>Дякуємо за відгук!</p>
-<a href="/">Повернутись на головну</a>
 
+<div class="feedback-after-submit">
+    <h3>Дякуємо за відгук! <i class="far fa-smile-beam"></i></h3>
+    <a href="/"><i class="fas fa-caret-left"></i> Повернутись на головну</a>
+</div>
 
 <#include "../include/footer.ftl" >
