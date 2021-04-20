@@ -23,13 +23,18 @@
 <header class="header">
     <a class="header__logo" href="/"></a>
 
+    <div class="header-links">
+        <a href="/accounts">Наші автори</a>
+        <a href="/feedbacks">Зворотній зв'язок</a>
+        <a href="https://telegram.im/@shpalta_if_stage_bot" target="_blank">Телеграм бот</a>
+    </div>
+
     <div class="header__search">
         <form method="get" action="/feed" class="search-form">
             <input id="search-bar" name="title" placeholder="Знайти найкактуальніші події ..." type="text" autocomplete="off">
         </form>
 
         <i class="fas fa-search" id="search-btn"></i>
-
         <div id="search-result"></div>
     </div>
 
@@ -60,6 +65,7 @@
             $('#search-result').hide();
         }
 
+        $('.header__search').toggleClass('search-header_show');
         $('.search-form').toggleClass('search__show');
         $(this).toggleClass('fa-search');
         $(this).toggleClass('fa-times');

@@ -13,7 +13,9 @@
         <div class="socials">
             <i class="fab fa-facebook-f"></i>
             <i class="fab fa-twitter"></i>
-            <i class="fab fa-telegram-plane"></i>
+            <a href="https://telegram.im/@shpalta_if_stage_bot" target="_blank">
+                <i class="fab fa-telegram-plane"></i>
+            </a>
         </div>
     </div>
 

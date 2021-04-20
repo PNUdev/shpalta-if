@@ -48,6 +48,10 @@
       }
     }
 
+    & > li {
+      height: 100%;
+    }
+
     &-info {
       height: 100%;
       display: flex;
