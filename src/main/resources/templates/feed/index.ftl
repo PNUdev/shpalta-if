@@ -6,7 +6,6 @@
 
     <!-- ToDo we should have dropdown with possible sort variations;
      applying of sort, that is different then current, should trigger reload of the page with new "sort" query param -->
-
     <div id="feed-main">
         <div class="feed-main-management">
             <form action="" class="filter">
@@ -32,9 +31,11 @@
 
         <#if title??>
             <p class="feed-main__search-by">
-               Результати пошуку за '${title}':
+                Результати пошуку за '${title}':
             </p>
         </#if>
+
+
     </div>
 
     <script>
@@ -46,10 +47,11 @@
         const title = '${(title)!}';
         const authorPublicAccountId = '${(authorPublicAccountId)!}';
 
-        $(window).on('load scroll', function () {
-                if ($(window).scrollTop() + $(window).height() === $(document).height()) {
+        let page = 1;
 
-                    let requestUrl = '/posts/partial?page=1'; // ToDo store previous page number and increment it for every new segment
+        $(window).on('load scroll', function () {
+                if ($(window).scrollTop() + $(window).height() >= $(document).height() - 160) {
+                    let requestUrl = '/posts/partial?page=' + page;
 
                     if (categoryParam) {
                         requestUrl += '&categoryUrl=' + categoryParam;
@@ -70,13 +72,14 @@
                     $.get(requestUrl, response => {
                         $("#feed-main").append(response)
                     })
+
+                    page++;
                 }
             }
         );
 
         let [sortBy, sortDir] = sortParam.split(",");
-        if(sortBy && sortDir){
-            console.log(sortBy)
+        if (sortBy && sortDir) {
             $('#sortBy')[0].value = sortBy;
             $('#sortDir')[0].value = sortDir;
         }

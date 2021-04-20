@@ -1,10 +1,6 @@
 <#if error?? >
     <div>${error}</div>
 <#else>
-    <#if posts.content?size==0>
-        <p class="post-not-found">За вашим запитом нічого не знайдено ...</p>
-    </#if>
-
     <#list posts.content as post >
         <div class="post">
             <div class="post-img">
