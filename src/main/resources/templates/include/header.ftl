@@ -23,7 +23,7 @@
 <header class="header">
     <a class="header__logo" href="/"></a>
 
-    <div class="header-links">
+    <div class="header-links header-links_show">
         <a href="/accounts">Наші автори</a>
         <a href="/feedbacks">Зворотній зв'язок</a>
         <a href="https://telegram.im/@shpalta_if_stage_bot" target="_blank">Телеграм бот</a>
@@ -31,10 +31,13 @@
 
     <div class="header__search">
         <form method="get" action="/feed" class="search-form">
-            <input id="search-bar" name="title" placeholder="Знайти найкактуальніші події ..." type="text" autocomplete="off">
+            <input id="search-bar" name="title" placeholder="Знайти найкактуальніші події ..." type="text"
+                   autocomplete="off">
         </form>
 
         <i class="fas fa-search" id="search-btn"></i>
+        <i class="fas fa-bars" id="menu-btn"></i>
+
         <div id="search-result"></div>
     </div>
 
@@ -60,13 +63,28 @@
         })
     });
 
-    $('#search-btn').on("click", function() {
-        if($(this).hasClass('fa-times')){
+    $('#search-btn').on("click", function () {
+        if ($(this).hasClass('fa-times')) {
             $('#search-result').hide();
+        }
+
+        if (window.innerWidth <= 740) {
+            $("#menu-btn").toggle();
         }
 
         $('.header__search').toggleClass('search-header_show');
         $('.search-form').toggleClass('search__show');
+
+        $(this).toggleClass('fa-search');
+        $(this).toggleClass('fa-times');
+        $('body').toggleClass('search_opacity');
+    })
+
+    $("#menu-btn").on("click", function () {
+        $(".header-links").toggleClass("header-links_show");
+        $(".categories").toggleClass("categories_show");
+        $("#search-btn").toggle();
+
         $(this).toggleClass('fa-search');
         $(this).toggleClass('fa-times');
         $('body').toggleClass('search_opacity');

@@ -31,12 +31,12 @@
     </aside>
 
     <script>
-        (function setCategoriesColor(){
+        (function setCategoriesColor() {
             let color = "${categoriesColor?js_string}"
             $('.categories__title').css({'border-color': color});
 
-            $(".categories__item_label[style='color:"+color+"']").each(function(){
-              this.parentElement.style.transform = "translate(1.5em)";
+            $(".categories__item_label[style='color:" + color + "']").each(function () {
+                this.parentElement.style.transform = "translate(1.5em)";
             })
         }())
     </script>

@@ -38,6 +38,7 @@
 
     &__img {
       width: 3.5em;
+      min-width: 3.5em;
       height: 3.5em;
       border-radius: 50%;
       overflow: hidden;
@@ -85,12 +86,20 @@
 
 .account {
   width: 75%;
-  margin: 2% 25% 0 22%;
+  margin: 3% 25% 0 22%;
   padding: 2%;
   background: linear-gradient(45deg, #ececec 0%, #dddddd 100%);
 
   display: flex;
   justify-content: space-between;
+  position: relative;
+
+  #home-btn{
+    display: block;
+    position: absolute;
+    top: -12%;
+    left: 0;
+  }
 
   &-info {
     display: flex;
@@ -135,6 +144,7 @@
   &-posts-btn {
     margin-top: 1em;
     width: max-content;
+    text-align: center;
     border: 2px solid #8CC350;
     color: #393A3F;
     border-radius: 1em;
@@ -145,4 +155,28 @@
       border-color: transparent;
     }
   }
+}
+
+@media (max-width: 1078px) {
+  .account{
+    width: 95%;
+    margin: 4% 0 0 27%;
+  }
+
+  .accounts{
+    width: 95%;
+    margin: 0 0 0 25%;
+  }
+}
+
+@media (max-width: 740px) {
+  .account{
+    width: 100%;
+    margin: 2em 0 0 0;
+  }
+
+  .accounts{
+    margin: 0;
+  }
+
 }

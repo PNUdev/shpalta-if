@@ -5,6 +5,7 @@
     <@c.categories categories />
 
     <ul class="accounts">
+        <a href="/"><i class="fas fa-caret-left"></i> Повернутись на головну</a>
         <li class="accounts-title"><h2>Користувачі: </h2></li>
         <#list accounts as account>
             <li>

@@ -1,4 +1,4 @@
-footer{
+footer {
   width: 100%;
   height: 150px;
   background-color: #393A3F;
@@ -8,19 +8,19 @@ footer{
   bottom: 0;
   left: 0;
 
-  &>div:first-child{
+  & > div:first-child {
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid #66686B;
 
-    .footer-logo{
+    .footer-logo {
       font-size: 40px;
       padding: 10px 0 15px 0;
       font-family: Arial, sans-serif;
     }
 
-    .feedback-btn{
+    .feedback-btn {
       color: #b1b1b1;
       padding: 5px 20px;
       border-radius: 1em;
@@ -28,13 +28,13 @@ footer{
     }
   }
 
-  div:last-child{
+  div:last-child {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding-top: 10px;
 
-    .socials i{
+    .socials i {
       font-size: 15px;
       margin-left: 20px;
       cursor: pointer;
@@ -47,7 +47,7 @@ footer{
       height: 35px;
       border-radius: 50%;
 
-      &:hover{
+      &:hover {
         background: #cacaca;
         color: #393A3F;
       }
@@ -56,9 +56,67 @@ footer{
 
   .copyright {
     font-size: 14px;
-    i{
+
+    i {
       font-size: 20px;
       transform: translateY(10%);
+    }
+  }
+}
+
+@media (max-width: 460px) {
+  footer {
+    min-height: 120px;
+    height: max-content;
+
+    div:first-child {
+      .footer-logo {
+        font-size: 32px;
+      }
+
+      .feedback-btn {
+        font-size: 13px;
+        padding: 4px 15px;
+      }
+    }
+
+    div:last-child {
+      .copyright {
+        font-size: 11px;
+      }
+
+      .socials {
+        padding-top: 0;
+
+        i {
+          font-size: 13px;
+          width: 30px;
+          height: 30px;
+          margin-left: 15px;
+        }
+      }
+    }
+  }
+
+}
+
+@media (max-width: 350px) {
+  footer {
+
+    div:first-child {
+      flex-wrap: wrap;
+      justify-content: center;
+      flex-direction: column;
+
+      .footer-logo{
+        padding: 8px 0;
+      }
+
+      .feedback-btn {
+        width: 50%;
+        text-align: center;
+        margin-bottom: .5em;
+      }
     }
   }
 }

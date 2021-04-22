@@ -13,6 +13,7 @@
   background-color: #FAFAFA;
   z-index: 2;
 
+
   &__logo {
     display: block;
     height: 100%;
@@ -36,7 +37,7 @@
       z-index: -1;
       position: relative;
 
-      &:after{
+      &:after {
         content: "";
         width: 0;
         height: 1px;
@@ -94,7 +95,6 @@
       font-size: 26px;
       color: #444444;
       cursor: pointer;
-      margin-left: 1em;
       transition: .3s linear;
 
       &:hover {
@@ -143,8 +143,130 @@
 
   }
 
+  #menu-btn {
+    display: none;
+    font-size: 26px;
+    color: #444444;
+    cursor: pointer;
+    transition: .3s linear;
+
+    &:hover {
+      color: #808080;
+    }
+  }
+
   .search-header_show {
     width: 75%;
+  }
+
+}
+
+@media (max-width: 1000px) {
+  .header-links {
+    right: 10%;
+  }
+}
+
+@media (max-width: 740px) {
+  .header {
+    &-links {
+      display: flex;
+      width: 80%;
+      flex-direction: column;
+      position: absolute;
+      align-items: flex-start;
+      top: 25em;
+      left: 50%;
+      transform: translateX(-50%);
+
+      text-align: left;
+
+      &:before {
+        content: "Інше";
+        width: 90%;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        font-family: "Open Sans", sans-serif;
+        font-size: 21px;
+        font-weight: bold;
+
+        border-bottom: 2px solid rgb(177, 130, 130);
+        animation: show-categories-border .5s forwards;
+      }
+
+      a {
+        width: 100%;
+        margin: 1em 0 0 0;
+        border-bottom: 1px solid rgba(204, 204, 204, 1);
+
+        &:hover:after {
+          display: none;
+        }
+      }
+
+      &_show {
+        display: none;
+      }
+    }
+
+    &__search {
+      width: 15%;
+
+      #search-bar {
+        width: 95%;
+      }
+
+      #search-result {
+        width: 90%;
+        left: 5%;
+      }
+    }
+
+    .search-header_show {
+      width: 65%;
+    }
+
+    .search__show {
+      width: 80%;
+    }
+
+
+    #menu-btn {
+      display: block;
+    }
+  }
+}
+
+@media (max-width: 520px) {
+  .header {
+    &__logo {
+      width: 100px;
+      margin-bottom: 4%;
+    }
+
+    &__search {
+      position: absolute;
+      right: 5%;
+      width: 20%;
+      height: 100%;
+
+      #search-result {
+        width: 100%;
+        left: 0;
+      }
+
+      & > #search-btn, & > #menu-btn{
+        font-size: 22px;
+      }
+    }
+
+    .search-header_show {
+      width: 91%;
+    }
+
+    .search__show {
+      width: 90%;
+    }
   }
 
 }
