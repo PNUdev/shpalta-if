@@ -35,7 +35,7 @@
                 <div class="input-group-prepend">
                     <span class="input-group-text">Зображення акаунту</span>
                 </div>
-                <input type="text" class="form-control" name="imageUrl" id="image-url"
+                <input type="text" class="form-control" name="profileImageUrl" id="image-url"
                        value="${(principalAccount.profileImageUrl)!}">
             </div>
             <div class="input-group">

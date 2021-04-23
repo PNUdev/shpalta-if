@@ -1,0 +1,272 @@
+
+.header {
+  width: 100%;
+  height: 4em;
+  padding: 0 1.3em;
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 1px 3px 1px #a0a0a0;
+  background-color: #FAFAFA;
+  z-index: 2;
+
+
+  &__logo {
+    display: block;
+    height: 100%;
+    width: 120px;
+    background: url("/images/shpalta_logo.png") bottom center no-repeat, #FAFAFA;
+    background-size: 105%, 105%;
+  }
+
+  &-links {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: absolute;
+    right: 7%;
+    font-size: 14px;
+    z-index: -1;
+
+    & > a {
+      white-space: nowrap;
+      margin-left: 1em;
+      z-index: -1;
+      position: relative;
+
+      &:after {
+        content: "";
+        width: 0;
+        height: 1px;
+        background-color: #9d9d9d;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        transition: .4s linear;
+      }
+
+      &:hover:after {
+        width: 100%;
+      }
+    }
+  }
+
+  &__search {
+    width: 5%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    background-color: #FAFAFA;
+    transition: .5s ease-out;
+
+    .search-form {
+      width: 0;
+      opacity: 0;
+      transition: .5s ease-out;
+    }
+
+    .search__show {
+      width: 90%;
+      opacity: 1;
+    }
+
+    #search-bar {
+      width: 70%;
+      font-size: 14px;
+      border: none;
+      outline: none;
+      border-bottom: 1px solid #b1b1b1;
+      background: transparent;
+      opacity: 1;
+      transition: .2s linear;
+
+      &:focus {
+        border-color: #8c8c8c;
+        box-shadow: 0 1.3px 2px -2px #0d1b46;
+      }
+    }
+
+    #search-btn {
+      display: block;
+      font-size: 26px;
+      color: #444444;
+      cursor: pointer;
+      transition: .3s linear;
+
+      &:hover {
+        color: #808080;
+      }
+    }
+
+    #search-result {
+      display: none;
+      position: absolute;
+      padding: .3em .5em;
+      box-shadow: 0 3px 5px 0 #a0a0a0;
+      opacity: 1;
+      top: 100%;
+      left: 24%;
+      width: 50%;
+      color: #6d6d6d;
+
+      background: #f6f6f6;
+      z-index: 1000;
+
+      .search-result-post {
+        display: block;
+        text-decoration: none;
+        color: #6d6d6d;
+        padding: 1em;
+        border-bottom: 1px solid #6d6d6d;
+
+        &:before {
+          font-family: "Font Awesome 5 Free", serif;
+          font-weight: bold;
+          content: "\f1ea";
+          padding-right: 1em;
+        }
+
+        &:hover {
+          background-color: #ececec;
+        }
+      }
+
+      &_notfound {
+        padding: 1em;
+        text-align: center;
+      }
+    }
+
+  }
+
+  #menu-btn {
+    display: none;
+    font-size: 26px;
+    color: #444444;
+    cursor: pointer;
+    transition: .3s linear;
+
+    &:hover {
+      color: #808080;
+    }
+  }
+
+  .search-header_show {
+    width: 75%;
+  }
+
+}
+
+@media (max-width: 1000px) {
+  .header-links {
+    right: 10%;
+  }
+}
+
+@media (max-width: 740px) {
+  .header {
+    &-links {
+      display: flex;
+      width: 80%;
+      flex-direction: column;
+      position: absolute;
+      align-items: flex-start;
+      top: 25em;
+      left: 50%;
+      transform: translateX(-50%);
+
+      text-align: left;
+
+      &:before {
+        content: "Інше";
+        width: 90%;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        font-family: "Open Sans", sans-serif;
+        font-size: 21px;
+        font-weight: bold;
+
+        border-bottom: 2px solid rgb(177, 130, 130);
+        animation: show-categories-border .5s forwards;
+      }
+
+      a {
+        width: 100%;
+        margin: 1em 0 0 0;
+        border-bottom: 1px solid rgba(204, 204, 204, 1);
+
+        &:hover:after {
+          display: none;
+        }
+      }
+
+      &_show {
+        display: none;
+      }
+    }
+
+    &__search {
+      width: 15%;
+
+      #search-bar {
+        width: 95%;
+      }
+
+      #search-result {
+        width: 90%;
+        left: 5%;
+      }
+    }
+
+    .search-header_show {
+      width: 65%;
+    }
+
+    .search__show {
+      width: 80%;
+    }
+
+
+    #menu-btn {
+      display: block;
+    }
+  }
+}
+
+@media (max-width: 520px) {
+  .header {
+    &__logo {
+      width: 100px;
+      margin-bottom: 4%;
+    }
+
+    &__search {
+      position: absolute;
+      right: 5%;
+      width: 20%;
+      height: 100%;
+
+      #search-result {
+        width: 100%;
+        left: 0;
+      }
+
+      & > #search-btn, & > #menu-btn{
+        font-size: 22px;
+      }
+    }
+
+    .search-header_show {
+      width: 91%;
+    }
+
+    .search__show {
+      width: 90%;
+    }
+  }
+
+}
