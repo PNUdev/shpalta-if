@@ -4,11 +4,9 @@
 <main class="wrapper">
     <@c.categories categories />
 
-    <!-- ToDo we should have dropdown with possible sort variations;
-     applying of sort, that is different then current, should trigger reload of the page with new "sort" query param -->
     <div id="feed-main">
         <div class="feed-main-management">
-            <form action="" class="filter">
+            <form action="" class="filter" onchange="this.submit()">
                 <select name="sort" id="sortBy">
                     <option value="createdAt">За датою публікації</option>
                     <option value="title">За назвою</option>
@@ -25,7 +23,6 @@
                     <input type="hidden" name="author" value='${(authorPublicAccountId)!}'>
                 </#if>
 
-                <input type="submit" class="filter-submit" value="Сортувати">
             </form>
         </div>
 
@@ -83,6 +80,7 @@
             $('#sortBy')[0].value = sortBy;
             $('#sortDir')[0].value = sortDir;
         }
+
     </script>
 </main>
 <#include "../include/footer.ftl" >

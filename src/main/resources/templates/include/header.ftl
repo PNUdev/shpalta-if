@@ -31,7 +31,7 @@
 
     <div class="header__search">
         <form method="get" action="/feed" class="search-form">
-            <input id="search-bar" name="title" placeholder="Знайти найкактуальніші події ..." type="text"
+            <input id="search-bar" name="title" placeholder="Знайти найактуальніші події ..." type="text"
                    autocomplete="off">
         </form>
 

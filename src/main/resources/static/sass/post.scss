@@ -321,8 +321,8 @@
         align-items: center;
         flex-wrap: wrap;
 
-        #sortBy {
-          max-width: 48%;
+        #sortBy, #sortDir {
+          width: 48%;
         }
       }
 
