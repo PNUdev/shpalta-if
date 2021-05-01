@@ -7,16 +7,15 @@
 <body>
 <nav class="navbar navbar-dark bg-info">
     <div>
+        <a class="navbar-brand" href="/admin/posts">Пости</a>
         <@security.authorize access="hasRole('ROLE_ADMIN')">
             <a class="navbar-brand" href="/admin">Інфо панель</a>
             <a class="navbar-brand" href="/admin/categories">Категорії</a>
             <a class="navbar-brand" href="/admin/users">Користувачі</a>
-        </@security.authorize >
-        <a class="navbar-brand" href="/admin/posts">Пости</a>
-        <@security.authorize access="hasRole('ROLE_ADMIN')">
             <a class="navbar-brand"
                href="/admin/feedbacks">Відгуки <#if  0 < unreviewedFeedbacksCount >(+${unreviewedFeedbacksCount}) </#if></a>
             <a class="navbar-brand" href="/admin/security-info">Безпека</a>
+            <a class="navbar-brand" href="/admin/telegram-message">Розсилка</a>
         </@security.authorize >
     </div>
 
