@@ -38,3 +38,5 @@ telegrambot:
 app:
   base_path: ${APP_BASE_PATH:http://localhost:8080}
 
+security-audit-enabled: true
+

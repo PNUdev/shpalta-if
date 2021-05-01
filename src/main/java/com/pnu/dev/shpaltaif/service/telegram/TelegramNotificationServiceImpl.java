@@ -2,12 +2,8 @@ package com.pnu.dev.shpaltaif.service.telegram;
 
 import com.pnu.dev.shpaltaif.domain.Category;
 import com.pnu.dev.shpaltaif.domain.Post;
-import com.pnu.dev.shpaltaif.domain.TelegramBotUser;
 import com.pnu.dev.shpaltaif.util.FreemarkerTemplateResolver;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -19,21 +15,17 @@ public class TelegramNotificationServiceImpl implements TelegramNotificationServ
 
     private String appBasePath;
 
-    private TelegramBotUserService telegramBotUserService;
-
-    private TelegramMessageSender telegramMessageSender;
-
     private FreemarkerTemplateResolver freemarkerTemplateResolver;
 
-    public TelegramNotificationServiceImpl(TelegramBotUserService telegramBotUserService,
-                                           TelegramMessageSender telegramMessageSender,
-                                           FreemarkerTemplateResolver freemarkerTemplateResolver,
+    private TelegramMessageSendService telegramMessageSendService;
+
+    public TelegramNotificationServiceImpl(FreemarkerTemplateResolver freemarkerTemplateResolver,
+                                           TelegramMessageSendService telegramMessageSendService,
                                            @Value("${app.base_path}") String appBasePath) {
 
-        this.telegramBotUserService = telegramBotUserService;
-        this.telegramMessageSender = telegramMessageSender;
         this.freemarkerTemplateResolver = freemarkerTemplateResolver;
         this.appBasePath = appBasePath;
+        this.telegramMessageSendService = telegramMessageSendService;
     }
 
     @Async
@@ -46,20 +38,7 @@ public class TelegramNotificationServiceImpl implements TelegramNotificationServ
 
         String messageContent = freemarkerTemplateResolver.resolve("/telegram/newPost.ftl", templateParams);
 
-        Pageable pageable = PageRequest.of(0, 10);
-
-        Page<TelegramBotUser> telegramBotUsersToNotify;
-        do {
-
-            telegramBotUsersToNotify = telegramBotUserService.findAllByCategory(post.getCategory(), pageable);
-
-            telegramBotUsersToNotify.forEach(telegramBotUser ->
-                    telegramMessageSender.sendMessageHtml(telegramBotUser.getChatId(), messageContent)
-            );
-
-            pageable = pageable.next();
-        } while (!telegramBotUsersToNotify.isLast());
-
+        telegramMessageSendService.sendMessageToCategory(messageContent, post.getCategory());
     }
 
     @Async
@@ -73,18 +52,6 @@ public class TelegramNotificationServiceImpl implements TelegramNotificationServ
         String messageContent = freemarkerTemplateResolver
                 .resolve("/telegram/newCategory.ftl", templateParams);
 
-        Pageable pageable = PageRequest.of(0, 10);
-
-        Page<TelegramBotUser> telegramBotUsersToNotify;
-        do {
-
-            telegramBotUsersToNotify = telegramBotUserService.findAll(pageable);
-
-            telegramBotUsersToNotify.forEach(telegramBotUser ->
-                    telegramMessageSender.sendMessageHtml(telegramBotUser.getChatId(), messageContent)
-            );
-
-            pageable = pageable.next();
-        } while (!telegramBotUsersToNotify.isLast());
+        telegramMessageSendService.sendMessageToCategory(messageContent, category);
     }
 }

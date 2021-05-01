@@ -164,7 +164,7 @@ public class TelegramBotUserServiceImpl implements TelegramBotUserService {
     @Transactional
     public void addCategorySubscriptionForAllUsers(Category category) {
 
-        Pageable pageable = PageRequest.of(0, 10);
+        Pageable pageable = PageRequest.of(0, 20);
 
         Page<TelegramBotUser> telegramBotUsers;
         do {

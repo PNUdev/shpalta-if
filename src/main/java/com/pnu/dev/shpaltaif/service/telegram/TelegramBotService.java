@@ -41,7 +41,7 @@ import static java.util.Objects.nonNull;
 @Profile("production")
 @Slf4j
 @Service
-public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTelegramBot, TelegramMessageSender {
+public class TelegramBotService extends TelegramWebhookBot implements SelfRegisteringTelegramBot, TelegramMessageSender {
 
     private static final String SELECTED_CATEGORY_MARKER = EmojiParser.parseToUnicode(":white_check_mark:");
 
@@ -81,9 +81,9 @@ public class TelegramBot extends TelegramWebhookBot implements SelfRegisteringTe
     private FreemarkerTemplateResolver freemarkerTemplateResolver;
 
     @Autowired
-    public TelegramBot(RestTemplate restTemplate,
-                       TelegramBotUserService telegramBotUserService,
-                       FreemarkerTemplateResolver freemarkerTemplateResolver) {
+    public TelegramBotService(RestTemplate restTemplate,
+                              TelegramBotUserService telegramBotUserService,
+                              FreemarkerTemplateResolver freemarkerTemplateResolver) {
 
         this.restTemplate = restTemplate;
         this.telegramBotUserService = telegramBotUserService;

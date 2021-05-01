@@ -20,3 +20,5 @@ app:
 telegrambot:
   url.secret: "secret"
 
+security-audit-enabled: true
+
