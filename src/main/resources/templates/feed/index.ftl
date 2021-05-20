@@ -36,9 +36,6 @@
     </div>
 
     <script>
-        // ToDo feel free to rewrite this piece of code in scope of UI implementation
-        //  (it's just a demo of desired behaviour) as long as you keep the same approach
-
         const categoryParam = '${(category)!}';
         const sortParam = '${(sort)!}';
         const title = '${(title)!}';
@@ -47,40 +44,25 @@
         let page = 1;
 
         $(window).on('load scroll', function () {
-                if ($(window).scrollTop() + $(window).height() >= $(document).height() - 160) {
-                    let requestUrl = '/posts/partial?page=' + page;
+            if ($(window).scrollTop() + $(window).height() >= $(document).height() - 160) {
+                let requestUrl = '/posts/partial?page=' + page;
 
-                    if (categoryParam) {
-                        requestUrl += '&categoryUrl=' + categoryParam;
-                    }
+                if (categoryParam) requestUrl += '&categoryUrl=' + categoryParam;
+                if (sortParam) requestUrl += '&sort=' + sortParam;
+                if (title) requestUrl += '&title=' + title;
+                if (authorPublicAccountId) requestUrl += '&authorPublicAccountId=' + authorPublicAccountId;
 
-                    if (sortParam) {
-                        requestUrl += '&sort=' + sortParam;
-                    }
+                $.get(requestUrl, response => $("#feed-main").append(response))
 
-                    if (title) {
-                        requestUrl += '&title=' + title;
-                    }
-
-                    if (authorPublicAccountId) {
-                        requestUrl += '&authorPublicAccountId=' + authorPublicAccountId;
-                    }
-
-                    $.get(requestUrl, response => {
-                        $("#feed-main").append(response)
-                    })
-
-                    page++;
-                }
+                page++;
             }
-        );
+        });
 
         let [sortBy, sortDir] = sortParam.split(",");
         if (sortBy && sortDir) {
             $('#sortBy')[0].value = sortBy;
             $('#sortDir')[0].value = sortDir;
         }
-
     </script>
 </main>
 <#include "../include/footer.ftl" >

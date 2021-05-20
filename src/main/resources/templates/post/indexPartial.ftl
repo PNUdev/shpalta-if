@@ -3,32 +3,35 @@
 <#else>
     <#list posts.content as post >
         <div class="post">
-            <div class="post-img">
+            <div class="post__preview">
                 <img src="${post.pictureUrl}" alt="NOT FOUND!">
             </div>
 
-            <div class="post-info">
-                <a href="/posts/${post.id}"><h3 class="post-title">${post.title}</h3></a>
+            <div class="post__info">
+                <a href="/posts/${post.id}">
+                    <h3 class="post__info__title">${post.title}</h3>
+                    <hr style="border-top-color: ${(post.category.colorTheme)!};">
+                </a>
 
-                <div class="post-info_bottom">
+                <div class="post__info__bottom">
                     <div>
                         <p>
                             <i class="far fa-calendar-alt"></i>
-                            <span class="post__created-at" data-date="${post.createdAt}"></span>
+                            <span class="post__info__bottom__created-at" data-date="${post.createdAt}"></span>
                         </p>
 
-                        <p>
+                        <a href="/feed/${post.category.publicUrl}">
                             <i class="fas fa-tag"></i>
-                            <span>${(post.category.title)!}</span>
-                        </p>
+                            <span class="post__info__bottom__link">${(post.category.title)!}</span>
+                        </a>
 
                         <a href="/accounts/${post.authorPublicAccount.id}">
                             <i class="fas fa-user-edit"></i>
-                            <span class="post__author">${post.authorPublicAccount.getSignature()!}</span>
+                            <span class="post__info__bottom__link">${post.authorPublicAccount.getSignature()!}</span>
                         </a>
                     </div>
 
-                    <a class="post-btn" href="/posts/${post.id}">Читати</a>
+                    <a class="link-to-post" href="/posts/${post.id}" style="color: ${(post.category.colorTheme)!};">Читати</a>
                 </div>
 
             </div>
@@ -43,7 +46,7 @@
         post.classList.add("post-headliner");
     }
 
-    $(".post__created-at").each((idx, el) => {
+    $(".post__info__bottom__created-at").each((idx, el) => {
         let date = new Date(el.dataset.date);
         let monthName = date.toLocaleString('ukr', {month: 'short'});
         monthName = monthName[0].toUpperCase() + monthName.substring(1);
@@ -51,7 +54,7 @@
         el.innerText = date.getDate() + " " + monthName;
     })
 
-    $(".post__created-at_full").each((idx, el) => {
+    $(".post__info__bottom__created-at_full").each((idx, el) => {
         el.innerText = el.innerText.replace("T", " ");
     })
 </script>

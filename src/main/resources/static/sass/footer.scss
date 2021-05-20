@@ -70,9 +70,7 @@ footer {
     height: max-content;
 
     div:first-child {
-      .footer-logo {
-        font-size: 32px;
-      }
+      .footer-logo { font-size: 32px; }
 
       .feedback-btn {
         font-size: 13px;
@@ -81,9 +79,7 @@ footer {
     }
 
     div:last-child {
-      .copyright {
-        font-size: 11px;
-      }
+      .copyright { font-size: 11px; }
 
       .socials {
         padding-top: 0;
@@ -108,9 +104,7 @@ footer {
       justify-content: center;
       flex-direction: column;
 
-      .footer-logo{
-        padding: 8px 0;
-      }
+      .footer-logo{ padding: 8px 0; }
 
       .feedback-btn {
         width: 50%;

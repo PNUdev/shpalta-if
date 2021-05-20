@@ -11,9 +11,6 @@
             <li class="account-name">${account.getSignature()}</li>
             <li><span>Ім'я:</span> ${account.name}</li>
             <li><span>Прізвище: </span>${account.surname}</li>
-            <li><span>Дата створення: </span>
-                <p class="account-created-at">${account.createdAt}</p></li>
-            <li>
                 <span>Опис: </span>
                 <p class="account-desc">${(account.description)!}</p>
             </li>
