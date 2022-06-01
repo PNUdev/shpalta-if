@@ -1,7 +1,7 @@
 ## Requirements
 
 #### Application
-- Java 8
+- Java 11
 - Maven
 
 #### Database

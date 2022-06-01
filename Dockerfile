@@ -1,4 +1,4 @@
-FROM openjdk:8-jre-alpine
+FROM openjdk:11-jre-slim
 
 COPY /radio-service-api/target/*.jar /app.jar
 
