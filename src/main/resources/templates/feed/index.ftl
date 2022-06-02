@@ -31,8 +31,6 @@
                 Результати пошуку за '${title}':
             </p>
         </#if>
-
-
     </div>
 
     <script>
@@ -45,8 +43,12 @@
         const authorPublicAccountId = '${(authorPublicAccountId)!}';
 
         let page = 1;
+        let isEnd = false;
 
         $(window).on('load scroll', function () {
+                if (isEnd) {
+                    return;
+                }
                 if ($(window).scrollTop() + $(window).height() >= $(document).height() - 160) {
                     let requestUrl = '/posts/partial?page=' + page;
 
@@ -68,6 +70,7 @@
 
                     $.get(requestUrl, response => {
                         $("#feed-main").append(response)
+                        isEnd = response.trim().startsWith("<script>")
                     })
 
                     page++;
