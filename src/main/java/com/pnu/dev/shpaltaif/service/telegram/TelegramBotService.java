@@ -109,10 +109,10 @@ public class TelegramBotService extends TelegramWebhookBot implements SelfRegist
             return handleMessage(chatId, message);
         } catch (ServiceException e) {
             log.error("Error while handling telegram message", e);
-            return new SendMessage(chatId, "Помилка: " + e.getMessage());
+            return new SendMessage(chatId.toString(), "Помилка: " + e.getMessage());
         } catch (Exception e) {
             log.error("Error while handling telegram message", e);
-            return new SendMessage(chatId, "Внутрішня помилка сервера");
+            return new SendMessage(chatId.toString(), "Внутрішня помилка сервера");
         }
     }
 
@@ -185,7 +185,9 @@ public class TelegramBotService extends TelegramWebhookBot implements SelfRegist
             return buildAnswerCallbackQuery(callbackQuery);
         } catch (Exception e) {
             log.error("Error while handling telegram message", e);
-            return buildAnswerCallbackQuery(callbackQuery).setText("Внутрішня помилка сервера");
+            AnswerCallbackQuery answerCallbackQuery = buildAnswerCallbackQuery(callbackQuery);
+            answerCallbackQuery.setText("Внутрішня помилка сервера");
+            return answerCallbackQuery;
         }
     }
 
@@ -206,12 +208,16 @@ public class TelegramBotService extends TelegramWebhookBot implements SelfRegist
 
         } catch (Exception e) {
             log.error("Error while handling telegram message", e);
-            return buildAnswerCallbackQuery(callbackQuery).setText("Внутрішня помилка сервера");
+            AnswerCallbackQuery answerCallbackQuery = buildAnswerCallbackQuery(callbackQuery);
+            answerCallbackQuery.setText("Внутрішня помилка сервера");
+            return answerCallbackQuery;
         }
     }
 
     private AnswerCallbackQuery buildAnswerCallbackQuery(CallbackQuery callbackQuery) {
-        return new AnswerCallbackQuery().setCallbackQueryId(callbackQuery.getId());
+        AnswerCallbackQuery answerCallbackQuery = new AnswerCallbackQuery();
+        answerCallbackQuery.setCallbackQueryId(callbackQuery.getId());
+        return answerCallbackQuery;
     }
 
     private SendMessage handleMessage(Long chatId, String message) throws TelegramApiException {
@@ -279,13 +285,10 @@ public class TelegramBotService extends TelegramWebhookBot implements SelfRegist
                 })
                 .collect(Collectors.toList());
 
-        keyboardButtons.add(Collections.singletonList(
-                new InlineKeyboardButton("Приховати налаштування")
-                        .setCallbackData(
-                                String.join(":", CATEGORIES_SETTINGS_CALLBACK_ACTION,
-                                        HIDE_CATEGORIES_SETTINGS
-                                )
-                        )));
+        InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton("Приховати налаштування");
+        inlineKeyboardButton.setCallbackData(
+                String.join(":", CATEGORIES_SETTINGS_CALLBACK_ACTION, HIDE_CATEGORIES_SETTINGS));
+        keyboardButtons.add(Collections.singletonList(inlineKeyboardButton));
 
         keyboardMarkup.setKeyboard(keyboardButtons);
         return keyboardMarkup;
@@ -297,18 +300,15 @@ public class TelegramBotService extends TelegramWebhookBot implements SelfRegist
     }
 
     private SendMessage buildSendMessageHtml(Long chatId, String content) {
-        SendMessage sendMessage = new SendMessage(chatId, content);
+        SendMessage sendMessage = new SendMessage(chatId.toString(), content);
         sendMessage.enableHtml(true);
         sendMessage.enableWebPagePreview();
 
+        InlineKeyboardButton inlineKeyboardButton = new InlineKeyboardButton("Налаштувати сповіщення");
+        inlineKeyboardButton.setCallbackData(
+                String.join(":", CATEGORIES_SETTINGS_CALLBACK_ACTION, SHOW_CATEGORIES_SETTINGS));
         List<List<InlineKeyboardButton>> inlineButtons = Collections.singletonList(
-                Collections.singletonList(
-                        new InlineKeyboardButton("Налаштувати сповіщення")
-                                .setCallbackData(
-                                        String.join(":",
-                                                CATEGORIES_SETTINGS_CALLBACK_ACTION, SHOW_CATEGORIES_SETTINGS)
-                                )
-                ));
+                Collections.singletonList(inlineKeyboardButton));
         sendMessage.setReplyMarkup(new InlineKeyboardMarkup(inlineButtons));
 
         return sendMessage;
@@ -323,9 +323,10 @@ public class TelegramBotService extends TelegramWebhookBot implements SelfRegist
 
     private void tryDeleteMessage(Long chatId, Integer messageId) throws TelegramApiException {
         try {
-            execute(new DeleteMessage(chatId, messageId));
+            execute(new DeleteMessage(chatId.toString(), messageId));
         } catch (TelegramApiRequestException e) {
             // message cannot be deleted, because more than 48 hours passed since it was sent
         }
     }
+
 }
