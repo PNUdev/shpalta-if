@@ -16,6 +16,7 @@
                href="/admin/feedbacks">Відгуки <#if  0 < unreviewedFeedbacksCount >(+${unreviewedFeedbacksCount}) </#if></a>
             <a class="navbar-brand" href="/admin/security-info">Безпека</a>
             <a class="navbar-brand" href="/admin/telegram-message">Розсилка</a>
+            <a class="navbar-brand" href="/admin/header-link">Посилання</a>
         </@security.authorize >
     </div>
 

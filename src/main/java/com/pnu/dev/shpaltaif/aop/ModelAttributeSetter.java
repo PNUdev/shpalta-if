@@ -5,6 +5,7 @@ import com.pnu.dev.shpaltaif.domain.User;
 import com.pnu.dev.shpaltaif.domain.UserRole;
 import com.pnu.dev.shpaltaif.service.CategoryService;
 import com.pnu.dev.shpaltaif.service.FeedbackService;
+import com.pnu.dev.shpaltaif.service.HeaderLinkService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,10 +24,17 @@ public class ModelAttributeSetter {
 
     private FeedbackService feedbackService;
 
+    private HeaderLinkService headerLinkService;
+
     @Autowired
-    public ModelAttributeSetter(CategoryService categoryService, FeedbackService feedbackService) {
+    public ModelAttributeSetter(
+            CategoryService categoryService,
+            FeedbackService feedbackService,
+            HeaderLinkService headerLinkService
+    ) {
         this.categoryService = categoryService;
         this.feedbackService = feedbackService;
+        this.headerLinkService = headerLinkService;
     }
 
     @ModelAttribute
@@ -45,6 +53,14 @@ public class ModelAttributeSetter {
     public void setUnreviewedFeedbacksCount(@AuthenticationPrincipal User user, Model model) {
         if (Objects.nonNull(user) && user.getRole() == UserRole.ROLE_ADMIN) {
             model.addAttribute("unreviewedFeedbacksCount", feedbackService.countUnreviewed());
+        }
+    }
+
+    @ModelAttribute
+    public void setHeaderLinks(HttpServletRequest request, Model model) {
+        if (!StringUtils.startsWith(request.getRequestURI(), "/admin")
+                && StringUtils.equals(request.getMethod(), "GET")) {
+            model.addAttribute("headerLinks", headerLinkService.findAll());
         }
     }
 

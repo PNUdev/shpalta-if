@@ -24,9 +24,9 @@
     <a class="header__logo" href="/"></a>
 
     <div class="header-links header-links_show">
-        <a href="/accounts">Наші автори</a>
-        <a href="/feedbacks">Зворотній зв'язок</a>
-        <a href="https://telegram.im/@shpalta_if_stage_bot" target="_blank">Телеграм бот</a>
+        <#list headerLinks as headerLink>
+            <a href="${headerLink.link}" <#if headerLink.openInNewTab>target="_blank"</#if>>${headerLink.name}</a>
+        </#list>
     </div>
 
     <div class="header__search">
